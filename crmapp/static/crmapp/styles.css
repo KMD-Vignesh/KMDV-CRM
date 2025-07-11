@@ -1,0 +1,19 @@
+/* crmapp/static/crmapp/styles.css */
+body {
+    font-family: Arial, sans-serif;
+    background-color: white;
+    margin: 0;
+    padding: 1rem;
+}
+
+header {
+    background: #2d2d2d;
+    color: white;
+    padding: 1rem;
+}
+
+nav a {
+    margin-right: 15px;
+    color: white;
+    text-decoration: none;
+}
