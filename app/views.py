@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Product, Category, Inventory, Vendor, Order, UserProfile
-from django.db.models import Sum
+from django.db.models import Sum, Count
 from django.contrib.auth.decorators import login_required
 from .forms import CustomUserCreationForm
 from django.contrib import messages
@@ -13,13 +13,23 @@ def dashboard(request):
     products = Product.objects.all()
     categories = Category.objects.all()
     inventory = Inventory.objects.all()
-    return render(request, 'app/dashboard.html', {
+    
+    order_summary = Order.objects.values('product__name').annotate(
+        total=Sum('quantity')
+    ).order_by('-total')
+    orders_count = Order.objects.count()
+    
+    context = {
         'products_count': products_count,
+        'orders_count': orders_count,
         'inventory_summary': inventory_summary,
+        'order_summary': order_summary,
         'products': products,
         'categories': categories,
         'inventory': inventory
-    })
+    }
+    
+    return render(request, 'app/dashboard.html', context)
 
 @login_required
 def category_list(request):

@@ -4,6 +4,16 @@
     <h1>Dashboard</h1>
     <div class="summary">
         <p><strong>Total Products:</strong> {{ products_count|default:"0" }}</p>
+        <h2>Order Summary</h2>
+        {% if order_summary %}
+            <ul>
+            {% for item in order_summary %}
+                <li>{{ item.product__name }}: {{ item.total }} units</li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>No inventory data available.</p>
+        {% endif %}
         <h2>Inventory Summary</h2>
         {% if inventory_summary %}
             <ul>
