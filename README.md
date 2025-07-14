@@ -1,17 +1,1 @@
 # KMDV-CRM
-
-`uv run django-admin startproject kmdv_crm`
-
-uv run python manage.py startapp appname
-
-uv run python manage.py runserver
-
-uv run python manage.py makemigrations
-
-uv run python manage.py migrate
-
-python manage.py createsuperuser
-
-python manage.py collectstatic
-
-python manage.py test
