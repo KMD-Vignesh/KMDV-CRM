@@ -1,0 +1,15 @@
+{% extends 'app/base.html' %}
+{% block content %}
+    <h1>Categories</h1>
+    <a href="{% url 'add_category' %}">Add Category</a>
+    <ul>
+    {% for category in categories %}
+        <li>{{ category.name }} - {{ category.description|default:"No description" }}
+            <a href="{% url 'edit_category' category.pk %}">Edit</a>
+            <a href="{% url 'delete_category' category.pk %}">Delete</a>
+        </li>
+    {% empty %}
+        <li>No categories available.</li>
+    {% endfor %}
+    </ul>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends 'app/base.html' %}
+{% block content %}
+    <h1>Logged Out</h1>
+    <p>You have been successfully logged out. Thank you for using KMDV CRM!</p>
+    <p>You will be redirected to the login page in <span id="countdown">5</span> seconds...</p>
+    <p><a href="{% url 'login' %}">Log in again</a></p>
+    <p>Don't have an account? <a href="{% url 'register' %}">Register here</a></p>
+    <script>
+        let timeLeft = 5;
+        const countdown = document.getElementById('countdown');
+        const timer = setInterval(() => {
+            timeLeft--;
+            countdown.textContent = timeLeft;
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                window.location.href = "{% url 'login' %}";
+            }
+        }, 1000);
+    </script>
+{% endblock %}

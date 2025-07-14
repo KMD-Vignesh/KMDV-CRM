@@ -1,0 +1,14 @@
+{% extends 'app/base.html' %}
+{% block content %}
+    <h1>Login</h1>
+    {% if form.errors %}
+        <p>Invalid username or password. Please try again.</p>
+    {% endif %}
+    <form method="post">
+        {% csrf_token %}
+        <label>Username: <input type="text" name="username" required></label><br>
+        <label>Password: <input type="password" name="password" required></label><br>
+        <button type="submit">Login</button>
+    </form>
+    <p><a href="{% url 'password_reset' %}">Forgot password?</a></p>  <!-- Updated URL name -->
+{% endblock %}

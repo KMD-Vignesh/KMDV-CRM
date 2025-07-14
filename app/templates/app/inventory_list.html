@@ -1,0 +1,21 @@
+{% extends 'app/base.html' %}
+{% block content %}
+    <h1>Inventory</h1>
+    <a href="{% url 'add_inventory' %}">Add Inventory</a>
+    <ul>
+    {% for item in inventory %}
+        <li>{{ item.product.name }} - {{ item.stock_quantity }} units (Vendor: {{ item.vendor.name|default:"N/A" }}, Last Updated: {{ item.last_updated|date:"F d, Y" }})
+            <a href="{% url 'edit_inventory' item.pk %}">Edit</a>
+            <a href="{% url 'delete_inventory' item.pk %}">Delete</a>
+        </li>
+    {% empty %}
+        <li>No inventory available.</li>
+    {% endfor %}
+    </ul>
+    <script>
+        document.querySelectorAll('ul li').forEach(li => {
+            li.addEventListener('mouseover', () => li.style.backgroundColor = '#d5e8f5');
+            li.addEventListener('mouseout', () => li.style.backgroundColor = '#ecf0f1');
+        });
+    </script>
+{% endblock %}

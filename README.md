@@ -1,33 +1,17 @@
 # KMDV-CRM
 
-> ***startproject:**** Creates a new Django project.*
+`uv run django-admin startproject kmdv_crm`
 
-`django-admin startproject kmdv_crm`
+uv run python manage.py startapp appname
 
-> ***startapp: ****Creates a new Django app within a project.*
+uv run python manage.py runserver
 
-`python manage.py startapp appname`
+uv run python manage.py makemigrations
 
-> ***runserver: ****Starts the development server.*
+uv run python manage.py migrate
 
-`python manage.py runserver`
+python manage.py createsuperuser
 
-> ***makemigrations: ****Generates new database migration files based on model changes.*
+python manage.py collectstatic
 
-`python manage.py makemigrations`
-
-> ***migrate: ****Applies database migrations to synchronize the database schema.*
-
-`python manage.py migrate`
-
-> ***createsuperuser:**** Creates a superuser for the Django admin.*
-
-`python manage.py createsuperuser`
-
-> ***collectstatic:**** Gathers static files from your apps into a single directory.*
-
-`python manage.py collectstatic`
-
-> ***test: ****Runs tests for your Django project.*
-
-`python manage.py test`
+python manage.py test

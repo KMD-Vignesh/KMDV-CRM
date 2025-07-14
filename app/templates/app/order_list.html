@@ -1,0 +1,21 @@
+{% extends 'app/base.html' %}
+{% block content %}
+    <h1>Orders</h1>
+    <a href="{% url 'add_order' %}">Add Order</a>
+    <ul>
+    {% for order in orders %}
+        <li>{{ order.product.name }} - {{ order.quantity }} units (Vendor: {{ order.vendor.name|default:"N/A" }}, Date: {{ order.order_date|date:"F d, Y" }}, Status: {{ order.is_cancelled|yesno:"Cancelled,Active" }})
+            <a href="{% url 'edit_order' order.pk %}">Edit</a>
+            <a href="{% url 'cancel_order' order.pk %}">Cancel</a>
+        </li>
+    {% empty %}
+        <li>No orders available.</li>
+    {% endfor %}
+    </ul>
+    <script>
+        document.querySelectorAll('ul li').forEach(li => {
+            li.addEventListener('mouseover', () => li.style.backgroundColor = '#d5e8f5');
+            li.addEventListener('mouseout', () => li.style.backgroundColor = '#ecf0f1');
+        });
+    </script>
+{% endblock %}

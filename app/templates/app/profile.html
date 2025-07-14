@@ -1,0 +1,29 @@
+{% extends 'app/base.html' %}
+{% block content %}
+    <h1>Profile</h1>
+    {% if messages %}
+        {% for message in messages %}
+            <p style="color: green;">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+    <div class="profile-details">
+        <p><strong>Username:</strong> {{ user.username }}</p>
+        <p><strong>Email:</strong> {{ user.email|default:"Not set" }}</p>
+        <p><strong>Role:</strong> {{ user_profile.role }}</p>
+        <p><strong>Permissions:</strong> {{ user_profile.permissions|default:"No specific permissions" }}</p>
+    </div>
+    <h2>Edit Profile</h2>
+    <form method="post">
+        {% csrf_token %}
+        <label>Role: 
+            <select name="role" required>
+                <option value="admin" {% if user_profile.role == 'admin' %}selected{% endif %}>Admin</option>
+                <option value="staff" {% if user_profile.role == 'staff' %}selected{% endif %}>Staff</option>
+                <option value="viewer" {% if user_profile.role == 'viewer' %}selected{% endif %}>Viewer</option>
+            </select>
+        </label><br>
+        <label>Permissions (JSON): <textarea name="permissions">{{ user_profile.permissions|default:"{}" }}</textarea></label><br>
+        <button type="submit">Save Changes</button>
+    </form>
+    <a href="{% url 'dashboard' %}">Back to Dashboard</a>
+{% endblock %}

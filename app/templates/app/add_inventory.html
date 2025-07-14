@@ -1,0 +1,25 @@
+{% extends 'app/base.html' %}
+{% block content %}
+    <h1>Add Inventory/Stock Inward</h1>
+    {% if messages %}
+        {% for message in messages %}
+            <p style="color: green;">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+    <form method="post">
+        {% csrf_token %}
+        <label>Product: <select name="product" required>
+            {% for prod in products %}
+                <option value="{{ prod.id }}">{{ prod.name }}</option>
+            {% endfor %}
+        </select></label><br>
+        <label>Vendor: <select name="vendor" required>
+            {% for vend in vendors %}
+                <option value="{{ vend.id }}">{{ vend.name }}</option>
+            {% endfor %}
+        </select></label><br>
+        <label>Quantity: <input type="number" name="qty" required></label><br>
+        <button type="submit">Add</button>
+    </form>
+    <a href="{% url 'inventory_list' %}">Back</a>
+{% endblock %}

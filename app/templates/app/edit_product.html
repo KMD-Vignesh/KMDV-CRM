@@ -1,0 +1,17 @@
+{% extends 'app/base.html' %}
+{% block content %}
+    <h1>Edit Product</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label>Name: <input type="text" name="name" value="{{ product.name }}" required></label><br>
+        <label>Category: <select name="category" required>
+            {% for cat in categories %}
+                <option value="{{ cat.id }}" {% if cat.id == product.category.id %}selected{% endif %}>{{ cat.name }}</option>
+            {% endfor %}
+        </select></label><br>
+        <label>Price (₹): <input type="number" step="0.01" name="price" value="{{ product.price }}" required></label><br>
+        <label>Description: <textarea name="description">{{ product.description|default:"" }}</textarea></label><br>
+        <button type="submit">Update</button>
+    </form>
+    <a href="{% url 'product_list' %}">Back</a>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends 'app/base.html' %}
+{% block content %}
+    <h1>Add Category</h1>
+    {% if messages %}
+        {% for message in messages %}
+            <p style="color: green;">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+    <form method="post">
+        {% csrf_token %}
+        <label>Name: <input type="text" name="name" required></label><br>
+        <label>Description: <textarea name="description"></textarea></label><br>
+        <button type="submit">Add</button>
+    </form>
+    <a href="{% url 'category_list' %}">Back</a>
+{% endblock %}

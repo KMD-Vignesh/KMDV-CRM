@@ -1,0 +1,21 @@
+{% extends 'app/base.html' %}
+{% block content %}
+    <h1>Vendors</h1>
+    <a href="{% url 'add_vendor' %}">Add Vendor</a>
+    <ul>
+    {% for vendor in vendors %}
+        <li>{{ vendor.name }} - {{ vendor.address|default:"No address" }}
+            <a href="{% url 'edit_vendor' vendor.pk %}">Edit</a>
+            <a href="{% url 'delete_vendor' vendor.pk %}">Delete</a>
+        </li>
+    {% empty %}
+        <li>No vendors available.</li>
+    {% endfor %}
+    </ul>
+    <script>
+        document.querySelectorAll('ul li').forEach(li => {
+            li.addEventListener('mouseover', () => li.style.backgroundColor = '#d5e8f5');
+            li.addEventListener('mouseout', () => li.style.backgroundColor = '#ecf0f1');
+        });
+    </script>
+{% endblock %}

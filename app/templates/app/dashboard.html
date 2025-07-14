@@ -1,0 +1,83 @@
+{% extends 'app/base.html' %}
+{% load humanize %}  <!-- Load humanize for intcomma filter -->
+{% block content %}
+    <h1>Dashboard</h1>
+    <div class="summary">
+        <p><strong>Total Products:</strong> {{ products_count|default:"0" }}</p>
+        <h2>Inventory Summary</h2>
+        {% if inventory_summary %}
+            <ul>
+            {% for item in inventory_summary %}
+                <li>{{ item.product__name }}: {{ item.total }} units</li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>No inventory data available.</p>
+        {% endif %}
+    </div>
+    <h2>Product Overview</h2>
+    <ul>
+    {% for product in products %}
+        <li>{{ product.name }} - ₹{{ product.price|floatformat:2|intcomma }} (Category: {{ product.category.name }})</li>
+    {% empty %}
+        <li>No products available.</li>
+    {% endfor %}
+    </ul>
+    <h2>Stock Chart</h2>
+    {% if inventory_summary and inventory_summary|length > 0 %}
+        <canvas id="stockChart" width="600" height="300"></canvas>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const ctx = document.getElementById('stockChart')?.getContext('2d');
+                if (!ctx) {
+                    console.error('Canvas context not found');
+                    return;
+                }
+
+                const labels = [
+                    {% for item in inventory_summary %}
+                        '{{ item.product__name }}'{% if not forloop.last %},{% endif %}
+                    {% endfor %}
+                ];
+                const data = [
+                    {% for item in inventory_summary %}
+                        {{ item.total }}{% if not forloop.last %},{% endif %}
+                    {% endfor %}
+                ];
+
+                if (labels.length === 0 || data.length === 0) {
+                    document.getElementById('stockChart').style.display = 'none';
+                    document.write('<p>No valid data for chart.</p>');
+                    return;
+                }
+
+                try {
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Stock Quantity',
+                                data: data,
+                                backgroundColor: 'rgba(52, 152, 219, 0.5)',
+                                borderColor: 'rgba(52, 152, 219, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: { y: { beginAtZero: true, title: { display: true, text: 'Units' } } },
+                            plugins: { legend: { position: 'top' } }
+                        }
+                    });
+                } catch (error) {
+                    console.error('Chart initialization failed:', error);
+                    document.getElementById('stockChart').style.display = 'none';
+                    document.write('<p>Error loading chart. Check console for details.</p>');
+                }
+            });
+        </script>
+    {% else %}
+        <p>No data available to display the chart.</p>
+    {% endif %}
+{% endblock %}

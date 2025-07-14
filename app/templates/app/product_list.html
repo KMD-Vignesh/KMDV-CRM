@@ -1,0 +1,22 @@
+{% extends 'app/base.html' %}
+{% load humanize %}
+{% block content %}
+    <h1>Products</h1>
+    <a href="{% url 'add_product' %}">Add Product</a>
+    <ul>
+    {% for product in products %}
+        <li>{{ product.name }} - ₹{{ product.price|floatformat:2|intcomma }} (Category: {{ product.category.name }})<br><small>{{ product.description|default:"No description" }}</small>
+            <a href="{% url 'edit_product' product.pk %}">Edit</a>
+            <a href="{% url 'delete_product' product.pk %}">Delete</a>
+        </li>
+    {% empty %}
+        <li>No products available.</li>
+    {% endfor %}
+    </ul>
+    <script>
+        document.querySelectorAll('ul li').forEach(li => {
+            li.addEventListener('mouseover', () => li.style.backgroundColor = '#d5e8f5');
+            li.addEventListener('mouseout', () => li.style.backgroundColor = '#ecf0f1');
+        });
+    </script>
+{% endblock %}

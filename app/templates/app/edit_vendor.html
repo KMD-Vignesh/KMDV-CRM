@@ -1,0 +1,11 @@
+{% extends 'app/base.html' %}
+{% block content %}
+    <h1>Edit Vendor</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label>Name: <input type="text" name="name" value="{{ vendor.name }}" required></label><br>
+        <label>Address: <textarea name="address" required>{{ vendor.address|default:"" }}</textarea></label><br>
+        <button type="submit">Update</button>
+    </form>
+    <a href="{% url 'vendor_list' %}">Back</a>
+{% endblock %}

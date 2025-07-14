@@ -1,0 +1,10 @@
+{% extends 'app/base.html' %}
+{% block content %}
+    <h1>Cancel Order</h1>
+    <p>Are you sure you want to cancel order for {{ order.product.name }} ({{ order.quantity }} units)?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Yes</button>
+    </form>
+    <a href="{% url 'order_list' %}">No</a>
+{% endblock %}
