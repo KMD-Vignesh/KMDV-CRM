@@ -213,16 +213,16 @@ def add_order(request):
                     # Reduce stock quantity
                     inventory.stock_quantity -= quantity
                     inventory.save()
-                    
-                    messages.success(request, f'Order #{order.id} created successfully!')
+
+                    messages.success(request, f'Order #{order.id} created successfully!', extra_tags='auto-dismiss page-specific')
                     return redirect('order_list')
                 else:
-                    messages.error(request, f'Insufficient stock. Available: {inventory.stock_quantity}, Requested: {quantity}')
+                    messages.error(request, f'Insufficient stock. Available: {inventory.stock_quantity}, Requested: {quantity}', extra_tags='auto-dismiss page-specific')
             except Inventory.DoesNotExist:
-                messages.error(request, f'No inventory found for {product.name} from {vendor.name}')
-                
+                messages.error(request, f'No inventory found for {product.name} from {vendor.name}', extra_tags='auto-dismiss page-specific')
+
         except Exception as e:
-            messages.error(request, f'Error creating order: {str(e)}')
+            messages.error(request, f'Error creating order: {str(e)}', extra_tags='auto-dismiss page-specific')
     
     # Get all products for the dropdown
     products = Product.objects.all()
@@ -316,7 +316,8 @@ def profile(request):
         user_profile.role = request.POST.get('role', user_profile.role)
         user_profile.permissions = request.POST.get('permissions', user_profile.permissions)
         user_profile.save()
-        messages.success(request, "Profile updated successfully!")
+        
+        messages.success(request, "Profile updated successfully!", extra_tags='auto-dismiss page-specific duration-10')
         return redirect('profile')
     return render(request, 'app/profile.html', {'user_profile': user_profile, 'user': request.user})
 

@@ -1,97 +1,79 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <title>KMDV CRM</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f4f6f9; color: #333; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        nav { background-color: #2c3e50; padding: 15px; border-radius: 5px; }
-        nav a { 
-            color: #ecf0f1; 
-            text-decoration: none; 
-            margin-right: 20px; 
-            font-weight: bold; 
-            transition: color 0.3s; 
-        }
-        nav a:hover { 
-            color: #3498db; 
-        }
-        .content { background: #fff; padding: 20px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-top: 20px; }
-        h1 { color: #2c3e50; }
-        ul { list-style: none; padding: 0; }
-        ul li { background: #ecf0f1; padding: 10px; margin: 5px 0; border-radius: 3px; }
-        canvas { max-width: 100%; }
-        .nav-links li { margin: 10px 0; }
-        .nav-links a { display: inline-block; padding: 5px 10px; background-color: #34495e; border-radius: 3px; }
-        .nav-links a:hover { background-color: #3498db; }
-        /* Style the logout button to match nav a links with smaller font size */
-        nav button.nav-a {
-            background: none; /* Remove button background */
-            border: none; /* Remove button border */
-            color: #ecf0f1; /* Match nav a color */
-            text-decoration: none; /* Match nav a text decoration */
-            margin-right: 20px; /* Match nav a margin */
-            font-weight: bold; /* Match nav a font weight */
-            cursor: pointer; /* Indicate clickable */
-            padding: 0; /* Remove default button padding */
-            transition: color 0.3s; /* Match nav a transition */
-            font-size: 1.05em; /* Smaller font size compared to nav a (default is ~1em) */
-        }
-        nav button.nav-a:hover {
-            color: #3498db; /* Match nav a hover color */
-        }
-        nav button.nav-a:focus {
-            outline: none; /* Remove focus outline for consistency */
-        }
-        .user-welcome { 
-            float: right; 
-            color: #ecf0f1; 
-            font-weight: bold; 
-            margin-left: 20px; 
-        }
-    </style>
-</head>
-<body>
+    <link rel="stylesheet" type="text/css" href="{% static 'app/css/base.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'app/css/messages.css' %}">
+  </head>
+  <body>
     <div class="container">
-        <nav>
-            {% if user.is_authenticated %}
-            <a href="{% url 'dashboard' %}">Dashboard</a>
-            <a href="{% url 'category_list' %}">Categories</a>
-            <a href="{% url 'product_list' %}">Products</a>
-            <a href="{% url 'vendor_list' %}">Vendors</a>
-            <a href="{% url 'inventory_list' %}">Inventory</a>
-            <a href="{% url 'order_list' %}">Orders</a>
-            <a href="{% url 'profile' %}">Profile</a>
-            <span class="user-welcome" style="color: #ecf0f1;">Welcome, {{ user.username }}!</span>
-            {% else %}
-                <span class="user-welcome" style="color: #ecf0f1;">Welcome, Guest!</span>
-            {% endif %}
-            {% if user.is_authenticated %}
-                <form method="post" action="{% url 'logout' %}" style="display: inline;">
-                    {% csrf_token %}
-                    <button type="submit" class="nav-a">Logout</button>
-                </form>
-            {% else %}
-                <a href="{% url 'login' %}">Login</a>
-                <a href="{% url 'register' %}">Register</a>
-            {% endif %}
-
-
-        </nav>
-        <div class="content">
-            {% block content %}{% endblock %}
-        </div>
+      <nav>
+        {% if user.is_authenticated %}
+        <a href="{% url 'dashboard' %}">Dashboard</a>
+        <a href="{% url 'category_list' %}">Categories</a>
+        <a href="{% url 'product_list' %}">Products</a>
+        <a href="{% url 'vendor_list' %}">Vendors</a>
+        <a href="{% url 'inventory_list' %}">Inventory</a>
+        <a href="{% url 'order_list' %}">Orders</a>
+        <a href="{% url 'profile' %}">Profile</a>
+        <span class="user-welcome" style="color: #ecf0f1"
+          >Welcome, {{ user.username }}!</span
+        >
+        {% else %}
+        <span class="user-welcome" style="color: #ecf0f1">Welcome, Guest!</span>
+        {% endif %} {% if user.is_authenticated %}
+        <form method="post" action="{% url 'logout' %}" style="display: inline">
+          {% csrf_token %}
+          <button type="submit" class="nav-a">Logout</button>
+        </form>
+        {% else %}
+        <a href="{% url 'login' %}">Login</a>
+        <a href="{% url 'register' %}">Register</a>
+        {% endif %}
+      </nav>
+      <div class="content">{% block content %}{% endblock %}</div>
     </div>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const links = document.querySelectorAll('nav a');
-            links.forEach(link => {
-                link.addEventListener('click', (e) => {
-                    links.forEach(l => l.style.color = '#ecf0f1');
-                    e.target.style.color = '#3498db';
-                });
-            });
+      document.addEventListener("DOMContentLoaded", () => {
+        const links = document.querySelectorAll("nav a");
+        links.forEach((link) => {
+          link.addEventListener("click", (e) => {
+            links.forEach((l) => (l.style.color = "#ecf0f1"));
+            e.target.style.color = "#3498db";
+          });
         });
+      });
+
+      document.addEventListener("DOMContentLoaded", function () {
+        // Handle all messages with dismiss classes
+        const messages = document.querySelectorAll(".alert");
+
+        messages.forEach(function (message) {
+          let duration = 3000; // default 10 seconds
+
+          // Check for dismiss-X classes
+          const classes = message.className.split(" ");
+          classes.forEach(function (cls) {
+            if (cls.startsWith("dismiss-")) {
+              duration = parseInt(cls.replace("dismiss-", "")) * 1000;
+            }
+          });
+
+          // Auto-hide after duration
+          setTimeout(function () {
+            if (message.parentElement) {
+              message.style.transition = "opacity 0.5s ease-out";
+              message.style.opacity = "0";
+              setTimeout(function () {
+                if (message.parentElement) {
+                  message.remove();
+                }
+              }, 500);
+            }
+          }, duration);
+        });
+      });
     </script>
-</body>
+  </body>
 </html>
