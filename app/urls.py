@@ -25,6 +25,7 @@ urlpatterns = [
     path('orders/cancel/<int:pk>/', views.cancel_order, name='cancel_order'),
     path('register/', views.register, name='register'),  
     path('profile/', views.profile, name='profile'),
-    path('logout/', views.logout, name='logout'),
+    path('load-vendors/', views.load_vendors, name='load_vendors'),
+    path('get-stock-quantity/', views.get_stock_quantity, name='get_stock_quantity'),
 
 ]

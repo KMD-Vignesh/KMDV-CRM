@@ -40,22 +40,24 @@ class Order(models.Model):
     quantity = models.PositiveIntegerField()
     order_date = models.DateTimeField(auto_now_add=True)
     is_cancelled = models.BooleanField(default=False)
-
+    
     def __str__(self):
         return f"Order {self.id} by {self.user.username}"
-
+    
     def save(self, *args, **kwargs):
-        if not self.pk:  # New order
-            inventory = Inventory.objects.get(product=self.product)
-            if inventory.stock_quantity >= self.quantity:
-                inventory.stock_quantity -= self.quantity
-                inventory.save()
-            else:
-                raise ValueError("Insufficient stock quantity")
-        elif self.is_cancelled and not Order.objects.get(pk=self.pk).is_cancelled:  # Cancelled order
-            inventory = Inventory.objects.get(product=self.product)
-            inventory.stock_quantity += self.quantity
-            inventory.save()
+        # Only handle stock changes for new orders or cancellations
+        # Stock reduction will be handled in the view for better error handling
+        if self.pk and self.is_cancelled:
+            # Handle cancellation - restore stock
+            try:
+                original_order = Order.objects.get(pk=self.pk)
+                if not original_order.is_cancelled:  # Only restore if not already cancelled
+                    inventory = Inventory.objects.get(product=self.product, vendor=self.vendor)
+                    inventory.stock_quantity += self.quantity
+                    inventory.save()
+            except (Order.DoesNotExist, Inventory.DoesNotExist):
+                pass  # Handle gracefully if inventory doesn't exist
+        
         super().save(*args, **kwargs)
 
 class UserProfile(models.Model):

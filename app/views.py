@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Product, Category, Inventory, Vendor, Order, UserProfile
 from django.db.models import Sum
@@ -165,26 +166,113 @@ def order_list(request):
     orders = Order.objects.all()
     return render(request, 'app/order_list.html', {'orders': orders})
 
+# @login_required
+# def add_order(request):
+#     if request.method == 'POST':
+#         product_id = request.POST.get('product')
+#         vendor_id = request.POST.get('vendor')
+#         qty = request.POST.get('qty')
+#         if not qty or not qty.isdigit():
+#             messages.error(request, "Invalid quantity. Please enter a valid number.")
+#             return redirect('add_order')
+#         qty = int(qty)  # Convert to integer
+#         product = get_object_or_404(Product, id=product_id)
+#         vendor = get_object_or_404(Vendor, id=vendor_id) if vendor_id else None
+#         order = Order(user=request.user, product=product, vendor=vendor, quantity=qty)
+#         order.save()
+#         messages.success(request, "Order added successfully!")
+#         return redirect('order_list')
+#     else:
+#         products = Product.objects.all()
+#         vendors = Vendor.objects.all()
+#         return render(request, 'app/add_order.html', {'products': products, 'vendors': vendors})
+
 @login_required
 def add_order(request):
     if request.method == 'POST':
         product_id = request.POST.get('product')
         vendor_id = request.POST.get('vendor')
-        qty = request.POST.get('qty')
-        if not qty or not qty.isdigit():
-            messages.error(request, "Invalid quantity. Please enter a valid number.")
-            return redirect('add_order')
-        qty = int(qty)  # Convert to integer
-        product = get_object_or_404(Product, id=product_id)
-        vendor = get_object_or_404(Vendor, id=vendor_id) if vendor_id else None
-        order = Order(user=request.user, product=product, vendor=vendor, quantity=qty)
-        order.save()
-        messages.success(request, "Order added successfully!")
-        return redirect('order_list')
-    else:
-        products = Product.objects.all()
-        vendors = Vendor.objects.all()
-        return render(request, 'app/add_order.html', {'products': products, 'vendors': vendors})
+        quantity = int(request.POST.get('qty'))
+        
+        try:
+            product = get_object_or_404(Product, id=product_id)
+            vendor = get_object_or_404(Vendor, id=vendor_id)
+            
+            # Check if inventory exists for this product-vendor combination
+            try:
+                inventory = Inventory.objects.get(product=product, vendor=vendor)
+                if inventory.stock_quantity >= quantity:
+                    # Create order and reduce stock
+                    order = Order.objects.create(
+                        user=request.user,
+                        product=product,
+                        vendor=vendor,
+                        quantity=quantity
+                    )
+                    
+                    # Reduce stock quantity
+                    inventory.stock_quantity -= quantity
+                    inventory.save()
+                    
+                    messages.success(request, f'Order #{order.id} created successfully!')
+                    return redirect('order_list')
+                else:
+                    messages.error(request, f'Insufficient stock. Available: {inventory.stock_quantity}, Requested: {quantity}')
+            except Inventory.DoesNotExist:
+                messages.error(request, f'No inventory found for {product.name} from {vendor.name}')
+                
+        except Exception as e:
+            messages.error(request, f'Error creating order: {str(e)}')
+    
+    # Get all products for the dropdown
+    products = Product.objects.all()
+    vendors = Vendor.objects.all()  # This will be filtered by JavaScript
+    
+    return render(request, 'app/add_order.html', {
+        'products': products,
+        'vendors': vendors
+    })
+
+def load_vendors(request):
+    """AJAX view to load vendors based on selected product"""
+    product_id = request.GET.get('product_id')
+    vendors = []
+    
+    if product_id:
+        # Get vendors who have stock for this product
+        inventory_items = Inventory.objects.filter(
+            product_id=product_id,
+            stock_quantity__gt=0
+        ).select_related('vendor')
+        
+        vendors = [
+            {
+                'id': item.vendor.id,
+                'name': item.vendor.name,
+                'stock': item.stock_quantity
+            }
+            for item in inventory_items if item.vendor
+        ]
+    
+    return JsonResponse({'vendors': vendors})
+
+def get_stock_quantity(request):
+    """AJAX view to get stock quantity for selected product-vendor combination"""
+    product_id = request.GET.get('product_id')
+    vendor_id = request.GET.get('vendor_id')
+    
+    stock_quantity = 0
+    if product_id and vendor_id:
+        try:
+            inventory = Inventory.objects.get(
+                product_id=product_id,
+                vendor_id=vendor_id
+            )
+            stock_quantity = inventory.stock_quantity
+        except Inventory.DoesNotExist:
+            stock_quantity = 0
+    
+    return JsonResponse({'stock_quantity': stock_quantity})
     
 @login_required
 def edit_order(request, pk):
