@@ -1,0 +1,189 @@
+/* ---------- profile.css ---------- */
+
+/* page wrapper */
+.profile-wrapper {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+/* profile card */
+.profile-card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,.05);
+}
+
+.profile-card h2 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+    color: #333;
+}
+
+.profile-card p {
+    margin: .5rem 0;
+    color: #444;
+}
+
+.profile-card strong {
+    color: #000;
+}
+
+/* form styling */
+.profile-form label {
+    display: block;
+    margin: .75rem 0 .25rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.profile-form input,
+.profile-form select,
+.profile-form textarea {
+    width: 100%;
+    padding: .5rem .6rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: .95rem;
+    transition: border-color .2s;
+}
+
+.profile-form input:focus,
+.profile-form select:focus,
+.profile-form textarea:focus {
+    outline: none;
+    border-color: #007bff;
+}
+
+.profile-form textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.profile-form button {
+    margin-top: 1rem;
+    padding: .5rem 1.2rem;
+    color: #fff;
+    background: #007bff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background .2s;
+}
+
+.profile-form button:hover {
+    background: #0056b3;
+}
+
+/* back link */
+.back-link {
+    display: inline-block;
+    margin-top: 1rem;
+    color: #007bff;
+    text-decoration: none;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+/* messages */
+.alert {
+    padding: .75rem 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    color: #155724;
+    background-color: #d4edda;
+}
+
+
+/* ---------- form.css (append to order.css) ---------- */
+
+.form-wrapper {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.form-card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,.05);
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: .25rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.form-control {
+    width: 100%;
+    padding: .5rem .6rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: .95rem;
+    transition: border-color .2s;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #007bff;
+}
+
+.form-text {
+    display: block;
+    font-size: .8rem;
+    margin-top: .25rem;
+    color: #6c757d;
+}
+
+.form-text.text-danger { color: #e74c3c; }
+.form-text.text-success { color: #28a745; }
+
+.btn {
+    display: inline-block;
+    padding: .5rem 1.2rem;
+    font-size: .9rem;
+    text-decoration: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background .2s;
+}
+
+.btn-primary {
+    color: #fff;
+    background: #007bff;
+    border-color: #007bff;
+}
+
+.btn-primary:hover {
+    background: #0056b3;
+    border-color: #0056b3;
+}
+
+.btn-secondary {
+    color: #333;
+    background: #f8f9fa;
+    border-color: #ccc;
+    margin-left: .5rem;
+}
+
+.btn-secondary:hover {
+    background: #e2e6ea;
+}

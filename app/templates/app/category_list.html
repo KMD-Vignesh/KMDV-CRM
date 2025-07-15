@@ -1,15 +1,39 @@
-{% extends 'app/base.html' %}
-{% block content %}
-    <h1>Categories</h1>
-    <a href="{% url 'add_category' %}">Add Category</a>
-    <ul>
-    {% for category in categories %}
-        <li>{{ category.name }} - {{ category.description|default:"No description" }}
-            <a href="{% url 'edit_category' category.pk %}">Edit</a>
-            <a href="{% url 'delete_category' category.pk %}">Delete</a>
-        </li>
-    {% empty %}
-        <li>No categories available.</li>
+{% extends 'app/base.html' %} {% block content %}
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            <p style="color: green;">{{ message }}</p>
+        </div>
     {% endfor %}
-    </ul>
+{% endif %}
+<div class="page-header">
+  <h1>Categories</h1>
+  <a class="btn-add" href="{% url 'add_category' %}">Add Category</a>
+</div>
+
+<table class="dv-table">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Description</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for category in categories %}
+      <tr>
+        <td>{{ category.name|title }}</td>
+        <td>{{ category.description|default:"No description"|truncatewords:15 }}</td>
+        <td class="actions">
+          <a class="btn" href="{% url 'edit_category' category.pk %}">Edit</a>
+          <a class="btn danger" href="{% url 'delete_category' category.pk %}">Delete</a>
+        </td>
+      </tr>
+    {% empty %}
+      <tr>
+        <td colspan="3" style="text-align:center;">No categories available.</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
 {% endblock %}

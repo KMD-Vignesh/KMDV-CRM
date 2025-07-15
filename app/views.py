@@ -1,10 +1,14 @@
+import stat
+from turtle import st
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Product, Category, Inventory, Vendor, Order, UserProfile
-from django.db.models import Sum, Count
+from django.db.models import Sum, Count, Q
 from django.contrib.auth.decorators import login_required
 from .forms import CustomUserCreationForm
 from django.contrib import messages
+
+from app import models
 
 @login_required
 def dashboard(request):
@@ -42,6 +46,7 @@ def add_category(request):
         name = request.POST['name']
         description = request.POST.get('description', '')
         Category.objects.create(name=name, description=description)
+        messages.success(request, f'Category - {name} created successfully!', extra_tags='auto-dismiss page-specific')
         return redirect('category_list')
     return render(request, 'app/add_category.html')
 
@@ -174,28 +179,8 @@ def delete_inventory(request, pk):
 @login_required
 def order_list(request):
     orders = Order.objects.all()
-    return render(request, 'app/order_list.html', {'orders': orders})
-
-# @login_required
-# def add_order(request):
-#     if request.method == 'POST':
-#         product_id = request.POST.get('product')
-#         vendor_id = request.POST.get('vendor')
-#         qty = request.POST.get('qty')
-#         if not qty or not qty.isdigit():
-#             messages.error(request, "Invalid quantity. Please enter a valid number.")
-#             return redirect('add_order')
-#         qty = int(qty)  # Convert to integer
-#         product = get_object_or_404(Product, id=product_id)
-#         vendor = get_object_or_404(Vendor, id=vendor_id) if vendor_id else None
-#         order = Order(user=request.user, product=product, vendor=vendor, quantity=qty)
-#         order.save()
-#         messages.success(request, "Order added successfully!")
-#         return redirect('order_list')
-#     else:
-#         products = Product.objects.all()
-#         vendors = Vendor.objects.all()
-#         return render(request, 'app/add_order.html', {'products': products, 'vendors': vendors})
+    orders_total = orders.aggregate(total_quantity=Sum('quantity'), active_count=Sum('quantity', filter=Q(is_cancelled=False)), cancelled_count=Sum('quantity', filter=Q(is_cancelled=True)))
+    return render(request, 'app/order_list.html', {'orders': orders, 'orders_total': orders_total})
 
 @login_required
 def add_order(request):

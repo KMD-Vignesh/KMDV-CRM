@@ -1,0 +1,85 @@
+/* ---------- orders.css ---------- */
+
+.dv-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: inherit;
+}
+
+.dv-table th,
+.dv-table td {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.dv-table th {
+    background: #f3f3f3;
+    font-weight: 600;
+}
+
+.dv-table tr:hover {
+    background-color: #d5e8f5;
+}
+
+.dv-table .actions {
+    white-space: nowrap;
+}
+
+.dv-table .badge {
+    padding: 3px 7px;
+    font-size: 0.75rem;
+    border-radius: 3px;
+    color: #fff;
+}
+
+.dv-table .badge.cancelled {
+    background: #e74c3c;
+}
+
+.dv-table .badge.active {
+    background: #27ae60;
+}
+
+.dv-table .btn {
+    display: inline-block;
+    padding: 4px 8px;
+    margin-right: 4px;
+    font-size: 0.8rem;
+    text-decoration: none;
+    border: 1px solid #bbb;
+    border-radius: 3px;
+    color: #333;
+}
+
+.dv-table .btn:hover {
+    background: #eee;
+}
+
+.dv-table .btn.danger {
+    border-color: #c0392b;
+    color: #c0392b;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;   /* h1 left, link right */
+    align-items: center;              /* vertical centering */
+    margin-bottom: 1rem;
+}
+
+/* 2. Button styling for “Add Order” */
+.btn-add {
+    padding: 6px 14px;
+    font-size: 0.9rem;
+    text-decoration: none;
+    color: #fff;
+    background: #007bff;
+    border: 1px solid #007bff;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.btn-add:hover {
+    background: #0056b3;
+}

@@ -1,28 +1,69 @@
 {% extends 'app/base.html' %}
+{% load static %}
+
 {% block content %}
-    <h1>Orders</h1>
-    {% if messages %}
+
+{% if messages %}
     {% for message in messages %}
         <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
             <p style="color: green;">{{ message }}</p>
         </div>
     {% endfor %}
 {% endif %}
-    <a href="{% url 'add_order' %}">Add Order</a>
-    <ul>
-    {% for order in orders %}
-        <li>{{ order.product.name }} - {{ order.quantity }} units (Vendor: {{ order.vendor.name|default:"N/A" }}, Date: {{ order.order_date|date:"F d, Y" }}, Status: {{ order.is_cancelled|yesno:"Cancelled,Active" }})
-            <a href="{% url 'edit_order' order.pk %}">Edit</a>
-            <a href="{% url 'cancel_order' order.pk %}">Cancel</a>
-        </li>
-    {% empty %}
-        <li>No orders available.</li>
-    {% endfor %}
-    </ul>
-    <script>
-        document.querySelectorAll('ul li').forEach(li => {
-            li.addEventListener('mouseover', () => li.style.backgroundColor = '#d5e8f5');
-            li.addEventListener('mouseout', () => li.style.backgroundColor = '#ecf0f1');
-        });
-    </script>
+
+<div class="page-header">
+    <h1>Orders</h1>
+    <a class="btn-add" href="{% url 'add_order' %}">Add Order</a>
+</div>
+
+<div class="page-header">
+{% if orders %}
+    <p>Total Orders: <strong>{{ orders_total.total_quantity }}</strong></p>
+    <p>Active Orders: <strong>{{ orders_total.active_count }}</strong></p>
+    <p>Cancelled Orders: <strong>{{ orders_total.cancelled_count }}</strong></p>
+{% else %}
+    <p>No orders available.</p>
+{% endif %}
+</div>
+
+<table class="dv-table">
+    <thead>
+        <tr>
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>Vendor</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for order in orders %}
+            <tr>
+                <td>{{ order.product.name|title }}</td>
+                <td>{{ order.quantity }}</td>
+                <td>{{ order.vendor.name|default:"N/A"|title }}</td>
+                <td>{{ order.order_date|date:"F d, Y" }}</td>
+                <td>
+                    {% if order.is_cancelled %}
+                        <span class="badge cancelled">Cancelled</span>
+                    {% else %}
+                        <span class="badge active">Active</span>
+                    {% endif %}
+                </td>
+                <td class="actions">
+                    {% if not order.is_cancelled %}
+                    <a class="btn" href="{% url 'edit_order' order.pk %}">Edit</a>
+                    <a class="btn danger" href="{% url 'cancel_order' order.pk %}">Cancel</a>
+                    {% endif %}
+
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="6" style="text-align:center;">No orders available.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
 {% endblock %}

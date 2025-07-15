@@ -1,38 +1,39 @@
 {% extends 'app/base.html' %}
 {% block content %}
-<h1>Add Order</h1>
+<div class="form-wrapper">
+  <h1>Add Order</h1>
 
-<form method="post" id="order-form">
+  <form class="form-card" method="post" id="order-form">
     {% csrf_token %}
-    
-    <div class="mb-3">
-        <label for="product-select" class="form-label">Product:</label>
-        <select name="product" id="product-select" class="form-control" required>
-            <option value="">Select a product</option>
-            {% for prod in products %}
-                <option value="{{ prod.id }}">{{ prod.name }}</option>
-            {% endfor %}
-        </select>
+
+    <div class="form-group">
+      <label for="product-select">Product:</label>
+      <select id="product-select" name="product" class="form-control" required>
+        <option value="">Select a product</option>
+        {% for prod in products %}
+          <option value="{{ prod.id }}">{{ prod.name }}</option>
+        {% endfor %}
+      </select>
     </div>
 
-    <div class="mb-3">
-        <label for="vendor-select" class="form-label">Vendor:</label>
-        <select name="vendor" id="vendor-select" class="form-control" required>
-            <option value="">Select a product first</option>
-        </select>
-        <small class="form-text text-muted">Only vendors with stock will be shown</small>
+    <div class="form-group">
+      <label for="vendor-select">Vendor:</label>
+      <select id="vendor-select" name="vendor" class="form-control" required>
+        <option value="">Select a product first</option>
+      </select>
+      <small class="form-text">Only vendors with stock will be shown</small>
     </div>
 
-    <div class="mb-3">
-        <label for="quantity-input" class="form-label">Quantity:</label>
-        <input type="number" name="qty" id="quantity-input" class="form-control" min="1" required>
-        <small id="stock-info" class="form-text text-muted"></small>
+    <div class="form-group">
+      <label for="quantity-input">Quantity:</label>
+      <input type="number" id="quantity-input" name="qty" class="form-control" min="1" required>
+      <small id="stock-info" class="form-text"></small>
     </div>
 
     <button type="submit" class="btn btn-primary">Add Order</button>
     <a href="{% url 'order_list' %}" class="btn btn-secondary">Back</a>
-</form>
-
+  </form>
+</div>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const productSelect = document.getElementById('product-select');

@@ -5,6 +5,10 @@
     <title>KMDV CRM</title>
     <link rel="stylesheet" type="text/css" href="{% static 'app/css/base.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'app/css/messages.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'app/css/table_cont.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'app/css/forms.css' %}">
+
+
   </head>
   <body>
     <div class="container">
@@ -18,7 +22,7 @@
         <a href="{% url 'order_list' %}">Orders</a>
         <a href="{% url 'profile' %}">Profile</a>
         <span class="user-welcome" style="color: #ecf0f1"
-          >Welcome, {{ user.username }}!</span
+          >Welcome, {{ user.username | title }}!</span
         >
         {% else %}
         <span class="user-welcome" style="color: #ecf0f1">Welcome, Guest!</span>
