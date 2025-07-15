@@ -85,3 +85,18 @@ nav button.nav-a:focus {
   margin-left: 20px;
 }
 
+nav .logo {
+    margin-right: 1rem;
+    display: inline-flex;      /* already here */
+    align-items: center;       /* already here */
+    height: 100%;              /* take full nav height */
+}
+nav .logo img {
+    transform: translateY(15%);
+    display: block;
+    height: 15px;
+    width: auto;
+    border: 1px solid #fff;   /* white 2-pixel border */
+    border-radius: 2px;       /* optional rounded corners */
+    padding: 1px;             /* optional inner spacing */
+}
