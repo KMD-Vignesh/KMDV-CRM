@@ -354,48 +354,6 @@ def get_stock_quantity(request):
     return JsonResponse({"stock_quantity": total})
 
 
-# def load_vendors(request):
-#     """AJAX view to load vendors based on selected product"""
-#     product_id = request.GET.get('product_id')
-#     vendors = []
-
-#     if product_id:
-#         # Get vendors who have stock for this product
-#         inventory_items = Inventory.objects.filter(
-#             product_id=product_id,
-#             stock_quantity__gt=0
-#         ).select_related('vendor')
-
-#         vendors = [
-#             {
-#                 'id': item.vendor.id,
-#                 'name': item.vendor.name,
-#                 'stock': item.stock_quantity
-#             }
-#             for item in inventory_items if item.vendor
-#         ]
-
-#     return JsonResponse({'vendors': vendors})
-
-# def get_stock_quantity(request):
-#     """AJAX view to get stock quantity for selected product-vendor combination"""
-#     product_id = request.GET.get('product_id')
-#     vendor_id = request.GET.get('vendor_id')
-
-#     stock_quantity = 0
-#     if product_id and vendor_id:
-#         try:
-#             inventory = Inventory.objects.get(
-#                 product_id=product_id,
-#                 vendor_id=vendor_id
-#             )
-#             stock_quantity = inventory.stock_quantity
-#         except Inventory.DoesNotExist:
-#             stock_quantity = 0
-
-#     return JsonResponse({'stock_quantity': stock_quantity})
-
-
 @login_required
 def edit_order(request, pk):
     order = get_object_or_404(Order, pk=pk)

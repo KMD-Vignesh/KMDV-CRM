@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
-
+from django.db.models import F   # add to model imports if not already present
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
@@ -50,22 +50,22 @@ class Order(models.Model):
         return f"Order {self.id} by {self.user.username}"
 
     def save(self, *args, **kwargs):
-        # Only handle stock changes for new orders or cancellations
-        # Stock reduction will be handled in the view for better error handling
         if self.pk and self.is_cancelled:
-            # Handle cancellation - restore stock
-            try:
-                original_order = Order.objects.get(pk=self.pk)
-                if (
-                    not original_order.is_cancelled
-                ):  # Only restore if not already cancelled
-                    inventory = Inventory.objects.get(
-                        product=self.product, vendor=self.vendor
-                    )
-                    inventory.stock_quantity += self.quantity
-                    inventory.save()
-            except (Order.DoesNotExist, Inventory.DoesNotExist):
-                pass  # Handle gracefully if inventory doesn't exist
+            original_order = Order.objects.filter(pk=self.pk).first()
+            if original_order and not original_order.is_cancelled:
+                # Restore stock to every matching Inventory row (FIFO-style)
+                remaining = self.quantity
+                for inv in (
+                    Inventory.objects
+                    .filter(product=self.product, vendor=self.vendor)
+                    .order_by('id')
+                ):
+                    add = min(remaining, inv.stock_quantity + remaining)  # always safe
+                    inv.stock_quantity = F('stock_quantity') + add
+                    inv.save(update_fields=['stock_quantity'])
+                    remaining -= add
+                    if remaining == 0:
+                        break
 
         super().save(*args, **kwargs)
 
