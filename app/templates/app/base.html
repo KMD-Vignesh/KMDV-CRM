@@ -3,18 +3,37 @@
 <html lang="en">
   <head>
     <title>KMDV CRM</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'app/css/base.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'app/css/messages.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'app/css/table_cont.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'app/css/forms.css' %}">
-
-
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{% static 'app/css/base.css' %}"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{% static 'app/css/messages.css' %}"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{% static 'app/css/table_cont.css' %}"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{% static 'app/css/forms.css' %}"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{% static 'app/css/dashboard.css' %}"
+    />
   </head>
   <body>
     <div class="container">
       <nav class="nav-with-logo">
         <a href="{% url 'dashboard' %}" class="logo">
-          <img src="{% static 'app/img/logo_png.png' %}" alt="KMDV CRM Logo">
+          <img src="{% static 'app/img/logo_png.png' %}" alt="KMDV CRM Logo" />
         </a>
         {% if user.is_authenticated %}
         <a href="{% url 'dashboard' %}">Dashboard</a>
@@ -24,11 +43,9 @@
         <a href="{% url 'inventory_list' %}">Inventory</a>
         <a href="{% url 'order_list' %}">Orders</a>
         <a href="{% url 'profile' %}">Profile</a>
-        <span class="user-welcome" style="color: #ecf0f1"
-          >Welcome, {{ user.username | title }}!</span
-        >
+        <span class="user-welcome">Welcome, {{ user.username | title }}!</span>
         {% else %}
-        <span class="user-welcome" style="color: #ecf0f1">Welcome, Guest!</span>
+        <span class="user-welcome">Welcome, Guest!</span>
         {% endif %} {% if user.is_authenticated %}
         <form method="post" action="{% url 'logout' %}" style="display: inline">
           {% csrf_token %}
@@ -43,12 +60,12 @@
     </div>
     <script>
       document.addEventListener("DOMContentLoaded", () => {
-        const links = document.querySelectorAll("nav a");
+        const links = document.querySelectorAll("nav a[href]");
+        const current = window.location.pathname;
+
         links.forEach((link) => {
-          link.addEventListener("click", (e) => {
-            links.forEach((l) => (l.style.color = "#ecf0f1"));
-            e.target.style.color = "#3498db";
-          });
+          const base = link.getAttribute("href").split("/")[1]; // e.g. "inventory"
+          link.classList.toggle("active", current.startsWith("/" + base + "/"));
         });
       });
 

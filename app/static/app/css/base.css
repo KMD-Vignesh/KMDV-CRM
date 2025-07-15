@@ -19,11 +19,16 @@ nav a {
   text-decoration: none;
   margin-right: 20px;
   font-weight: bold;
-  transition: color 0.3s;
+  transition: color 0.2s;
 }
 nav a:hover {
-  color: #3498db;
+  color: #FD841A;
 }
+
+nav a.active {
+  color: #FD841A;         
+}
+
 .content {
   background: #fff;
   padding: 20px;
@@ -73,16 +78,18 @@ nav button.nav-a {
   font-size: 1.05em; /* Smaller font size compared to nav a (default is ~1em) */
 }
 nav button.nav-a:hover {
-  color: #3498db; /* Match nav a hover color */
+  color: #ff3f0f; /* Match nav a hover color */
 }
 nav button.nav-a:focus {
   outline: none; /* Remove focus outline for consistency */
 }
 .user-welcome {
   float: right;
-  color: #ecf0f1;
+  /*color: #FD841A; */
+  color: #FD841A;
   font-weight: bold;
   margin-left: 20px;
+  opacity: 0.5;
 }
 
 nav .logo {

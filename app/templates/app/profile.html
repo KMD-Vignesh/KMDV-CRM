@@ -17,6 +17,7 @@
     <p><strong>Permissions:</strong> {{ user_profile.permissions|default:"No specific permissions" }}</p>
   </div>
 
+  {% if user_profile.role == 'admin' %}
   <div class="profile-card">
     <h2>Edit Profile</h2>
     <form class="profile-form" method="post">
@@ -36,7 +37,7 @@
       <button type="submit">Save Changes</button>
     </form>
   </div>
-
+{% endif %}
   <a class="back-link" href="{% url 'dashboard' %}">← Back to Dashboard</a>
 </div>
 {% endblock %}

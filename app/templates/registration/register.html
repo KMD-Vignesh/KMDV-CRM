@@ -1,13 +1,33 @@
 {% extends 'app/base.html' %}
 {% block content %}
-    <h1>Register</h1>
-    {% if form.errors %}
-        <p style="color: red;">Please correct the errors below.</p>
-    {% endif %}
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Register</button>
-    </form>
-    <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+<div class="form-wrapper">
+  <h1>Register</h1>
+
+  {% if form.errors %}
+    <div class="alert">Please correct the errors below.</div>
+  {% endif %}
+
+  <form class="form-card" method="post">
+    {% csrf_token %}
+
+    {# Render each field manually so we can add our classes #}
+    {% for field in form %}
+      <div class="form-group">
+        <label>{{ field.label }}{% if field.field.required %}*{% endif %}</label>
+        {{ field }}
+        {% if field.errors %}
+          <small class="form-text text-danger">{{ field.errors.0 }}</small>
+        {% endif %}
+      </div>
+    {% endfor %}
+
+    <button type="submit" class="btn btn-primary">Register</button>
+  </form>
+
+  <p style="margin-top:1rem">
+    Already have an account?
+    <a class="back-link" href="{% url 'login' %}">Login here</a>
+  </p>
+</div>
+
 {% endblock %}

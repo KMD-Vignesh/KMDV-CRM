@@ -4,9 +4,13 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Product, Category, Inventory, Vendor, Order, UserProfile
 from django.db.models import Sum, Count, Q
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from .forms import CustomUserCreationForm
 from django.contrib import messages
+from django.db import transaction
+from .decorators import admin_required, permission_required
+from django.core.paginator import Paginator
 
 from app import models
 
@@ -22,7 +26,10 @@ def dashboard(request):
         total=Sum('quantity')
     ).order_by('-total')
     orders_count = Order.objects.count()
-    
+
+    total_stock = Inventory.objects.aggregate(t=Sum('stock_quantity'))['t'] or 0
+    total_orders = Order.objects.aggregate(total=Sum('quantity'))['total'] or 0
+
     context = {
         'products_count': products_count,
         'orders_count': orders_count,
@@ -30,7 +37,9 @@ def dashboard(request):
         'order_summary': order_summary,
         'products': products,
         'categories': categories,
-        'inventory': inventory
+        'inventory': inventory,
+        'total_stock': total_stock,
+        'total_orders': total_orders,
     }
     
     return render(request, 'app/dashboard.html', context)
@@ -315,4 +324,6 @@ def profile(request):
         messages.success(request, "Profile updated successfully!", extra_tags='auto-dismiss page-specific duration-10')
         return redirect('profile')
     return render(request, 'app/profile.html', {'user_profile': user_profile, 'user': request.user})
+
+
 

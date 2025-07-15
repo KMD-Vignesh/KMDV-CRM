@@ -135,6 +135,13 @@ STATIC_ROOT = BASE_DIR / "staticfiles"  # Add this line
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY = True
+# CSRF settings
+CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_HTTPONLY = True
+
 # ... other settings ...
 LOGIN_REDIRECT_URL = '/'  # Set to dashboard (root URL) or '/dashboard/'
 LANGUAGE_CODE = 'en-in'  # Indian English

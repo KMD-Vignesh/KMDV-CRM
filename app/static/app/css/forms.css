@@ -123,6 +123,7 @@
     margin-bottom: 1rem;
 }
 
+
 .form-group label {
     display: block;
     margin-bottom: .25rem;
@@ -186,4 +187,27 @@
 
 .btn-secondary:hover {
     background: #e2e6ea;
+}
+
+/* make Django widgets the same size as our manual inputs */
+.form-card input[type=text],
+.form-card input[type=email],
+.form-card input[type=password],
+.form-card input[type=number],
+.form-card select,
+.form-card textarea {
+    width: 100%;
+    padding: .5rem .6rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: .95rem;
+    box-sizing: border-box;   /* keeps width correct */
+}
+
+.form-card input:focus,
+.form-card select:focus,
+.form-card textarea:focus {
+    outline: none;
+    border-color: #007bff;
 }
