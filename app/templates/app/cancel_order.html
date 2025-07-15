@@ -1,11 +1,12 @@
-{% extends 'app/base.html' %}
-
-{% block content %}
+{% extends 'app/base.html' %} {% block content %}
 <div class="form-wrapper">
   <h1>Cancel Order</h1>
 
   <div class="form-card">
-    <p>Are you sure you want to cancel order for <strong>{{ order.product.name }} ({{ order.quantity }} units)</strong>?</p>
+    <p>
+      Are you sure you want to cancel order for
+      <strong>{{ order.product.name }} ({{ order.quantity }} units)</strong>?
+    </p>
 
     <form method="post">
       {% csrf_token %}

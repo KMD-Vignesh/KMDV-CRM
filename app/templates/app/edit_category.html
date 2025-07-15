@@ -1,5 +1,4 @@
-{% extends 'app/base.html' %}
-{% block content %}
+{% extends 'app/base.html' %} {% block content %}
 <div class="form-wrapper">
   <h1>Edit Category</h1>
 
@@ -8,12 +7,20 @@
 
     <div class="form-group">
       <label>Name:</label>
-      <input type="text" name="name" class="form-control" value="{{ category.name|escape }}" required>
+      <input
+        type="text"
+        name="name"
+        class="form-control"
+        value="{{ category.name|escape }}"
+        required
+      />
     </div>
 
     <div class="form-group">
       <label>Description:</label>
-      <textarea name="description" class="form-control" rows="4">{{ category.description|default:"" }}</textarea>
+      <textarea name="description" class="form-control" rows="4">
+{{ category.description|default:"" }}</textarea
+      >
     </div>
 
     <button type="submit" class="btn btn-primary">Update</button>

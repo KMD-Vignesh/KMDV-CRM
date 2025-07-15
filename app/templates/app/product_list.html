@@ -1,12 +1,10 @@
-{% extends 'app/base.html' %}
-{% load humanize %}
-{% block content %}
+{% extends 'app/base.html' %} {% load humanize %} {% block content %}
 <div class="page-header">
   <h1>Products</h1>
   <a class="btn-add" href="{% url 'add_product' %}">Add Product</a>
 </div>
 
-    <table class="dv-table">
+<table class="dv-table">
   <thead>
     <tr>
       <th>Name</th>
@@ -18,27 +16,37 @@
   </thead>
   <tbody>
     {% for product in products %}
-      <tr>
-        <td>{{ product.name|title }}</td>
-        <td>₹{{ product.price|floatformat:2|intcomma }}</td>
-        <td>{{ product.category.name|title }}</td>
-        <td>{{ product.description|default:"No description"|truncatewords:12 }}</td>
-        <td class="actions">
-          <a class="btn" href="{% url 'edit_product' product.pk %}">Edit</a>
-          <a class="btn danger" href="{% url 'delete_product' product.pk %}">Delete</a>
-        </td>
-      </tr>
+    <tr>
+      <td>{{ product.name|title }}</td>
+      <td>₹{{ product.price|floatformat:2|intcomma }}</td>
+      <td>{{ product.category.name|title }}</td>
+      <td>
+        {{ product.description|default:"No description"|truncatewords:12 }}
+      </td>
+      <td class="actions">
+        <a class="btn" href="{% url 'edit_product' product.pk %}">Edit</a>
+        <a class="btn danger" href="{% url 'delete_product' product.pk %}"
+          >Delete</a
+        >
+      </td>
+    </tr>
     {% empty %}
-      <tr>
-        <td colspan="5" style="text-align:center;">No products available.</td>
-      </tr>
+    <tr>
+      <td colspan="5" style="text-align: center">No products available.</td>
+    </tr>
     {% endfor %}
   </tbody>
 </table>
-    <script>
-        document.querySelectorAll('ul li').forEach(li => {
-            li.addEventListener('mouseover', () => li.style.backgroundColor = '#d5e8f5');
-            li.addEventListener('mouseout', () => li.style.backgroundColor = '#ecf0f1');
-        });
-    </script>
+<script>
+  document.querySelectorAll("ul li").forEach((li) => {
+    li.addEventListener(
+      "mouseover",
+      () => (li.style.backgroundColor = "#d5e8f5")
+    );
+    li.addEventListener(
+      "mouseout",
+      () => (li.style.backgroundColor = "#ecf0f1")
+    );
+  });
+</script>
 {% endblock %}

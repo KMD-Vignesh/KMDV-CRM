@@ -22,11 +22,11 @@ nav a {
   transition: color 0.2s;
 }
 nav a:hover {
-  color: #FD841A;
+  color: #fd841a;
 }
 
 nav a.active {
-  color: #FD841A;         
+  color: #fd841a;
 }
 
 .content {
@@ -86,24 +86,24 @@ nav button.nav-a:focus {
 .user-welcome {
   float: right;
   /*color: #FD841A; */
-  color: #FD841A;
+  color: #fd841a;
   font-weight: bold;
   margin-left: 20px;
   opacity: 0.5;
 }
 
 nav .logo {
-    margin-right: 1rem;
-    display: inline-flex;      /* already here */
-    align-items: center;       /* already here */
-    height: 100%;              /* take full nav height */
+  margin-right: 1rem;
+  display: inline-flex; /* already here */
+  align-items: center; /* already here */
+  height: 100%; /* take full nav height */
 }
 nav .logo img {
-    transform: translateY(15%);
-    display: block;
-    height: 15px;
-    width: auto;
-    border: 1px solid #fff;   /* white 2-pixel border */
-    border-radius: 2px;       /* optional rounded corners */
-    padding: 1px;             /* optional inner spacing */
+  transform: translateY(15%);
+  display: block;
+  height: 15px;
+  width: auto;
+  border: 1px solid #fff; /* white 2-pixel border */
+  border-radius: 2px; /* optional rounded corners */
+  padding: 1px; /* optional inner spacing */
 }

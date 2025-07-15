@@ -1,5 +1,4 @@
-{% extends 'app/base.html' %}
-{% block content %}
+{% extends 'app/base.html' %} {% block content %}
 <div class="form-wrapper">
   <h1>Add Order</h1>
 
@@ -11,7 +10,7 @@
       <select id="product-select" name="product" class="form-control" required>
         <option value="">Select a product</option>
         {% for prod in products %}
-          <option value="{{ prod.id }}">{{ prod.name }}</option>
+        <option value="{{ prod.id }}">{{ prod.name }}</option>
         {% endfor %}
       </select>
     </div>
@@ -26,7 +25,14 @@
 
     <div class="form-group">
       <label for="quantity-input">Quantity:</label>
-      <input type="number" id="quantity-input" name="qty" class="form-control" min="1" required>
+      <input
+        type="number"
+        id="quantity-input"
+        name="qty"
+        class="form-control"
+        min="1"
+        required
+      />
       <small id="stock-info" class="form-text"></small>
     </div>
 
@@ -35,93 +41,95 @@
   </form>
 </div>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const productSelect = document.getElementById('product-select');
-    const vendorSelect = document.getElementById('vendor-select');
-    const quantityInput = document.getElementById('quantity-input');
-    const stockInfo = document.getElementById('stock-info');
+  document.addEventListener("DOMContentLoaded", function () {
+    const productSelect = document.getElementById("product-select");
+    const vendorSelect = document.getElementById("vendor-select");
+    const quantityInput = document.getElementById("quantity-input");
+    const stockInfo = document.getElementById("stock-info");
 
     // Load vendors when product changes
-    productSelect.addEventListener('change', function() {
-        const productId = this.value;
-        
-        // Clear vendor dropdown and reset quantity
-        vendorSelect.innerHTML = '<option value="">---------</option>';
-        stockInfo.textContent = '';
-        quantityInput.max = '';
-        quantityInput.value = '';
+    productSelect.addEventListener("change", function () {
+      const productId = this.value;
 
-        if (productId) {
-            fetch(`/load-vendors/?product_id=${productId}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.vendors.length > 0) {
-                        data.vendors.forEach(vendor => {
-                            const option = document.createElement('option');
-                            option.value = vendor.id;
-                            option.textContent = `${vendor.name} (Stock: ${vendor.stock})`;
-                            vendorSelect.appendChild(option);
-                        });
-                    } else {
-                        const option = document.createElement('option');
-                        option.value = '';
-                        option.textContent = 'No vendors with stock available';
-                        vendorSelect.appendChild(option);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error loading vendors:', error);
-                    const option = document.createElement('option');
-                    option.value = '';
-                    option.textContent = 'Error loading vendors';
-                    vendorSelect.appendChild(option);
-                });
-        }
+      // Clear vendor dropdown and reset quantity
+      vendorSelect.innerHTML = '<option value="">---------</option>';
+      stockInfo.textContent = "";
+      quantityInput.max = "";
+      quantityInput.value = "";
+
+      if (productId) {
+        fetch(`/load-vendors/?product_id=${productId}`)
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.vendors.length > 0) {
+              data.vendors.forEach((vendor) => {
+                const option = document.createElement("option");
+                option.value = vendor.id;
+                option.textContent = `${vendor.name} (Stock: ${vendor.stock})`;
+                vendorSelect.appendChild(option);
+              });
+            } else {
+              const option = document.createElement("option");
+              option.value = "";
+              option.textContent = "No vendors with stock available";
+              vendorSelect.appendChild(option);
+            }
+          })
+          .catch((error) => {
+            console.error("Error loading vendors:", error);
+            const option = document.createElement("option");
+            option.value = "";
+            option.textContent = "Error loading vendors";
+            vendorSelect.appendChild(option);
+          });
+      }
     });
 
     // Update stock info when vendor changes
-    vendorSelect.addEventListener('change', function() {
-        const productId = productSelect.value;
-        const vendorId = this.value;
+    vendorSelect.addEventListener("change", function () {
+      const productId = productSelect.value;
+      const vendorId = this.value;
 
-        if (productId && vendorId) {
-            fetch(`/get-stock-quantity/?product_id=${productId}&vendor_id=${vendorId}`)
-                .then(response => response.json())
-                .then(data => {
-                    const stockQuantity = data.stock_quantity;
-                    stockInfo.textContent = `Available stock: ${stockQuantity}`;
-                    quantityInput.max = stockQuantity;
-                    
-                    if (stockQuantity === 0) {
-                        stockInfo.className = 'form-text text-danger';
-                        stockInfo.textContent = 'No stock available';
-                        quantityInput.disabled = true;
-                    } else {
-                        stockInfo.className = 'form-text text-success';
-                        quantityInput.disabled = false;
-                    }
-                })
-                .catch(error => {
-                    console.error('Error getting stock quantity:', error);
-                });
-        } else {
-            stockInfo.textContent = '';
-            quantityInput.max = '';
-            quantityInput.disabled = false;
-        }
+      if (productId && vendorId) {
+        fetch(
+          `/get-stock-quantity/?product_id=${productId}&vendor_id=${vendorId}`
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            const stockQuantity = data.stock_quantity;
+            stockInfo.textContent = `Available stock: ${stockQuantity}`;
+            quantityInput.max = stockQuantity;
+
+            if (stockQuantity === 0) {
+              stockInfo.className = "form-text text-danger";
+              stockInfo.textContent = "No stock available";
+              quantityInput.disabled = true;
+            } else {
+              stockInfo.className = "form-text text-success";
+              quantityInput.disabled = false;
+            }
+          })
+          .catch((error) => {
+            console.error("Error getting stock quantity:", error);
+          });
+      } else {
+        stockInfo.textContent = "";
+        quantityInput.max = "";
+        quantityInput.disabled = false;
+      }
     });
 
     // Validate quantity input
-    quantityInput.addEventListener('input', function() {
-        const max = parseInt(this.max);
-        const value = parseInt(this.value);
-        
-        if (max && value > max) {
-            this.setCustomValidity(`Maximum quantity available is ${max}`);
-        } else {
-            this.setCustomValidity('');
-        }
+    quantityInput.addEventListener("input", function () {
+      const max = parseInt(this.max);
+      const value = parseInt(this.value);
+
+      if (max && value > max) {
+        this.setCustomValidity(`Maximum quantity available is ${max}`);
+      } else {
+        this.setCustomValidity("");
+      }
     });
-});
+  });
 </script>
 {% endblock %}

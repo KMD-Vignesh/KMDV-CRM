@@ -47,32 +47,36 @@
     </div>
   </section>
 
-<!-- ---------- PRODUCT TABLE ---------- -->
-<section class="card">
-  <h2>Product Overview</h2>
-  <div class="scroll">
-    <table class="dv-table">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Price</th>
-          <th>Category</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for product in products %}
+  <!-- ---------- PRODUCT TABLE ---------- -->
+  <section class="card">
+    <h2>Product Overview</h2>
+    <div class="scroll">
+      <table class="dv-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Category</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for product in products %}
           <tr>
             <td>{{ product.name|title }}</td>
             <td>₹{{ product.price|floatformat:2|intcomma }}</td>
             <td>{{ product.category.name|title }}</td>
           </tr>
-        {% empty %}
-          <tr><td colspan="3" style="text-align:center;">No products available.</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-</section>
+          {% empty %}
+          <tr>
+            <td colspan="3" style="text-align: center">
+              No products available.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
 
   <!-- ---------- CHART ---------- -->
   <section class="card">

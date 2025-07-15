@@ -1,7 +1,4 @@
-{% extends 'app/base.html' %}
-
-
-{% block content %}
+{% extends 'app/base.html' %} {% block content %}
 <div class="form-wrapper">
   <h1>Delete Product</h1>
 
@@ -11,7 +8,9 @@
     <form method="post">
       {% csrf_token %}
       <button type="submit" class="btn btn-danger">Yes, delete</button>
-      <a href="{% url 'product_list' %}" class="btn btn-secondary">No, cancel</a>
+      <a href="{% url 'product_list' %}" class="btn btn-secondary"
+        >No, cancel</a
+      >
     </form>
   </div>
 </div>
