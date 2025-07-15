@@ -2,7 +2,10 @@ import stat
 from turtle import st
 
 from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.db import transaction
@@ -13,9 +16,10 @@ from django.shortcuts import get_object_or_404, redirect, render
 from app import models
 
 from .decorators import admin_required, permission_required
-from .forms import CustomUserCreationForm
+from .forms import CustomUserCreationForm, UserAddForm, UserEditForm, UserUpdateForm
 from .models import Category, Inventory, Order, Product, UserProfile, Vendor
 
+User = get_user_model()
 
 @login_required
 def dashboard(request):
@@ -387,32 +391,62 @@ def register(request):
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            # Optionally create a UserProfile
-            UserProfile.objects.create(user=user, role="staff")
+            # create profile with the new data
+            UserProfile.objects.create(
+                user=user,
+                role="staff",
+                # if you store first/last name in profile you can copy them here
+            )
+            messages.success(request, 'Account created successfully.')
             return redirect("login")
     else:
         form = CustomUserCreationForm()
     return render(request, "registration/register.html", {"form": form})
 
-
 @login_required
 def profile(request):
-    user_profile = get_object_or_404(UserProfile, user=request.user)
-    if request.method == "POST":
-        user_profile.role = request.POST.get("role", user_profile.role)
-        user_profile.permissions = request.POST.get(
-            "permissions", user_profile.permissions
-        )
-        user_profile.save()
+    if request.method == 'POST':
+        form = UserUpdateForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Profile updated!')
+            return redirect('profile')
+    else:
+        form = UserUpdateForm(instance=request.user)
 
-        messages.success(
-            request,
-            "Profile updated successfully!",
-            extra_tags="auto-dismiss page-specific duration-10",
-        )
-        return redirect("profile")
-    return render(
-        request,
-        "app/profile.html",
-        {"user_profile": user_profile, "user": request.user},
-    )
+    return render(request, 'app/profile.html', {'form': form})
+
+
+def user_list(request):
+    users = User.objects.all().order_by('id')
+    return render(request, 'app/user_list.html', {'users': users})
+
+def user_add(request):
+    if request.method == 'POST':
+        form = UserAddForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'User created.')
+            return redirect('user_list')
+    else:
+        form = UserAddForm()
+    return render(request, 'app/user_form.html', {'form': form, 'title': 'Add User'})
+
+def user_edit(request, pk):
+    user_obj = get_object_or_404(User, pk=pk)
+    if request.method == 'POST':
+        form = UserEditForm(request.POST, instance=user_obj)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'User updated.')
+            return redirect('user_list')
+    else:
+        form = UserEditForm(instance=user_obj)
+    return render(request, 'app/user_form.html', {'form': form, 'title': 'Edit User'})
+def user_delete(request, pk):
+    user = get_object_or_404(User, pk=pk)
+    if request.method == 'POST':
+        user.delete()
+        messages.success(request, 'User deleted.')
+        return redirect('user_list')
+    return render(request, 'app/user_confirm_delete.html', {'user': user})

@@ -43,10 +43,12 @@
         <a href="{% url 'inventory_list' %}">Inventory</a>
         <a href="{% url 'order_list' %}">Orders</a>
         <a href="{% url 'profile' %}">Profile</a>
-        <span class="user-welcome">Welcome, {{ user.username | title }}!</span>
+        <a href="{% url 'user_list' %}">Users</a>
+        <span class="user-welcome">Welcome, {{ user.username | title }}</span>
         {% else %}
-        <span class="user-welcome">Welcome, Guest!</span>
+        <span class="user-welcome">Welcome, Guest</span>
         {% endif %} {% if user.is_authenticated %}
+        </a>
         <form method="post" action="{% url 'logout' %}" style="display: inline">
           {% csrf_token %}
           <button type="submit" class="nav-a">Logout</button>

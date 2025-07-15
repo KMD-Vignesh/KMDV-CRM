@@ -28,4 +28,9 @@ urlpatterns = [
     path("profile/", view=views.profile, name="profile"),
     path("load-vendors/", views.load_vendors, name="load_vendors"),
     path("get-stock-quantity/", views.get_stock_quantity, name="get_stock_quantity"),
+    path('accounts/',        views.user_list,   name='user_list'),
+    path('accounts/add/',    views.user_add,    name='user_add'),
+    path('accounts/<int:pk>/edit/',   views.user_edit,   name='user_edit'),
+    path('accounts/<int:pk>/delete/', views.user_delete, name='user_delete'),
+
 ]
