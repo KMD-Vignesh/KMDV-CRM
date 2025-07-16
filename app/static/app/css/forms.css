@@ -130,8 +130,9 @@
 }
 
 .form-control {
+  background-color: #f7f1f1;
   width: 100%;
-  padding: 0.5rem 0.6rem;
+  padding: 0.2rem 0.3rem;
   border: 1px solid #ccc;
   border-radius: 4px;
   font-family: inherit;
@@ -185,6 +186,19 @@
   border-color: #0056b3;
 }
 
+.btn-warning {
+  color: #191818;
+  background: #f3e567;
+  border-color: #ccc;
+  margin-left: 0.5rem;
+}
+
+.btn- :hover {
+  background: #c3b855;
+  border-color: #a89e49;
+
+}
+
 .btn-secondary {
   color: #333;
   background: #f8f9fa;
@@ -194,6 +208,20 @@
 
 .btn-secondary:hover {
   background: #e2e6ea;
+}
+
+.btn-filter {
+  padding-left: 8%;
+  padding-right: 8%;
+  display: inline-block;
+  color: #fff;
+  background: #27ae60;
+  border-color: #000;
+  text-align: center; 
+}
+
+.btn-filter:hover {
+  background: #3d6e3b;
 }
 
 /* make Django widgets the same size as our manual inputs */
@@ -214,7 +242,21 @@
 
 .form-card input:focus,
 .form-card select:focus,
+
 .form-card textarea:focus {
   outline: none;
   border-color: #007bff;
 }
+
+
+.filter-row input, .filter-row select {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+
+
+.filter-form {
+    margin-bottom: 1rem;
+}
+

@@ -17,53 +17,74 @@
 </div>
 
 <div class="page-header">
-{% if orders %}
-    <p>Total Orders: <strong>{{ orders_total.total_quantity }}</strong></p>
-    <p>Active Orders: <strong>{{ orders_total.active_count }}</strong></p>
-    <p>Cancelled Orders: <strong>{{ orders_total.cancelled_count }}</strong></p>
-{% else %}
-    <p>No orders available.</p>
-{% endif %}
+    {% if orders %}
+        <p>Total Orders: <strong>{{ orders_total.total_quantity }}</strong></p>
+        <p>Active Orders: <strong>{{ orders_total.active_count }}</strong></p>
+        <p>Cancelled Orders: <strong>{{ orders_total.cancelled_count }}</strong></p>
+    {% else %}
+        <p>No orders available.</p>
+    {% endif %}
 </div>
 
-<table class="dv-table">
-    <thead>
-        <tr>
-            <th>Product</th>
-            <th>Quantity</th>
-            <th>Vendor</th>
-            <th>Date</th>
-            <th>Status</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for order in orders %}
+<form method="get" action="{% url 'order_list' %}" class="filter-form">
+    <table class="dv-table">
+        <thead>
             <tr>
-                <td>{{ order.product.name|title }}</td>
-                <td>{{ order.quantity }}</td>
-                <td>{{ order.vendor.name|default:"N/A"|title }}</td>
-                <td>{{ order.order_date|date:"F d, Y" }}</td>
+                <th>Order ID</th>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Vendor</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+            <tr class="filter-row">
+                <td><input type="text" name="order_id" value="{{ request.GET.order_id }}" class="form-control"></td>
+                <td><input type="text" name="product" value="{{ request.GET.product }}" class="form-control"></td>
+                <td><input type="number" name="quantity" value="{{ request.GET.quantity }}" class="form-control"></td>
+                <td><input type="text" name="vendor" value="{{ request.GET.vendor }}" class="form-control"></td>
+                <td><input type="date" name="order_date" value="{{ request.GET.order_date }}" class="form-control"></td>
                 <td>
-                    {% if order.is_cancelled %}
-                        <span class="badge cancelled">Cancelled</span>
-                    {% else %}
-                        <span class="badge active">Active</span>
-                    {% endif %}
+                    <select name="status" class="form-control">
+                        <option value="">----</option>
+                        <option value="cancelled" {% if request.GET.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                        <option value="active" {% if request.GET.status == 'active' %}selected{% endif %}>Active</option>
+                    </select>
                 </td>
                 <td class="actions">
-                    {% if not order.is_cancelled %}
-                    <a class="btn" href="{% url 'edit_order' order.pk %}">Edit</a>
-                    <a class="btn danger" href="{% url 'cancel_order' order.pk %}">Cancel</a>
-                    {% endif %}
-
+                    <button type="submit" class="btn-filter">Filter</button>
+                    <a href="{% url 'order_list' %}" class="btn">Clear</a>
                 </td>
             </tr>
-        {% empty %}
-            <tr>
-                <td colspan="6" style="text-align:center;">No orders available.</td>
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+                <tr>
+                    <td>{{ order.id }}</td>
+                    <td>{{ order.product.name|title }}</td>
+                    <td>{{ order.quantity }}</td>
+                    <td>{{ order.vendor.name|default:"N/A"|title }}</td>
+                    <td>{{ order.order_date|date:"F d, Y" }}</td>
+                    <td>
+                        {% if order.is_cancelled %}
+                            <span class="badge cancelled">Cancelled</span>
+                        {% else %}
+                            <span class="badge active">Active</span>
+                        {% endif %}
+                    </td>
+                    <td class="actions">
+                        {% if not order.is_cancelled %}
+                            <a class="btn" href="{% url 'edit_order' order.pk %}">Edit</a>
+                            <a class="btn danger" href="{% url 'cancel_order' order.pk %}">Cancel</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="7" style="text-align:center;">No orders available.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</form>
 {% endblock %}

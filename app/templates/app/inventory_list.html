@@ -1,5 +1,13 @@
 {% extends 'app/base.html' %} {% block content %}
+  {% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+      <p style="color: green;">{{ message }}</p>
+    </div>
+  {% endfor %}
+{% endif %}
 <div class="page-header">
+
   <h1>Inventory</h1>
   <a class="btn-add" href="{% url 'add_inventory' %}">Add Inventory</a>
 </div>
@@ -7,7 +15,8 @@
   <thead>
     <tr>
       <th>Product</th>
-      <th>Stock&nbsp;Qty</th>
+      <th>Inward&nbsp;Qty</th>
+      <th>Current&nbsp;Stock</th>
       <th>Vendor</th>
       <th>Last&nbsp;Updated</th>
       <th>Actions</th>
@@ -17,6 +26,7 @@
     {% for item in inventory %}
     <tr>
       <td>{{ item.product.name|title }}</td>
+      <td>{{ item.inward_qty }}</td>
       <td>{{ item.stock_quantity }}</td>
       <td>{{ item.vendor.name|default:"N/A"|title }}</td>
       <td>{{ item.last_updated|date:"F d, Y" }}</td>

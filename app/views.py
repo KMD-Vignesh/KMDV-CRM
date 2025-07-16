@@ -11,7 +11,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from .forms import CustomUserCreationForm, UserEditForm, UserUpdateForm
 from .models import Category, Inventory, Order, Product, UserProfile, Vendor
 from django.contrib.auth.forms import SetPasswordForm
-
+from django.utils.dateparse import parse_date
 @login_required
 def dashboard(request):
     products_count = Product.objects.count()
@@ -75,7 +75,13 @@ def edit_category(request, pk):
         category.name = request.POST["name"]
         category.description = request.POST.get("description", "")
         category.save()
+        messages.success(
+            request,
+            f"Category - {category.name} updated successfully!",
+            extra_tags="auto-dismiss page-specific",
+        )
         return redirect("category_list")
+    return render(request, "app/edit_category.html", {"category": category})
     return render(request, "app/edit_category.html", {"category": category})
 
 
@@ -84,13 +90,18 @@ def delete_category(request, pk):
     category = get_object_or_404(Category, pk=pk)
     if request.method == "POST":
         category.delete()
+        messages.success(
+            request,
+            f"Category - {category.name} deleted successfully!",
+            extra_tags="auto-dismiss page-specific",
+        )
         return redirect("category_list")
     return render(request, "app/delete_category.html", {"category": category})
 
 
 @login_required
 def product_list(request):
-    products = Product.objects.all()
+    products = Product.objects.all().order_by('name')
     return render(request, "app/product_list.html", {"products": products})
 
 
@@ -103,6 +114,11 @@ def add_product(request):
         description = request.POST.get("description", "")
         Product.objects.create(
             name=name, category_id=category_id, price=price, description=description
+        )
+        messages.success(
+            request,
+            f"Product - {name} created successfully!",
+            extra_tags="auto-dismiss page-specific",
         )
         return redirect("product_list")
     categories = Category.objects.all()
@@ -118,6 +134,11 @@ def edit_product(request, pk):
         product.price = request.POST["price"]
         product.description = request.POST.get("description", "")
         product.save()
+        messages.success(
+            request,
+            f"Product - {product.name} updated successfully!",
+            extra_tags="auto-dismiss page-specific",
+        )
         return redirect("product_list")
     categories = Category.objects.all()
     return render(
@@ -130,13 +151,18 @@ def delete_product(request, pk):
     product = get_object_or_404(Product, pk=pk)
     if request.method == "POST":
         product.delete()
+        messages.success(
+            request,
+            f"Product - {product.name} deleted successfully!",
+            extra_tags="auto-dismiss page-specific",
+        )
         return redirect("product_list")
     return render(request, "app/delete_product.html", {"product": product})
 
 
 @login_required
 def vendor_list(request):
-    vendors = Vendor.objects.all()
+    vendors = Vendor.objects.all().order_by('name')
     return render(request, "app/vendor_list.html", {"vendors": vendors})
 
 
@@ -146,6 +172,11 @@ def add_vendor(request):
         name = request.POST["name"]
         address = request.POST["address"]
         Vendor.objects.create(name=name, address=address)
+        messages.success(
+            request,
+            f"Vendor - {name} created successfully!",
+            extra_tags="auto-dismiss page-specific",
+        )
         return redirect("vendor_list")
     return render(request, "app/add_vendor.html")
 
@@ -157,6 +188,11 @@ def edit_vendor(request, pk):
         vendor.name = request.POST["name"]
         vendor.address = request.POST["address"]
         vendor.save()
+        messages.success(
+            request,
+            f"Vendor - {vendor.name} updated successfully!",
+            extra_tags="auto-dismiss page-specific",
+        )
         return redirect("vendor_list")
     return render(request, "app/edit_vendor.html", {"vendor": vendor})
 
@@ -166,6 +202,11 @@ def delete_vendor(request, pk):
     vendor = get_object_or_404(Vendor, pk=pk)
     if request.method == "POST":
         vendor.delete()
+        messages.success(
+            request,
+            f"Vendor - {vendor.name} deleted successfully!",
+            extra_tags="auto-dismiss page-specific",
+        )
         return redirect("vendor_list")
     return render(request, "app/delete_vendor.html", {"vendor": vendor})
 
@@ -185,6 +226,11 @@ def add_inventory(request):
         Inventory.objects.create(
             product_id=product_id, vendor_id=vendor_id, stock_quantity=qty
         )
+        messages.success(
+            request,
+            f"Inventory for Product - {product_id} for Vendor - {vendor_id} created successfully!",
+            extra_tags="auto-dismiss page-specific",
+        )
         return redirect("inventory_list")
     products = Product.objects.all()
     vendors = Vendor.objects.all()
@@ -201,6 +247,11 @@ def edit_inventory(request, pk):
         inventory.vendor_id = request.POST["vendor"]
         inventory.stock_quantity = request.POST["qty"]
         inventory.save()
+        messages.success(
+            request,
+            f"Inventory for Product - {inventory.product.name} for Vendor - {inventory.vendor.name} updated successfully!",
+            extra_tags="auto-dismiss page-specific",
+        )
         return redirect("inventory_list")
     products = Product.objects.all()
     vendors = Vendor.objects.all()
@@ -216,21 +267,54 @@ def delete_inventory(request, pk):
     inventory = get_object_or_404(Inventory, pk=pk)
     if request.method == "POST":
         inventory.delete()
+        messages.success(
+            request,
+            f"Inventory for Product - {inventory.product.name} for Vendor - {inventory.vendor.name} deleted successfully!",
+            extra_tags="auto-dismiss page-specific",
+        )
         return redirect("inventory_list")
     return render(request, "app/delete_inventory.html", {"inventory": inventory})
 
 
 @login_required
 def order_list(request):
-    orders = Order.objects.all()
+    query = Q()
+    
+    order_id = request.GET.get('order_id')
+    if order_id:
+        query &= Q(id=order_id)
+    
+    product_name = request.GET.get('product')
+    if product_name:
+        query &= Q(product__name__icontains=product_name)
+    
+    quantity = request.GET.get('quantity')
+    if quantity:
+        query &= Q(quantity=quantity)
+    
+    vendor_name = request.GET.get('vendor')
+    if vendor_name:
+        query &= Q(vendor__name__icontains=vendor_name)
+    
+    order_date = request.GET.get('order_date')
+    if order_date:
+        parsed_date = parse_date(order_date)
+        if parsed_date:
+            query &= Q(order_date__date=parsed_date)
+    
+    status = request.GET.get('status')
+    if status == 'cancelled':
+        query &= Q(is_cancelled=True)
+    elif status == 'active':
+        query &= Q(is_cancelled=False)
+    
+    orders = Order.objects.filter(query).order_by('-order_date')
     orders_total = orders.aggregate(
         total_quantity=Sum("quantity"),
         active_count=Sum("quantity", filter=Q(is_cancelled=False)),
         cancelled_count=Sum("quantity", filter=Q(is_cancelled=True)),
     )
-    return render(
-        request, "app/order_list.html", {"orders": orders, "orders_total": orders_total}
-    )
+    return render(request, "app/order_list.html", {"orders": orders, "orders_total": orders_total})
 
 
 @login_required
@@ -282,10 +366,10 @@ def add_order(request):
             order = Order.objects.create(
                 user=request.user, product=product, vendor=vendor, quantity=quantity
             )
-
+            
             messages.success(
                 request,
-                f"Order #{order.id} created successfully!",
+                f"Order # {order.id} with Qty({order.quantity}) for Product ({product.name}) created successfully!",
                 extra_tags="auto-dismiss page-specific",
             )
             return redirect("order_list")
@@ -360,6 +444,11 @@ def edit_order(request, pk):
         return redirect("order_list")
     products = Product.objects.all()
     vendors = Vendor.objects.all()
+    messages.success(
+        request,
+        f"Order - {order.id} updated successfully!",
+        extra_tags="auto-dismiss page-specific",
+    )
     return render(
         request,
         "app/edit_order.html",
@@ -373,6 +462,11 @@ def cancel_order(request, pk):
     if request.method == "POST":
         order.is_cancelled = True
         order.save()
+        messages.success(
+            request,
+            f"Order - {order.id} cancelled successfully!",
+            extra_tags="auto-dismiss page-specific",
+        )
         return redirect("order_list")
     return render(request, "app/cancel_order.html", {"order": order})
 
@@ -407,7 +501,7 @@ def profile(request):
 
     return render(request, 'app/profile.html', {'form': form})
 
-User = get_user_model()
+get_user_model()
 
 @login_required
 def user_list(request):

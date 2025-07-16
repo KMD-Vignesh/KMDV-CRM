@@ -33,7 +33,7 @@ class Inventory(models.Model):
     vendor = models.ForeignKey(Vendor, on_delete=models.SET_NULL, null=True, blank=True)
     stock_quantity = models.PositiveIntegerField()
     last_updated = models.DateTimeField(auto_now=True)
-
+    inward_qty     = models.PositiveIntegerField(default=0)
     def __str__(self):
         return f"{self.product.name} - {self.stock_quantity}"
 
