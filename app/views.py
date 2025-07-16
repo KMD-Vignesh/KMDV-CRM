@@ -1,25 +1,16 @@
-import stat
-from turtle import st
 
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from django.contrib.auth.models import User
-from django.core.paginator import Paginator
-from django.db import transaction
-from django.db.models import Count, F, Q, Sum
+from django.db.models import F, Q, Sum
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
-from app import models
 
-from .decorators import admin_required, permission_required
-from .forms import CustomUserCreationForm, UserAddForm, UserEditForm, UserUpdateForm
+from .forms import CustomUserCreationForm, UserEditForm, UserUpdateForm
 from .models import Category, Inventory, Order, Product, UserProfile, Vendor
 
-User = get_user_model()
 
 @login_required
 def dashboard(request):
@@ -416,22 +407,26 @@ def profile(request):
 
     return render(request, 'app/profile.html', {'form': form})
 
+User = get_user_model()
 
+@login_required
 def user_list(request):
     users = User.objects.all().order_by('id')
     return render(request, 'app/user_list.html', {'users': users})
 
+@login_required
 def user_add(request):
     if request.method == 'POST':
-        form = UserAddForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, 'User created.')
+            messages.success(request, 'User created!')
             return redirect('user_list')
     else:
-        form = UserAddForm()
-    return render(request, 'app/user_form.html', {'form': form, 'title': 'Add User'})
+        form = CustomUserCreationForm()
+    return render(request, 'app/user_form.html', {'form': form})
 
+@login_required
 def user_edit(request, pk):
     user_obj = get_object_or_404(User, pk=pk)
     if request.method == 'POST':
@@ -442,7 +437,8 @@ def user_edit(request, pk):
             return redirect('user_list')
     else:
         form = UserEditForm(instance=user_obj)
-    return render(request, 'app/user_form.html', {'form': form, 'title': 'Edit User'})
+    return render(request, 'app/user_form.html', {'form': form, 'title': 'Edit'})
+@login_required
 def user_delete(request, pk):
     user = get_object_or_404(User, pk=pk)
     if request.method == 'POST':

@@ -15,16 +15,23 @@ class CustomUserCreationForm(UserCreationForm):
 
 
 User = get_user_model()
-
 class UserAddForm(UserCreationForm):
+    is_staff     = forms.BooleanField(required=False, label='Staff')
+    is_superuser = forms.BooleanField(required=False, label='Superuser')
+
     class Meta(UserCreationForm.Meta):
-        fields = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'is_superuser')
+        model = User
+        fields = ('username', 'first_name', 'last_name', 'email',
+                  'password1', 'password2', 'is_staff', 'is_superuser')
 
 class UserEditForm(UserChangeForm):
-    password = None   # hide password field in edit
-    class Meta(UserChangeForm.Meta):
-        fields = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'is_superuser')
+    password = None
+    is_staff     = forms.BooleanField(required=False, label='Staff')
+    is_superuser = forms.BooleanField(required=False, label='Superuser')
 
+    class Meta(UserChangeForm.Meta):
+        fields = ('username', 'first_name', 'last_name', 'email',
+                  'is_staff', 'is_superuser')
 
 class UserUpdateForm(forms.ModelForm):
     class Meta:
