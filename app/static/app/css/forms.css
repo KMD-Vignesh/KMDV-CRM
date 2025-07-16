@@ -154,6 +154,11 @@
 .form-text.text-danger {
   color: #e74c3c;
 }
+
+.form-text.text-warn {
+  color: #e74c3c;
+}
+
 .form-text.text-success {
   color: #28a745;
 }

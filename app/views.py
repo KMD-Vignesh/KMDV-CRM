@@ -10,7 +10,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import CustomUserCreationForm, UserEditForm, UserUpdateForm
 from .models import Category, Inventory, Order, Product, UserProfile, Vendor
-
+from django.contrib.auth.forms import SetPasswordForm
 
 @login_required
 def dashboard(request):
@@ -446,3 +446,17 @@ def user_delete(request, pk):
         messages.success(request, 'User deleted.')
         return redirect('user_list')
     return render(request, 'app/user_confirm_delete.html', {'user': user})
+
+@login_required
+def user_reset_password(request, pk):
+    user = get_object_or_404(get_user_model(), pk=pk)
+    if request.method == 'POST':
+        form = SetPasswordForm(user, request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'Password for {user.username} has been reset.')
+            return redirect('user_list')
+    else:
+        form = SetPasswordForm(user)
+    return render(request, 'app/user_reset_password.html',
+                  {'form': form, 'user_obj': user})

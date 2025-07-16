@@ -56,10 +56,17 @@
   background: #eee;
 }
 
+.dv-table .btn.warning {
+  border-color: #c58907;
+  color: #c58907;
+}
+
 .dv-table .btn.danger {
   border-color: #c0392b;
   color: #c0392b;
 }
+
+
 
 .page-header {
   display: flex;
@@ -83,3 +90,4 @@
 .btn-add:hover {
   background: #0056b3;
 }
+

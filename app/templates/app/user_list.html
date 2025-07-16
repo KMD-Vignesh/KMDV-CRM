@@ -54,6 +54,7 @@
             <td class="actions">
               <a class="btn" href="{% url 'user_edit' u.pk %}">Edit</a>
               <a class="btn danger" href="{% url 'user_delete' u.pk %}">Delete</a>
+              <a class="btn warning" href="{% url 'user_reset_password' u.pk %}">Reset&nbsp;Pwd</a>
             </td>
           </tr>
         {% empty %}
