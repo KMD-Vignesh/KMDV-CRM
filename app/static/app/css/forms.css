@@ -130,7 +130,7 @@
 }
 
 .form-control {
-  background-color: #f7f1f1;
+  background-color: #feddc1;
   width: 100%;
   padding: 0.2rem 0.3rem;
   border: 1px solid #ccc;
@@ -162,6 +162,22 @@
 
 .form-text.text-success {
   color: #28a745;
+}
+
+.btn-filter {
+  display: inline-block;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  font-size: 0.8rem;
+  text-decoration: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+  color: #000000;
+  font-weight: bold;
+  background: #fd841ad9;
+  border-color: #fd841a;
 }
 
 .btn {
@@ -210,15 +226,6 @@
   background: #e2e6ea;
 }
 
-.btn-filter {
-  padding-left: 8%;
-  padding-right: 8%;
-  display: inline-block;
-  color: #fff;
-  background: #27ae60;
-  border-color: #000;
-  text-align: center; 
-}
 
 .btn-filter:hover {
   background: #3d6e3b;
