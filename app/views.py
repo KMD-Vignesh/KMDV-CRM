@@ -3,8 +3,8 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.db.models import F, Q, Sum
-from django.http import JsonResponse
+from django.db.models import F, Q, Sum, DecimalField, ExpressionWrapper
+from django.http import JsonResponse    
 from django.shortcuts import get_object_or_404, redirect, render
 
 
@@ -12,6 +12,8 @@ from .forms import CustomUserCreationForm, UserEditForm, UserUpdateForm
 from .models import Category, Inventory, Order, Product, UserProfile, Vendor
 from django.contrib.auth.forms import SetPasswordForm
 from django.utils.dateparse import parse_date
+from decimal import Decimal, DivisionByZero, InvalidOperation
+
 @login_required
 def dashboard(request):
     products_count = Product.objects.count()
@@ -213,9 +215,20 @@ def delete_vendor(request, pk):
 
 @login_required
 def inventory_list(request):
-    inventory = Inventory.objects.all()
-    return render(request, "app/inventory_list.html", {"inventory": inventory})
+    inventory = Inventory.objects.annotate(
+        total_price=ExpressionWrapper(F('stock_quantity') * F('product__price'), output_field=DecimalField(max_digits=10, decimal_places=2))
+    )
 
+    total_inward_qty = inventory.aggregate(Sum('inward_qty'))['inward_qty__sum'] or 0
+    total_current_stock = inventory.aggregate(Sum('stock_quantity'))['stock_quantity__sum'] or 0
+    total_price = inventory.aggregate(Sum('total_price'))['total_price__sum'] or 0
+
+    return render(request, "app/inventory_list.html", {
+        "inventory": inventory,
+        "total_inward_qty": total_inward_qty,
+        "total_current_stock": total_current_stock,
+        "total_price": total_price
+    })
 
 @login_required
 def add_inventory(request):
@@ -302,21 +315,39 @@ def order_list(request):
         if parsed_date:
             query &= Q(order_date__date=parsed_date)
     
+    product_price = request.GET.get('product_price')
+    if product_price:
+        query &= Q(product__price=product_price)
+    
+    total_price = request.GET.get('total_price')
+    if total_price:
+        try:
+            total_price_decimal = Decimal(total_price)
+            # Filter by calculated total_price
+            query &= Q(total_price=total_price_decimal)
+        except (InvalidOperation, DivisionByZero):
+            pass
+    
     status = request.GET.get('status')
     if status == 'cancelled':
         query &= Q(is_cancelled=True)
     elif status == 'active':
         query &= Q(is_cancelled=False)
     
-    orders = Order.objects.filter(query).order_by('-order_date')
+    # Annotate total_price for each order
+    orders = Order.objects.annotate(
+        total_price=ExpressionWrapper(F('quantity') * F('product__price'), output_field=DecimalField(max_digits=10, decimal_places=2))
+    ).filter(query).order_by('-order_date')
+    
+    # Aggregate total values
     orders_total = orders.aggregate(
         total_quantity=Sum("quantity"),
         active_count=Sum("quantity", filter=Q(is_cancelled=False)),
         cancelled_count=Sum("quantity", filter=Q(is_cancelled=True)),
+        total_price=Sum(ExpressionWrapper(F('quantity') * F('product__price'), output_field=DecimalField(max_digits=10, decimal_places=2)))
     )
+    
     return render(request, "app/order_list.html", {"orders": orders, "orders_total": orders_total})
-
-
 @login_required
 def add_order(request):
     if request.method == "POST":

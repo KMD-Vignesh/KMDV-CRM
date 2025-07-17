@@ -18,3 +18,5 @@ python manage.py createsuperuser
 python manage.py collectstatic
 
 python manage.py test
+
+uv pip freeze > requirements.txt

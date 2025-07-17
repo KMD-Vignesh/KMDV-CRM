@@ -130,7 +130,7 @@
 }
 
 .form-control {
-  background-color: #feddc1;
+  background-color: #fffcf9;
   width: 100%;
   padding: 0.2rem 0.3rem;
   border: 1px solid #ccc;
@@ -259,8 +259,11 @@
 .filter-row input, .filter-row select {
     width: 100%;
     box-sizing: border-box;
-}
+} 
 
+.filter-row select[name="status"] {
+    width: 6rem; 
+}
 
 
 .filter-form {

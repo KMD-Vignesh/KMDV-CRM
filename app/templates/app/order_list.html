@@ -1,5 +1,6 @@
 {% extends 'app/base.html' %}
 {% load static %}
+{% load custom_filters %}
 
 {% block content %}
 
@@ -21,6 +22,7 @@
         <p>Total Orders: <strong>{{ orders_total.total_quantity }}</strong></p>
         <p>Active Orders: <strong>{{ orders_total.active_count }}</strong></p>
         <p>Cancelled Orders: <strong>{{ orders_total.cancelled_count }}</strong></p>
+        <p>Total Price: <strong>₹{{ orders_total.total_price|floatformat:2|indian_comma }}</strong></p>
     {% else %}
         <p>No orders available.</p>
     {% endif %}
@@ -36,6 +38,7 @@
                 <th>Vendor</th>
                 <th>Date</th>
                 <th>Status</th>
+                <th>Total Price</th>
                 <th>Actions</th>
             </tr>
             <tr class="filter-row">
@@ -51,6 +54,7 @@
                         <option value="active" {% if request.GET.status == 'active' %}selected{% endif %}>Active</option>
                     </select>
                 </td>
+                <td><input type="number" step="0.01" name="total_price" value="{{ request.GET.total_price }}" class="form-control"></td>
                 <td class="actions">
                     <button type="submit" class="btn-filter">Filter</button>
                     <a href="{% url 'order_list' %}" class="btn">Clear</a>
@@ -72,6 +76,7 @@
                             <span class="badge active">Active</span>
                         {% endif %}
                     </td>
+                    <td>₹{{ order.total_price|floatformat:2|indian_comma }}</td>
                     <td class="actions">
                         {% if not order.is_cancelled %}
                             <a class="btn" href="{% url 'edit_order' order.pk %}">Edit</a>
@@ -81,7 +86,7 @@
                 </tr>
             {% empty %}
                 <tr>
-                    <td colspan="7" style="text-align:center;">No orders available.</td>
+                    <td colspan="8" style="text-align:center;">No orders available.</td>
                 </tr>
             {% endfor %}
         </tbody>
