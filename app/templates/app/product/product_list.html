@@ -1,4 +1,6 @@
-{% extends 'app/base/base.html' %} {% load humanize %} {% block content %}
+{% extends 'app/base/base.html' %} 
+{% block title %}Products{% endblock %}
+{% load humanize %} {% block content %}
 {% load custom_filters %}
   {% if messages %}
   {% for message in messages %}

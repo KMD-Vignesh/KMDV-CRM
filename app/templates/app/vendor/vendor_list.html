@@ -1,4 +1,5 @@
 {% extends 'app/base/base.html' %} {% block content %}
+{% block title %}Vendors{% endblock %}
   {% if messages %}
   {% for message in messages %}
     <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
@@ -7,7 +8,7 @@
   {% endfor %}
 {% endif %}
 <div class="page-header">
-  <h1>Vendor</h1>
+  <h1>Vendors</h1>
   <a class="btn-add" href="{% url 'add_vendor' %}">Add Vendor</a>
 </div>
 <table class="dv-table">
