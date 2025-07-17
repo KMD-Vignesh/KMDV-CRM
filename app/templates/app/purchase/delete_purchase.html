@@ -1,0 +1,17 @@
+{% extends 'app/base/base.html' %}
+{% block content %}
+<div class="form-wrapper">
+  <h1>Delete Purchase Order #{{ order.id }}</h1>
+  <div class="form-card">
+    <p>
+      Are you sure you want to delete PO for
+      <strong>{{ order.product.name }} ({{ order.quantity }} units)</strong>?
+    </p>
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger">Yes, delete</button>
+      <a href="{% url 'purchase_list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

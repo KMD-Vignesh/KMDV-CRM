@@ -65,13 +65,13 @@ def dashboard(request):
         "total_stock_price": total_stock_price,
     }
 
-    return render(request, "app/dashboard.html", context)
+    return render(request, "app/base/dashboard.html", context)
 
 
 @login_required
 def category_list(request):
     categories = Category.objects.all()
-    return render(request, "app/category_list.html", {"categories": categories})
+    return render(request, "app/category/category_list.html", {"categories": categories})
 
 
 @login_required
@@ -86,7 +86,7 @@ def add_category(request):
             extra_tags="auto-dismiss page-specific",
         )
         return redirect("category_list")
-    return render(request, "app/add_category.html")
+    return render(request, "app/category/add_category.html")
 
 
 @login_required
@@ -102,8 +102,8 @@ def edit_category(request, pk):
             extra_tags="auto-dismiss page-specific",
         )
         return redirect("category_list")
-    return render(request, "app/edit_category.html", {"category": category})
-    return render(request, "app/edit_category.html", {"category": category})
+    return render(request, "app/category/edit_category.html", {"category": category})
+
 
 
 @login_required
@@ -117,13 +117,13 @@ def delete_category(request, pk):
             extra_tags="auto-dismiss page-specific",
         )
         return redirect("category_list")
-    return render(request, "app/delete_category.html", {"category": category})
+    return render(request, "app/category/delete_category.html", {"category": category})
 
 
 @login_required
 def product_list(request):
     products = Product.objects.all().order_by('name')
-    return render(request, "app/product_list.html", {"products": products})
+    return render(request, "app/product/product_list.html", {"products": products})
 
 
 @login_required
@@ -143,7 +143,7 @@ def add_product(request):
         )
         return redirect("product_list")
     categories = Category.objects.all()
-    return render(request, "app/add_product.html", {"categories": categories})
+    return render(request, "app/product/add_product.html", {"categories": categories})
 
 
 @login_required
@@ -163,7 +163,7 @@ def edit_product(request, pk):
         return redirect("product_list")
     categories = Category.objects.all()
     return render(
-        request, "app/edit_product.html", {"product": product, "categories": categories}
+        request, "app/product/edit_product.html", {"product": product, "categories": categories}
     )
 
 
@@ -178,13 +178,13 @@ def delete_product(request, pk):
             extra_tags="auto-dismiss page-specific",
         )
         return redirect("product_list")
-    return render(request, "app/delete_product.html", {"product": product})
+    return render(request, "app/product/delete_product.html", {"product": product})
 
 
 @login_required
 def vendor_list(request):
     vendors = Vendor.objects.all().order_by('name')
-    return render(request, "app/vendor_list.html", {"vendors": vendors})
+    return render(request, "app/vendor/vendor_list.html", {"vendors": vendors})
 
 
 @login_required
@@ -199,7 +199,7 @@ def add_vendor(request):
             extra_tags="auto-dismiss page-specific",
         )
         return redirect("vendor_list")
-    return render(request, "app/add_vendor.html")
+    return render(request, "app/vendor/add_vendor.html")
 
 
 @login_required
@@ -215,7 +215,7 @@ def edit_vendor(request, pk):
             extra_tags="auto-dismiss page-specific",
         )
         return redirect("vendor_list")
-    return render(request, "app/edit_vendor.html", {"vendor": vendor})
+    return render(request, "app/vendor/edit_vendor.html", {"vendor": vendor})
 
 
 @login_required
@@ -229,7 +229,7 @@ def delete_vendor(request, pk):
             extra_tags="auto-dismiss page-specific",
         )
         return redirect("vendor_list")
-    return render(request, "app/delete_vendor.html", {"vendor": vendor})
+    return render(request, "app/vendor/delete_vendor.html", {"vendor": vendor})
 
 
 @login_required
@@ -242,7 +242,7 @@ def inventory_list(request):
     total_current_stock = inventory.aggregate(Sum('stock_quantity'))['stock_quantity__sum'] or 0
     total_price = inventory.aggregate(Sum('total_price'))['total_price__sum'] or 0
 
-    return render(request, "app/inventory_list.html", {
+    return render(request, "app/inventory/inventory_list.html", {
         "inventory": inventory,
         "total_inward_qty": total_inward_qty,
         "total_current_stock": total_current_stock,
@@ -267,7 +267,7 @@ def add_inventory(request):
     products = Product.objects.all()
     vendors = Vendor.objects.all()
     return render(
-        request, "app/add_inventory.html", {"products": products, "vendors": vendors}
+        request, "app/inventory/add_inventory.html", {"products": products, "vendors": vendors}
     )
 
 
@@ -289,7 +289,7 @@ def edit_inventory(request, pk):
     vendors = Vendor.objects.all()
     return render(
         request,
-        "app/edit_inventory.html",
+        "app/inventory/edit_inventory.html",
         {"inventory": inventory, "products": products, "vendors": vendors},
     )
 
@@ -305,7 +305,7 @@ def delete_inventory(request, pk):
             extra_tags="auto-dismiss page-specific",
         )
         return redirect("inventory_list")
-    return render(request, "app/delete_inventory.html", {"inventory": inventory})
+    return render(request, "app/inventory/delete_inventory.html", {"inventory": inventory})
 
 
 @login_required
@@ -365,8 +365,8 @@ def order_list(request):
         cancelled_count=Sum("quantity", filter=Q(is_cancelled=True)),
         total_price=Sum(ExpressionWrapper(F('quantity') * F('product__price'), output_field=DecimalField(max_digits=10, decimal_places=2)))
     )
-    
-    return render(request, "app/order_list.html", {"orders": orders, "orders_total": orders_total})
+
+    return render(request, "app/order/order_list.html", {"orders": orders, "orders_total": orders_total})
 @login_required
 def add_order(request):
     if request.method == "POST":
@@ -435,7 +435,7 @@ def add_order(request):
     products = Product.objects.all()
     vendors = Vendor.objects.all()
     return render(
-        request, "app/add_order.html", {"products": products, "vendors": vendors}
+        request, "app/order/add_order.html", {"products": products, "vendors": vendors}
     )
 
 
@@ -501,7 +501,7 @@ def edit_order(request, pk):
     )
     return render(
         request,
-        "app/edit_order.html",
+        "app/order/edit_order.html",
         {"order": order, "products": products, "vendors": vendors},
     )
 
@@ -518,7 +518,7 @@ def cancel_order(request, pk):
             extra_tags="auto-dismiss page-specific",
         )
         return redirect("order_list")
-    return render(request, "app/cancel_order.html", {"order": order})
+    return render(request, "app/order/cancel_order.html", {"order": order})
 
 
 def register(request):
@@ -549,14 +549,14 @@ def profile(request):
     else:
         form = UserUpdateForm(instance=request.user)
 
-    return render(request, 'app/profile.html', {'form': form})
+    return render(request, 'app/base/profile.html', {'form': form})
 
 get_user_model()
 
 @login_required
 def user_list(request):
     users = User.objects.all().order_by('id')
-    return render(request, 'app/user_list.html', {'users': users})
+    return render(request, 'app/user/user_list.html', {'users': users})
 
 @login_required
 def user_add(request):
@@ -568,7 +568,7 @@ def user_add(request):
             return redirect('user_list')
     else:
         form = CustomUserCreationForm()
-    return render(request, 'app/user_form.html', {'form': form})
+    return render(request, 'app/user/user_form.html', {'form': form})
 
 @login_required
 def user_edit(request, pk):
@@ -581,7 +581,7 @@ def user_edit(request, pk):
             return redirect('user_list')
     else:
         form = UserEditForm(instance=user_obj)
-    return render(request, 'app/user_form.html', {'form': form, 'title': 'Edit'})
+    return render(request, 'app/user/user_form.html', {'form': form, 'title': 'Edit'})
 @login_required
 def user_delete(request, pk):
     user = get_object_or_404(User, pk=pk)
@@ -589,7 +589,7 @@ def user_delete(request, pk):
         user.delete()
         messages.success(request, 'User deleted.')
         return redirect('user_list')
-    return render(request, 'app/user_confirm_delete.html', {'user': user})
+    return render(request, 'app/user/user_confirm_delete.html', {'user': user})
 
 @login_required
 def user_reset_password(request, pk):
@@ -602,7 +602,7 @@ def user_reset_password(request, pk):
             return redirect('user_list')
     else:
         form = SetPasswordForm(user)
-    return render(request, 'app/user_reset_password.html',
+    return render(request, 'app/user/user_reset_password.html',
                   {'form': form, 'user_obj': user})
 
 
@@ -618,7 +618,7 @@ def purchase_list(request):
     STATUS_KEYS = ['PO_RAISED', 'PO_APPROVED', 'SHIPPED', 'DELIVERED', 'INWARD_DONE']
     summary = {k: status_totals.get(k, 0) for k in STATUS_KEYS}
 
-    return render(request, 'app/purchase_list.html', {
+    return render(request, 'app/purchase/purchase_list.html', {
         'orders': orders,
         'summary': summary,
     })
@@ -637,7 +637,7 @@ def add_purchase(request):
         return redirect('purchase_list')
     products = Product.objects.all()
     vendors  = Vendor.objects.all()
-    return render(request, 'app/add_purchase.html', {'products': products, 'vendors': vendors})
+    return render(request, 'app/purchase/add_purchase.html', {'products': products, 'vendors': vendors})
 
 @login_required
 def edit_purchase(request, pk):
@@ -653,7 +653,7 @@ def edit_purchase(request, pk):
         return redirect('purchase_list')
     products = Product.objects.all()
     vendors  = Vendor.objects.all()
-    return render(request, 'app/edit_purchase.html',
+    return render(request, 'app/purchase/edit_purchase.html',
                   {'order': order, 'products': products, 'vendors': vendors, 'status_choices': PurchaseOrder.STATUS_CHOICES})
 
 @login_required
@@ -665,4 +665,11 @@ def delete_purchase(request, pk):
         messages.success(request, f"Purchase order (PO_ID: {order_id}) deleted successfully!",
                          extra_tags="auto-dismiss page-specific")
         return redirect('purchase_list')
-    return render(request, 'app/delete_purchase.html', {'order': order})
+    return render(request, 'app/purchase/delete_purchase.html', {'order': order})
+
+@login_required
+def print_purchase_order(request, pk):
+    po = get_object_or_404(PurchaseOrder.objects.select_related('product', 'vendor'), pk=pk)
+    total = po.quantity * po.product.price
+    return render(request, 'app/purchase/purchase_print.html',
+                  {'po': po, 'total': total})

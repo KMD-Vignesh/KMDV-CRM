@@ -1,0 +1,60 @@
+{% extends 'app/base/base.html' %} {% load humanize %} {% block content %}
+{% load custom_filters %}
+  {% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+      <p style="color: green;">{{ message }}</p>
+    </div>
+  {% endfor %}
+{% endif %}
+<div class="page-header">
+  <h1>Products</h1>
+  <a class="btn-add" href="{% url 'add_product' %}">Add Product</a>
+</div>
+
+<table class="dv-table">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Price</th>
+      <th>Category</th>
+      <th>Description</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for product in products %}
+    <tr>
+      <td>{{ product.name|title }}</td>
+      <td>₹{{ product.price|floatformat:2|indian_comma }}</td>
+      <td>{{ product.category.name|title }}</td>
+      <td>
+        {{ product.description|default:"No description"|truncatewords:12 }}
+      </td>
+      <td class="actions">
+        <a class="btn" href="{% url 'edit_product' product.pk %}">Edit</a>
+        <a class="btn danger" href="{% url 'delete_product' product.pk %}"
+          >Delete</a
+        >
+      </td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="5" style="text-align: center">No products available.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<script>
+  document.querySelectorAll("ul li").forEach((li) => {
+    li.addEventListener(
+      "mouseover",
+      () => (li.style.backgroundColor = "#d5e8f5")
+    );
+    li.addEventListener(
+      "mouseout",
+      () => (li.style.backgroundColor = "#ecf0f1")
+    );
+  });
+</script>
+{% endblock %}

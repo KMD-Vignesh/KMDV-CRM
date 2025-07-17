@@ -1,0 +1,40 @@
+{% extends 'app/base/base.html' %}
+{% block content %}
+<div class="form-wrapper">
+  <h1>Edit Order</h1>
+
+  <form class="form-card" method="post">
+    {% csrf_token %}
+
+    <div class="form-group">
+      <label>Product:</label>
+      <select name="product" class="form-control" required>
+        {% for prod in products %}
+          <option value="{{ prod.id }}" {% if prod.id == order.product.id %}selected{% endif %}>
+            {{ prod.name|title }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Vendor:</label>
+      <select name="vendor" class="form-control" required>
+        {% for vend in vendors %}
+          <option value="{{ vend.id }}" {% if vend.id == order.vendor.id %}selected{% endif %}>
+            {{ vend.name|title }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Quantity:</label>
+      <input type="number" name="qty" class="form-control" value="{{ order.quantity }}" required>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Update</button>
+    <a href="{% url 'order_list' %}" class="btn btn-secondary">Back</a>
+  </form>
+</div>
+{% endblock %}

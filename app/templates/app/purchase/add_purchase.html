@@ -1,0 +1,12 @@
+{% extends 'app/base/base.html' %}
+{% block content %}
+<div class="form-wrapper">
+  <h1>Raise Purchase Order</h1>
+  <form class="form-card" method="post">
+    {% csrf_token %}
+    {% include 'app/purchase/_purchase_form_fields.html' %}
+    <button type="submit" class="btn btn-primary">Create PO</button>
+    <a href="{% url 'purchase_list' %}" class="btn btn-secondary">Back</a>
+  </form>
+</div>
+{% endblock %}

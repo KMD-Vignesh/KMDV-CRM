@@ -1,0 +1,20 @@
+{% extends 'app/base/base.html' %}
+{% block content %}
+<div class="form-wrapper">
+  <h1>Edit Purchase Order #{{ order.id }}</h1>
+  <form class="form-card" method="post">
+    {% csrf_token %}
+    {% include 'app/purchase/_purchase_form_fields.html' %}
+    <div class="form-group">
+      <label>Status:</label>
+      <select name="status" class="form-control" required>
+        {% for val, label in status_choices %}
+          <option value="{{ val }}" {% if val == order.status %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Save changes</button>
+    <a href="{% url 'purchase_list' %}" class="btn btn-secondary">Back</a>
+  </form>
+</div>
+{% endblock %}

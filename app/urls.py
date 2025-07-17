@@ -37,5 +37,6 @@ urlpatterns = [
     path('purchase/add/',      views.add_purchase,    name='add_purchase'),
     path('purchase/<int:pk>/edit/', views.edit_purchase, name='edit_purchase'),
     path('purchase/<int:pk>/delete/', views.delete_purchase, name='delete_purchase'),
+    path('purchase/<int:pk>/print/', views.print_purchase_order, name='print_purchase_order'),
 
 ]
