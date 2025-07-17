@@ -1,24 +1,42 @@
 {% extends 'app/base.html' %} {% load humanize static %} {% block content %}
+{% load custom_filters %}
 
 <div class="dashboard">
 
   <!-- ---------- KPI ROW ---------- -->
-  <section class="kpi-row">
-    <div class="kpi-card">
-      <h3>Products</h3>
-      <p>{{ products_count|default:"0" }}</p>
-    </div>
+<section class="kpi-row">
+  <div class="kpi-card">
+    <h3>Products</h3>
+    <p>{{ products_count|default:"0" }}</p>
+  </div>
 
-    <div class="kpi-card">
-      <h3>Total Orders</h3>
-      <p>{{ total_orders|default:"0" }}</p>
-    </div>
+  <div class="kpi-card">
+    <h3>Total Orders</h3>
+    <p>{{ total_orders|default:"0" }}</p>
+  </div>
 
-    <div class="kpi-card">
-      <h3>Total Stock</h3>
-      <p>{{ total_stock|default:"0" }}</p>
-    </div>
-  </section>
+  <div class="kpi-card">
+    <h3>Total Stock</h3>
+    <p>{{ total_stock|default:"0" }}</p>
+  </div>
+
+  <div class="kpi-card">
+    <h3>Total Inward Qty</h3>
+    <p>{{ total_inward_qty|default:"0" }}</p>
+  </div>
+</section>
+<section class="kpi-row">
+
+  <div class="kpi-card">
+    <h3>Total Order Price</h3>
+    <p>₹{{ total_order_price|floatformat:2|indian_comma|default:"0.00" }}</p>
+  </div>
+
+  <div class="kpi-card">
+    <h3>Total Stock Price</h3>
+    <p>₹{{ total_stock_price|floatformat:2|indian_comma|default:"0.00" }}</p>
+  </div>
+</section>
 
   <!-- ---------- SUMMARY CARDS ---------- -->
   <section class="grid-2">

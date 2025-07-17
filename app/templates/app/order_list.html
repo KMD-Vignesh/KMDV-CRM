@@ -19,10 +19,10 @@
 
 <div class="page-header">
     {% if orders %}
-        <p>Total Orders: <strong>{{ orders_total.total_quantity }}</strong></p>
-        <p>Active Orders: <strong>{{ orders_total.active_count }}</strong></p>
-        <p>Cancelled Orders: <strong>{{ orders_total.cancelled_count }}</strong></p>
-        <p>Total Price: <strong>₹{{ orders_total.total_price|floatformat:2|indian_comma }}</strong></p>
+        <p>Total Orders: <strong style="color: #245c9c;">{{ orders_total.total_quantity }}</strong></p>
+        <p>Active Orders: <strong style="color: #2e8652;">{{ orders_total.active_count }}</strong></p>
+        <p>Cancelled Orders: <strong style="color: #e74c3c;">{{ orders_total.cancelled_count }}</strong></p>
+        <p>Total Price: <strong style="color: #245c9c;">₹{{ orders_total.total_price|floatformat:2|indian_comma }}</strong></p>
     {% else %}
         <p>No orders available.</p>
     {% endif %}

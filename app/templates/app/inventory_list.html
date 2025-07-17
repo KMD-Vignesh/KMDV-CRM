@@ -17,9 +17,9 @@
 </div>
 
 <div class="page-header">
-  <p>Total Inward Quantity: <strong>{{ total_inward_qty }}</strong></p>
-  <p>Total Current Stock: <strong>{{ total_current_stock }}</strong></p>
-  <p>Total Price: <strong>₹{{ total_price|floatformat:2|indian_comma }}</strong></p>
+  <p>Total Current Stock: <strong style="color: #245c9c;">{{ total_current_stock }}</strong></p>
+  <p>Total Inward Quantity: <strong style="color: #2e8652;">{{ total_inward_qty }}</strong></p>
+  <p>Total CS Price: <strong style="color: #245c9c;">₹{{ total_price|floatformat:2|indian_comma }}</strong></p>
 </div>
 
 <table class="dv-table">

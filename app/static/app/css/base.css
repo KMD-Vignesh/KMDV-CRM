@@ -102,7 +102,7 @@ nav .logo img {
   transform: translateY(15%);
   display: block;
   height: 15px;
-  width: auto;
+  width: 75px;
   border: 1px solid #fff; /* white 2-pixel border */
   border-radius: 2px; /* optional rounded corners */
   padding: 1px; /* optional inner spacing */

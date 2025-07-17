@@ -14,12 +14,15 @@ from django.contrib.auth.forms import SetPasswordForm
 from django.utils.dateparse import parse_date
 from decimal import Decimal, DivisionByZero, InvalidOperation
 
+
 @login_required
 def dashboard(request):
     products_count = Product.objects.count()
+
     inventory_summary = list(
         Inventory.objects.values("product__name").annotate(total=Sum("stock_quantity"))
     )
+
     products = Product.objects.all()
     categories = Category.objects.all()
     inventory = Inventory.objects.all()
@@ -34,6 +37,19 @@ def dashboard(request):
     total_stock = Inventory.objects.aggregate(t=Sum("stock_quantity"))["t"] or 0
     total_orders = Order.objects.aggregate(total=Sum("quantity"))["total"] or 0
 
+    # NEW / UPDATED AGGREGATES
+    total_inward_qty = Inventory.objects.aggregate(
+        total=Sum("stock_quantity")
+    )["total"] or 0
+
+    total_order_price = Order.objects.aggregate(
+        total=Sum(F("quantity") * F("product__price"))
+    )["total"] or 0
+
+    total_stock_price = Inventory.objects.aggregate(
+        total=Sum(F("stock_quantity") * F("product__price"))
+    )["total"] or 0
+
     context = {
         "products_count": products_count,
         "orders_count": orders_count,
@@ -44,6 +60,9 @@ def dashboard(request):
         "inventory": inventory,
         "total_stock": total_stock,
         "total_orders": total_orders,
+        "total_inward_qty": total_inward_qty,
+        "total_order_price": total_order_price,
+        "total_stock_price": total_stock_price,
     }
 
     return render(request, "app/dashboard.html", context)
@@ -237,11 +256,11 @@ def add_inventory(request):
         vendor_id = request.POST["vendor"]
         qty = request.POST["qty"]
         Inventory.objects.create(
-            product_id=product_id, vendor_id=vendor_id, stock_quantity=qty
+            product_id=product_id, vendor_id=vendor_id, stock_quantity=qty, inward_qty=qty
         )
         messages.success(
             request,
-            f"Inventory for Product - {product_id} for Vendor - {vendor_id} created successfully!",
+            f"Inventory Qty {qty} for Product({product_id}) for Vendor({vendor_id}) created successfully!",
             extra_tags="auto-dismiss page-specific",
         )
         return redirect("inventory_list")
