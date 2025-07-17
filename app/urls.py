@@ -33,5 +33,9 @@ urlpatterns = [
     path('accounts/<int:pk>/edit/',   views.user_edit,   name='user_edit'),
     path('accounts/<int:pk>/delete/', views.user_delete, name='user_delete'),
     path('accounts/<int:pk>/reset-password/', views.user_reset_password, name='user_reset_password'),
+    path('purchase/',          views.purchase_list,   name='purchase_list'),
+    path('purchase/add/',      views.add_purchase,    name='add_purchase'),
+    path('purchase/<int:pk>/edit/', views.edit_purchase, name='edit_purchase'),
+    path('purchase/<int:pk>/delete/', views.delete_purchase, name='delete_purchase'),
 
 ]

@@ -83,14 +83,6 @@ nav button.nav-a:hover {
 nav button.nav-a:focus {
   outline: none; /* Remove focus outline for consistency */
 }
-.user-welcome {
-  float: right;
-  /*color: #FD841A; */
-  color: #fd841a;
-  font-weight: bold;
-  margin-left: 20px;
-  opacity: 0.5;
-}
 
 nav .logo {
   margin-right: 1rem;
@@ -106,4 +98,46 @@ nav .logo img {
   border: 1px solid #fff; /* white 2-pixel border */
   border-radius: 2px; /* optional rounded corners */
   padding: 1px; /* optional inner spacing */
+}
+
+
+/* --- dropdown wrapper --- */
+.user-welcome   { 
+  float: right;
+  /*color: #FD841A; */
+  color: #fd841a;
+  font-weight: bold;
+  margin-left: 20px;
+  position: relative; 
+  cursor: pointer; 
+}
+
+.user-dropdown  {
+  position: absolute; top: 100%; right: 0; left: auto;
+  display: none; flex-direction: column;
+  background-color: #2c3e50;
+  border-radius: 4px; padding: 6px 0;
+  min-width: 90px; z-index: 10;
+  overflow: hidden; 
+}
+.user-welcome:hover .user-dropdown { display: flex; }
+
+/* --- shared style for Profile & Logout --- */
+.dropdown-link,
+.logout-btn {
+  all: unset;                       /* strip nav / button defaults */
+  display: block;
+  color: #ecf0f1;
+  font-size: 0.9rem;
+  padding: 6px 12px;
+  width: 100%;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.2s;
+}
+
+.dropdown-link:hover,
+.logout-btn:hover {
+  background-color: #34495e;
+  color: #ecf0f1;   /* override nav a:hover #fd841a */
 }

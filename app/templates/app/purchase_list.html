@@ -1,0 +1,48 @@
+{% extends 'app/base.html' %}
+{% load custom_filters %}
+
+{% block content %}
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            <p style="color: green;">{{ message }}</p>
+        </div>
+    {% endfor %}
+{% endif %}
+<div class="page-header">
+    <h1>Purchase Orders</h1>
+    <a class="btn-add" href="{% url 'add_purchase' %}">New Purchase</a>
+</div>
+<div class="page-header">
+  <p>PO Raised: <strong style="color:#245c9c;">{{ summary.PO_RAISED }}</strong></p>
+  <p>PO Approved: <strong style="color:#2e8652;">{{ summary.PO_APPROVED }}</strong></p>
+  <p>Shipped: <strong style="color:#245c9c;">{{ summary.SHIPPED }}</strong></p>
+  <p>Delivered: <strong style="color:#d9534f;">{{ summary.DELIVERED }}</strong></p>
+  <p>Inward Done: <strong style="color:#5cb85c;">{{ summary.INWARD_DONE }}</strong></p>
+</div>
+<table class="dv-table">
+  <thead>
+    <tr>
+      <th>ID</th><th>Product</th><th>Vendor</th><th>Qty</th><th>Status</th><th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for o in orders %}
+    <tr>
+      <td>{{ o.id }}</td>
+      <td>{{ o.product.name|title }}</td>
+      <td>{{ o.vendor.name|title }}</td>
+      <td>{{ o.quantity }}</td>
+      <td>{{ o.get_status_display }}</td>
+        <td class="actions">
+        <a href="{% url 'edit_purchase' o.pk %}" class="btn">Edit</a>
+        <a href="{% url 'delete_purchase' o.pk %}" class="btn danger">Delete</a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="6">No purchase orders yet.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

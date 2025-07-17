@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 
 from .forms import CustomUserCreationForm, UserEditForm, UserUpdateForm
-from .models import Category, Inventory, Order, Product, UserProfile, Vendor
+from .models import Category, Inventory, Order, Product, PurchaseOrder, UserProfile, Vendor
 from django.contrib.auth.forms import SetPasswordForm
 from django.utils.dateparse import parse_date
 from decimal import Decimal, DivisionByZero, InvalidOperation
@@ -260,7 +260,7 @@ def add_inventory(request):
         )
         messages.success(
             request,
-            f"Inventory Qty {qty} for Product({product_id}) for Vendor({vendor_id}) created successfully!",
+            f"Inventory Qty {qty} for (Product:{product_id},Vendor:{vendor_id}) created successfully!",
             extra_tags="auto-dismiss page-specific",
         )
         return redirect("inventory_list")
@@ -281,7 +281,7 @@ def edit_inventory(request, pk):
         inventory.save()
         messages.success(
             request,
-            f"Inventory for Product - {inventory.product.name} for Vendor - {inventory.vendor.name} updated successfully!",
+            f"Inventory Product - {inventory.product.name}, Vendor - {inventory.vendor.name} updated successfully!",
             extra_tags="auto-dismiss page-specific",
         )
         return redirect("inventory_list")
@@ -301,7 +301,7 @@ def delete_inventory(request, pk):
         inventory.delete()
         messages.success(
             request,
-            f"Inventory for Product - {inventory.product.name} for Vendor - {inventory.vendor.name} deleted successfully!",
+            f"Inventory Product - {inventory.product.name}, Vendor - {inventory.vendor.name} deleted successfully!",
             extra_tags="auto-dismiss page-specific",
         )
         return redirect("inventory_list")
@@ -604,3 +604,65 @@ def user_reset_password(request, pk):
         form = SetPasswordForm(user)
     return render(request, 'app/user_reset_password.html',
                   {'form': form, 'user_obj': user})
+
+
+@login_required
+def purchase_list(request):
+    orders = PurchaseOrder.objects.select_related('product', 'vendor')
+
+    # ---- summary cards ----
+    status_totals = dict(
+        orders.values('status').annotate(total=Sum('quantity')).values_list('status', 'total')
+    )
+    # make sure every status has a value (0 if none)
+    STATUS_KEYS = ['PO_RAISED', 'PO_APPROVED', 'SHIPPED', 'DELIVERED', 'INWARD_DONE']
+    summary = {k: status_totals.get(k, 0) for k in STATUS_KEYS}
+
+    return render(request, 'app/purchase_list.html', {
+        'orders': orders,
+        'summary': summary,
+    })
+
+@login_required
+def add_purchase(request):
+    if request.method == 'POST':
+        PurchaseOrder.objects.create(
+            product_id = request.POST['product'],
+            vendor_id  = request.POST['vendor'],
+            quantity   = request.POST['qty'],
+            status     = 'PO_RAISED'  # default
+        )
+        messages.success(request, f"Purchase order (ProductID: {request.POST['product']}, VendorID: {request.POST['vendor']}) created successfully!",
+                         extra_tags="auto-dismiss page-specific")
+        return redirect('purchase_list')
+    products = Product.objects.all()
+    vendors  = Vendor.objects.all()
+    return render(request, 'app/add_purchase.html', {'products': products, 'vendors': vendors})
+
+@login_required
+def edit_purchase(request, pk):
+    order = get_object_or_404(PurchaseOrder, pk=pk)
+    if request.method == 'POST':
+        order.product_id = request.POST['product']
+        order.vendor_id  = request.POST['vendor']
+        order.quantity   = request.POST['qty']
+        order.status     = request.POST['status']
+        order.save()
+        messages.success(request, f"Purchase order (PO_ID: {order.id}) updated successfully!",
+                         extra_tags="auto-dismiss page-specific")
+        return redirect('purchase_list')
+    products = Product.objects.all()
+    vendors  = Vendor.objects.all()
+    return render(request, 'app/edit_purchase.html',
+                  {'order': order, 'products': products, 'vendors': vendors, 'status_choices': PurchaseOrder.STATUS_CHOICES})
+
+@login_required
+def delete_purchase(request, pk):
+    order = get_object_or_404(PurchaseOrder, pk=pk)
+    order_id = f"{order.id}"
+    if request.method == 'POST':
+        order.delete()
+        messages.success(request, f"Purchase order (PO_ID: {order_id}) deleted successfully!",
+                         extra_tags="auto-dismiss page-specific")
+        return redirect('purchase_list')
+    return render(request, 'app/delete_purchase.html', {'order': order})

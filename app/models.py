@@ -80,3 +80,22 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.role}"
+
+class PurchaseOrder(models.Model):
+    STATUS_CHOICES = [
+        ('PO_RAISED',  'PO Raised'),
+        ('PO_APPROVED','PO Approved'),
+        ('SHIPPED',    'Shipped'),
+        ('DELIVERED',  'Delivered'),
+        ('INWARD_DONE','Inward Done'),
+    ]
+
+    product         = models.ForeignKey('Product', on_delete=models.CASCADE)
+    vendor          = models.ForeignKey('Vendor', on_delete=models.SET_NULL, null=True, blank=True)
+    quantity        = models.PositiveIntegerField()
+    status          = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PO_RAISED')
+    created_at      = models.DateTimeField(auto_now_add=True)
+    updated_at      = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"PO #{self.pk} — {self.product.name} ({self.quantity})"
