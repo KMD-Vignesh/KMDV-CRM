@@ -31,13 +31,22 @@ class Product(models.Model):
 
 
 class Inventory(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    vendor = models.ForeignKey(Vendor, on_delete=models.SET_NULL, null=True, blank=True)
+    STATUS_CHOICES = [
+        ('INWARD_REQUESTED', 'Requested'),
+        ('INWARD_APPROVED',  'Approved'),
+        ('INWARD_REJECTED',  'Rejected'),
+        ('INWARD_COMPLETED',  'Completed'),
+    ]
+
+    product        = models.ForeignKey(Product, on_delete=models.CASCADE)
+    vendor         = models.ForeignKey(Vendor, on_delete=models.SET_NULL, null=True, blank=True)
     stock_quantity = models.PositiveIntegerField()
-    last_updated = models.DateTimeField(auto_now=True)
     inward_qty     = models.PositiveIntegerField(default=0)
+    status         = models.CharField(max_length=20, choices=STATUS_CHOICES, default='INWARD_REQUESTED')
+    last_updated   = models.DateTimeField(auto_now=True)
+
     def __str__(self):
-        return f"{self.product.name} - {self.stock_quantity}"
+        return f"{self.product.name} - {self.stock_quantity} ({self.get_status_display()})"
 
 
 class Order(models.Model):
@@ -95,11 +104,12 @@ class UserProfile(models.Model):
 
 class PurchaseOrder(models.Model):
     STATUS_CHOICES = [
-        ('PO_RAISED',  'PO Raised'),
-        ('PO_APPROVED','PO Approved'),
-        ('SHIPPED',    'Shipped'),
-        ('DELIVERED',  'Delivered'),
-        ('INWARD_DONE','Inward Done'),
+        ('PO_RAISED',  'Raised'),
+        ('PO_APPROVED','Approved'),
+        ('PO_REJECTED','Rejected'),
+        ('PO_SHIPPED',    'Shipped'),
+        ('PO_DELIVERED',  'Delivered'),
+        ('INWARD_REQUESTED','Inward Requested'),
     ]
 
     product         = models.ForeignKey('Product', on_delete=models.CASCADE)

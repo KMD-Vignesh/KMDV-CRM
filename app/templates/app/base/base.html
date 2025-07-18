@@ -14,9 +14,9 @@
         </a>
         {% if user.is_authenticated %}
         <a href="{% url 'dashboard' %}">Dashboard</a>
-        <a href="{% url 'vendor_list' %}">Vendors</a>
         <a href="{% url 'category_list' %}">Categories</a>
         <a href="{% url 'product_list' %}">Products</a>
+        <a href="{% url 'vendor_list' %}">Vendors</a>
         <a href="{% url 'purchase_list' %}">Purchase</a>
         <a href="{% url 'inventory_list' %}">Inventory</a>
         <a href="{% url 'order_list' %}">Orders</a>

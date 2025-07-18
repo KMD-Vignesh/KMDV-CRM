@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import F, Q, Sum, DecimalField, ExpressionWrapper
+from django.db.models.manager import BaseManager
 from django.http import JsonResponse    
 from django.shortcuts import get_object_or_404, redirect, render
 
@@ -271,7 +272,7 @@ def add_inventory(request):
         vendor_id = request.POST["vendor"]
         qty = request.POST["qty"]
         Inventory.objects.create(
-            product_id=product_id, vendor_id=vendor_id, stock_quantity=qty, inward_qty=qty
+            product_id=product_id, vendor_id=vendor_id, stock_quantity=qty, inward_qty=qty, status=request.POST.get("status", "INWARD_REQUESTED")
         )
         messages.success(
             request,
@@ -279,11 +280,16 @@ def add_inventory(request):
             extra_tags="auto-dismiss page-specific",
         )
         return redirect("inventory_list")
-    products = Product.objects.all()
-    vendors = Vendor.objects.all()
+
     return render(
-        request, "app/inventory/add_inventory.html", {"products": products, "vendors": vendors}
-    )
+    request,
+    "app/inventory/add_inventory.html",
+    {
+        "products": Product.objects.all(),
+        "vendors": Vendor.objects.all(),
+        "status_choices": Inventory.STATUS_CHOICES,
+    }
+)
 
 
 @login_required
@@ -293,6 +299,7 @@ def edit_inventory(request, pk):
         inventory.product_id = request.POST["product"]
         inventory.vendor_id = request.POST["vendor"]
         inventory.stock_quantity = request.POST["qty"]
+        inventory.status = request.POST.get("status", "INWARD_REQUESTED")
         inventory.save()
         messages.success(
             request,
@@ -300,12 +307,15 @@ def edit_inventory(request, pk):
             extra_tags="auto-dismiss page-specific",
         )
         return redirect("inventory_list")
-    products = Product.objects.all()
-    vendors = Vendor.objects.all()
     return render(
-        request,
-        "app/inventory/edit_inventory.html",
-        {"inventory": inventory, "products": products, "vendors": vendors},
+    request,
+    "app/inventory/edit_inventory.html",
+    {
+        "inventory": inventory,
+        "products": Product.objects.all(),
+        "vendors": Vendor.objects.all(),
+        "status_choices": Inventory.STATUS_CHOICES,
+    }
     )
 
 
@@ -629,21 +639,34 @@ def user_reset_password(request, pk):
                   {'form': form, 'user_obj': user})
 
 
+
 @login_required
 def purchase_list(request):
-    orders = PurchaseOrder.objects.select_related('product', 'vendor')
+    orders = (
+        PurchaseOrder.objects
+        .select_related('product', 'vendor')
+        .annotate(
+            total_price=ExpressionWrapper(
+                F('quantity') * F('product__price'),
+                output_field=DecimalField(max_digits=12, decimal_places=2)
+            )
+        )
+    )
 
-    # ---- summary cards ----
+    # existing status totals
     status_totals = dict(
         orders.values('status').annotate(total=Sum('quantity')).values_list('status', 'total')
     )
-    # make sure every status has a value (0 if none)
-    STATUS_KEYS = ['PO_RAISED', 'PO_APPROVED', 'SHIPPED', 'DELIVERED', 'INWARD_DONE']
+    STATUS_KEYS = ['PO_RAISED', 'PO_APPROVED', 'PO_REJECTED', 'PO_SHIPPED', 'PO_DELIVERED', 'INWARD_REQUESTED']
     summary = {k: status_totals.get(k, 0) for k in STATUS_KEYS}
+
+    # NEW: grand total
+    grand_total = orders.aggregate(total=Sum('total_price'))['total'] or 0
 
     return render(request, 'app/purchase/purchase_list.html', {
         'orders': orders,
         'summary': summary,
+        'grand_total': grand_total,
     })
 
 @login_required

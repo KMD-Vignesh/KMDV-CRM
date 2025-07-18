@@ -41,6 +41,20 @@
   background: #27ae60;
 }
 
+/*  Purchase-Order badges  */
+.dv-table .badge.po-raised   { background:#3498db; }
+.dv-table .badge.po-approved { background:#8e44ad; }
+.dv-table .badge.po-rejected { background:#e74c3c; }
+.dv-table .badge.po-shipped  { background:#f39c12; }
+.dv-table .badge.po-delivered{ background:#d55bd3; }
+.dv-table .badge.po-inward-requested { background:#27ae60; }
+
+/*  Inventory badges  */
+.dv-table .badge.inventory-requested  { background:#3498db; }
+.dv-table .badge.inventory-approved   { background:#8e44ad; }
+.dv-table .badge.inventory-rejected   { background:#e74c3c; }
+.dv-table .badge.inventory-completed  { background:#27ae60; }
+
 .dv-table .btn {
   display: inline-block;
   padding: 4px 8px;

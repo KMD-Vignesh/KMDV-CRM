@@ -16,16 +16,26 @@
     <a class="btn-add" href="{% url 'add_purchase' %}">New Purchase</a>
 </div>
 <div class="page-header">
-  <p>PO Raised: <strong style="color:#245c9c;">{{ summary.PO_RAISED }}</strong></p>
-  <p>PO Approved: <strong style="color:#2e8652;">{{ summary.PO_APPROVED }}</strong></p>
-  <p>Shipped: <strong style="color:#245c9c;">{{ summary.SHIPPED }}</strong></p>
-  <p>Delivered: <strong style="color:#d9534f;">{{ summary.DELIVERED }}</strong></p>
-  <p>Inward Done: <strong style="color:#5cb85c;">{{ summary.INWARD_DONE }}</strong></p>
+  <p>PO&nbsp;Raised: <strong style="color:#245c9c;">{{ summary.PO_RAISED }}</strong></p>
+  <p>PO&nbsp;Approved: <strong style="color:#2e8652;">{{ summary.PO_APPROVED }}</strong></p>
+  <p>PO&nbsp;Rejected: <strong style="color:#d9534f;">{{ summary.PO_REJECTED }}</strong></p>
+  <p>PO&nbsp;Shipped: <strong style="color:#245c9c;">{{ summary.PO_SHIPPED }}</strong></p>
+  <p>PO&nbsp;Delivered: <strong style="color:#d9534f;">{{ summary.PO_DELIVERED }}</strong></p>
+  <p>Inward&nbsp;Requested: <strong style="color:#5cb85c;">{{ summary.INWARD_REQUESTED }}</strong></p>
+  <p>Total&nbsp;PO&nbsp;Price: <strong style="color:#245c9c;">₹{{ grand_total|floatformat:2|indian_comma }}</strong></p>
 </div>
 <table class="dv-table">
   <thead>
     <tr>
-      <th>ID</th><th>Product&nbsp;ID</th><th>Product&nbsp;Name</th><th>Vendo&nbsp;ID</th><th>Vendor&nbsp;Name</th><th>Qty</th><th>Status</th><th>Actions</th>
+      <th>ID</th>
+      <th>Product&nbsp;ID</th>
+      <th>Product&nbsp;Name</th>
+      <th>Vendo&nbsp;ID</th>
+      <th>Vendor&nbsp;Name</th>
+      <th>Qty</th>
+      <th>Total&nbsp;Price</th>
+      <th>PO&nbsp;Status</th>
+      <th>Actions</th>
     </tr>
   </thead>
   <tbody>
@@ -37,7 +47,10 @@
       <td>{{ o.vendor.vendor_id|title }}</td>
       <td>{{ o.vendor.name|title }}</td>
       <td>{{ o.quantity }}</td>
-      <td>{{ o.get_status_display }}</td>
+      <td>₹{{ o.total_price|floatformat:2|indian_comma }}</td> 
+      <td>
+  <span class="badge po-{{ o.get_status_display|lower|slugify }}">{{ o.get_status_display }}</span>
+</td>
         <td class="actions">
         <a href="{% url 'edit_purchase' o.pk %}" class="btn">Edit</a>
         <a href="{% url 'delete_purchase' o.pk %}" class="btn danger">Delete</a>

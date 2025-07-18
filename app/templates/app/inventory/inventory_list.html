@@ -19,7 +19,7 @@
 
 <div class="page-header">
   <p>Total Current Stock: <strong style="color: #245c9c;">{{ total_current_stock }}</strong></p>
-  <p>Total Inward Quantity: <strong style="color: #2e8652;">{{ total_inward_qty }}</strong></p>
+  <p>Total Inward Qty: <strong style="color: #2e8652;">{{ total_inward_qty }}</strong></p>
   <p>Total CS Price: <strong style="color: #245c9c;">₹{{ total_price|floatformat:2|indian_comma }}</strong></p>
 </div>
 
@@ -32,8 +32,8 @@
       <th>Current&nbsp;Qty</th>
       <th>Vendor&nbsp;ID</th>
       <th>Vendor&nbsp;Name</th>
-      <th>Last&nbsp;Updated</th>
       <th>Total&nbsp;Price</th>
+      <th>Inward&nbsp;Status</th>
       <th>Actions</th>
     </tr>
   </thead>
@@ -46,8 +46,12 @@
       <td>{{ item.stock_quantity }}</td>
       <td>{{ item.vendor.vendor_id|default:"N/A"|title }}</td>
       <td>{{ item.vendor.name|default:"N/A"|title }}</td>
-      <td>{{ item.last_updated|date:"F d, Y" }}</td>
       <td>₹{{ item.total_price|floatformat:2|indian_comma }}</td>
+      <td>
+  <span class="badge inventory-{{ item.get_status_display|lower }}">
+    {{ item.get_status_display }}
+  </span>
+</td>
       <td class="actions">
         <a class="btn" href="{% url 'edit_inventory' item.pk %}">Edit</a>
         <a class="btn danger" href="{% url 'delete_inventory' item.pk %}">Delete</a>
