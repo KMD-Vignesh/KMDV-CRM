@@ -22,11 +22,11 @@
         <tr>
           <th>ID</th>
           <th>Username</th>
-          <th>First&nbsp;Name</th>
-          <th>Last&nbsp;Name</th>
+          <th>Name</th>
           <th>Email</th>
-          <th>Staff</th>
-          <th>Superuser</th>
+          <th>Role</th>
+          <th>DOJ</th>
+          <th>Staff/Superuser</th>
           <th class="text-end">Actions</th>
         </tr>
       </thead>
@@ -35,22 +35,22 @@
           <tr>
             <td>{{ u.id }}</td>
             <td>{{ u.username }}</td>
-            <td>{{ u.first_name|default:"—" }}</td>
-            <td>{{ u.last_name|default:"—" }}</td>
+            <td>{{ u.first_name|default:"" }} {{ u.last_name|default:"" }}</td>
             <td>{{ u.email|default:"—" }}</td>
+            <td>{{ u.userprofile.get_role_display|default:"—" }}</td>
+            <td>{{ u.userprofile.date_of_join|default:"—"|date:"d-M-y" }}</td>
             <td>
               {% if u.is_staff %}
               <span class="badge active">Yes</span>
               {% else %}<span class="badge cancelled">No</span>
-              {% endif %}
-              </td>
-            <td>
+              {% endif %} /
               {% if u.is_superuser %}
                 <span class="badge active">Yes</span>
               {% else %}
                 <span class="badge cancelled">No</span>
               {% endif %}
-            </td>
+              </td>
+  
             
             <td class="actions">
               <a class="btn" href="{% url 'user_edit' u.pk %}">Edit</a>

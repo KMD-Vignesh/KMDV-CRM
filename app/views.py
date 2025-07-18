@@ -577,7 +577,7 @@ get_user_model()
 
 @login_required
 def user_list(request):
-    users = User.objects.all().order_by('id')
+    users = User.objects.select_related('userprofile').all().order_by('id')
     return render(request, 'app/user/user_list.html', {'users': users})
 
 @login_required
@@ -604,6 +604,7 @@ def user_edit(request, pk):
     else:
         form = UserEditForm(instance=user_obj)
     return render(request, 'app/user/user_form.html', {'form': form, 'title': 'Edit'})
+
 @login_required
 def user_delete(request, pk):
     user = get_object_or_404(User, pk=pk)

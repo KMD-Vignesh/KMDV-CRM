@@ -74,14 +74,24 @@ class Order(models.Model):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    role = models.CharField(
-        max_length=50,
-        choices=[("admin", "Admin"), ("staff", "Staff"), ("viewer", "Viewer")],
-    )
-    permissions = models.JSONField(default=dict)
+
+    ROLE_CHOICES = [
+        ('admin',           'Administrator'),
+        ('vendor_manager',   'Vendor Manager'),
+        ('vendor_team',      'Vendor Management Team'),
+        ('customer_manager', 'Customer Manager'),
+        ('customer_team',    'Customer Management Team'),
+    ]
+    role = models.CharField(max_length=30, choices=ROLE_CHOICES, default='customer_team')
+
+    date_of_birth = models.DateField(null=True, blank=True)
+    date_of_join  = models.DateField(null=True, blank=True)
+    designation   = models.CharField(max_length=100, blank=True)
+    work_location = models.CharField(max_length=100, blank=True)
+    address       = models.TextField(blank=True)
 
     def __str__(self):
-        return f"{self.user.username} - {self.role}"
+        return f"{self.user.username} – {self.get_role_display()}"
 
 class PurchaseOrder(models.Model):
     STATUS_CHOICES = [
