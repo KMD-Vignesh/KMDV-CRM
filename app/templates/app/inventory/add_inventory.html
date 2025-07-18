@@ -15,7 +15,7 @@
       <label>Product:</label>
       <select name="product" class="form-control" required>
         {% for prod in products %}
-        <option value="{{ prod.id }}">{{ prod.name|title }}</option>
+        <option value="{{ prod.id }}">{{ prod.name|title }}&nbsp;({{ prod.product_id|title }})</option>
         {% endfor %}
       </select>
     </div>
@@ -24,7 +24,7 @@
       <label>Vendor:</label>
       <select name="vendor" class="form-control" required>
         {% for vend in vendors %}
-        <option value="{{ vend.id }}">{{ vend.name|title }}</option>
+        <option value="{{ vend.id }}">{{ vend.name|title }}&nbsp;({{ vend.vendor_id|title }})</option>
         {% endfor %}
       </select>
     </div>

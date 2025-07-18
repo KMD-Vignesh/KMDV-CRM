@@ -11,21 +11,23 @@ class Category(models.Model):
 
 
 class Vendor(models.Model):
-    name = models.CharField(max_length=100)
-    address = models.TextField()
+    vendor_id = models.CharField(max_length=20,unique=True, verbose_name="Vendor ID")  
+    name      = models.CharField(max_length=100)
+    address   = models.TextField()
 
     def __str__(self):
-        return self.name
+        return f"{self.vendor_id} – {self.name}"
 
 
 class Product(models.Model):
-    name = models.CharField(max_length=100)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    description = models.TextField(blank=True)
+    product_id = models.CharField(max_length=20, unique=True, verbose_name="Product ID")
+    name       = models.CharField(max_length=100)
+    category   = models.ForeignKey(Category, on_delete=models.CASCADE)
+    price      = models.DecimalField(max_digits=10, decimal_places=2)
+    description= models.TextField(blank=True)
 
     def __str__(self):
-        return self.name
+        return f"{self.product_id} – {self.name}"
 
 
 class Inventory(models.Model):

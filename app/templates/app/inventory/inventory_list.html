@@ -26,10 +26,12 @@
 <table class="dv-table">
   <thead>
     <tr>
-      <th>Product</th>
+<th>Product&nbsp;ID</th>
+<th>Product&nbsp;Name</th>
       <th>Inward&nbsp;Qty</th>
-      <th>Current&nbsp;Stock</th>
-      <th>Vendor</th>
+      <th>Current&nbsp;Qty</th>
+      <th>Vendor&nbsp;ID</th>
+      <th>Vendor&nbsp;Name</th>
       <th>Last&nbsp;Updated</th>
       <th>Total&nbsp;Price</th>
       <th>Actions</th>
@@ -38,9 +40,11 @@
   <tbody>
     {% for item in inventory %}
     <tr>
-      <td>{{ item.product.name|title }}</td>
+<td>{{ item.product.product_id|title }}</td>
+<td>{{ item.product.name|title }}</td>
       <td>{{ item.inward_qty }}</td>
       <td>{{ item.stock_quantity }}</td>
+      <td>{{ item.vendor.vendor_id|default:"N/A"|title }}</td>
       <td>{{ item.vendor.name|default:"N/A"|title }}</td>
       <td>{{ item.last_updated|date:"F d, Y" }}</td>
       <td>₹{{ item.total_price|floatformat:2|indian_comma }}</td>

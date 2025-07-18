@@ -12,7 +12,7 @@
       <select name="product" class="form-control" required>
         {% for prod in products %}
           <option value="{{ prod.id }}" {% if prod.id == inventory.product.id %}selected{% endif %}>
-            {{ prod.name|title }}
+            {{ prod.name|title }}&nbsp;({{ prod.product_id|title }})
           </option>
         {% endfor %}
       </select>
@@ -23,7 +23,7 @@
       <select name="vendor" class="form-control" required>
         {% for vend in vendors %}
           <option value="{{ vend.id }}" {% if vend.id == inventory.vendor.id %}selected{% endif %}>
-            {{ vend.name|title }}
+            {{ vend.name|title }}&nbsp;({{ vend.vendor_id|title }})
           </option>
         {% endfor %}
       </select>

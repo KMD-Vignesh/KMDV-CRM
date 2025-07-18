@@ -2,7 +2,7 @@
   <label>Product:</label>
   <select name="product" class="form-control" required>
     {% for p in products %}
-      <option value="{{ p.id }}" {% if p.id == order.product.id|default:'' %}selected{% endif %}>{{ p.name|title }}</option>
+      <option value="{{ p.id }}" {% if p.id == order.product.id|default:'' %}selected{% endif %}>{{ p.name|title }}&nbsp;({{ p.product_id|title }})</option>
     {% endfor %}
   </select>
 </div>
@@ -11,7 +11,7 @@
   <label>Vendor:</label>
   <select name="vendor" class="form-control" required>
     {% for v in vendors %}
-      <option value="{{ v.id }}" {% if v.id == order.vendor.id|default:'' %}selected{% endif %}>{{ v.name|title }}</option>
+      <option value="{{ v.id }}" {% if v.id == order.vendor.id|default:'' %}selected{% endif %}>{{ v.name|title }}&nbsp;({{ v.vendor_id|title }})</option>
     {% endfor %}
   </select>
 </div>

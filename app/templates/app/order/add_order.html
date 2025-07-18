@@ -12,7 +12,7 @@
       <select id="product-select" name="product" class="form-control" required>
         <option value="">Select a product</option>
         {% for prod in products %}
-        <option value="{{ prod.id }}">{{ prod.name }}</option>
+        <option value="{{ prod.id }}">{{ prod.name|title }}&nbsp;({{ prod.product_id|title }})</option>
         {% endfor %}
       </select>
     </div>
@@ -67,7 +67,7 @@
               data.vendors.forEach((vendor) => {
                 const option = document.createElement("option");
                 option.value = vendor.id;
-                option.textContent = `${vendor.name} (Stock: ${vendor.stock})`;
+                option.textContent = `${vendor.name} (${vendor.vendor_id}, Stock: ${vendor.stock})`;
                 vendorSelect.appendChild(option);
               });
             } else {

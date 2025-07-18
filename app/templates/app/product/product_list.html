@@ -17,7 +17,8 @@
 <table class="dv-table">
   <thead>
     <tr>
-      <th>Name</th>
+      <th>Product&nbsp;ID</th>
+      <th>Product&nbsp;Name</th>
       <th>Price</th>
       <th>Category</th>
       <th>Description</th>
@@ -27,6 +28,7 @@
   <tbody>
     {% for product in products %}
     <tr>
+      <td>{{ product.product_id }}</td>
       <td>{{ product.name|title }}</td>
       <td>₹{{ product.price|floatformat:2|indian_comma }}</td>
       <td>{{ product.category.name|title }}</td>

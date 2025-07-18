@@ -15,7 +15,8 @@
 <table class="dv-table">
   <thead>
     <tr>
-      <th>Name</th>
+      <th>Vendor&nbsp;ID</th>
+      <th>Vendor&nbsp;Name</th>
       <th>Address</th>
       <th>Actions</th>
     </tr>
@@ -24,6 +25,7 @@
   <tbody>
     {% for vendor in vendors %}
     <tr>
+      <td>{{ vendor.vendor_id|title }}</td>
       <td>{{ vendor.name|title }}</td>
       <td>{{ vendor.address|default:"No address"|title }}</td>
       <td class="actions">

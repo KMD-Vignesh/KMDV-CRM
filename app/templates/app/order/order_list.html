@@ -43,10 +43,10 @@
                 <th>Actions</th>
             </tr>
             <tr class="filter-row">
-                <td><input type="text" name="order_id" value="{{ request.GET.order_id }}" class="form-control"></td>
-                <td><input type="text" name="product" value="{{ request.GET.product }}" class="form-control"></td>
-                <td><input type="number" name="quantity" value="{{ request.GET.quantity }}" class="form-control"></td>
-                <td><input type="text" name="vendor" value="{{ request.GET.vendor }}" class="form-control"></td>
+                <td><input type="text" name="order_id" value="{{ request.GET.order_id }}" class="form-control" placeholder="id"></td>
+                <td><input type="text" name="product" value="{{ request.GET.product }}" class="form-control" placeholder="name / id"></td>
+                <td><input type="number" name="quantity" value="{{ request.GET.quantity }}" class="form-control" placeholder="qty"></td>
+                <td><input type="text" name="vendor" value="{{ request.GET.vendor }}" class="form-control" placeholder="name / id"></td>
                 <td><input type="date" name="order_date" value="{{ request.GET.order_date }}" class="form-control"></td>
                 <td>
                     <select name="status" class="form-control">
@@ -66,10 +66,10 @@
             {% for order in orders %}
                 <tr>
                     <td>{{ order.id }}</td>
-                    <td>{{ order.product.name|title }}</td>
+                    <td style="white-space: nowrap;">{{ order.product.name|title }}&nbsp;<small style="color: rgb(18, 77, 117); font-size:x-small !important;">({{ order.product.product_id|upper }})</small></td>
                     <td>{{ order.quantity }}</td>
-                    <td>{{ order.vendor.name|default:"N/A"|title }}</td>
-                    <td>{{ order.order_date|date:"F d, Y" }}</td>
+                    <td style="white-space: nowrap;">{{ order.vendor.name|default:"N/A"|title }}&nbsp;<small style="color: rgb(18, 77, 117); font-size:x-small !important;">({{ order.vendor.vendor_id|upper }})</small></td>
+                    <td>{{ order.order_date|date:"d M Y" }}</td>
                     <td>
                         {% if order.is_cancelled %}
                             <span class="badge cancelled">Cancelled</span>

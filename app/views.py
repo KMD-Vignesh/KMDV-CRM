@@ -13,7 +13,7 @@ from .models import Category, Inventory, Order, Product, PurchaseOrder, UserProf
 from django.contrib.auth.forms import SetPasswordForm
 from django.utils.dateparse import parse_date
 from decimal import Decimal, DivisionByZero, InvalidOperation
-
+from django.db import IntegrityError
 
 @login_required
 def dashboard(request):
@@ -129,19 +129,21 @@ def product_list(request):
 @login_required
 def add_product(request):
     if request.method == "POST":
-        name = request.POST["name"]
-        category_id = request.POST["category"]
-        price = request.POST["price"]
-        description = request.POST.get("description", "")
+        pid = request.POST["product_id"].strip()
+        if Product.objects.filter(product_id__iexact=pid).exists():
+            messages.error(request, f"Product ID “{pid}” already exists!")
+            return redirect("add_product")
+
         Product.objects.create(
-            name=name, category_id=category_id, price=price, description=description
+            product_id  = pid,
+            name        = request.POST["name"],
+            category_id = request.POST["category"],
+            price       = request.POST["price"],
+            description = request.POST.get("description", "")
         )
-        messages.success(
-            request,
-            f"Product - {name} created successfully!",
-            extra_tags="auto-dismiss page-specific",
-        )
+        messages.success(request, f"Product {pid} created.")
         return redirect("product_list")
+
     categories = Category.objects.all()
     return render(request, "app/product/add_product.html", {"categories": categories})
 
@@ -150,21 +152,22 @@ def add_product(request):
 def edit_product(request, pk):
     product = get_object_or_404(Product, pk=pk)
     if request.method == "POST":
-        product.name = request.POST["name"]
+        pid = request.POST["product_id"].strip()
+        if Product.objects.filter(product_id__iexact=pid).exclude(pk=pk).exists():
+            messages.error(request, f"Product ID “{pid}” is already taken by another product!")
+            return redirect("edit_product", pk=pk)
+
+        product.product_id  = pid
+        product.name        = request.POST["name"]
         product.category_id = request.POST["category"]
-        product.price = request.POST["price"]
+        product.price       = request.POST["price"]
         product.description = request.POST.get("description", "")
         product.save()
-        messages.success(
-            request,
-            f"Product - {product.name} updated successfully!",
-            extra_tags="auto-dismiss page-specific",
-        )
+        messages.success(request, f"Product {pid} updated.")
         return redirect("product_list")
+
     categories = Category.objects.all()
-    return render(
-        request, "app/product/edit_product.html", {"product": product, "categories": categories}
-    )
+    return render(request, "app/product/edit_product.html", {"product": product, "categories": categories})
 
 
 @login_required
@@ -190,15 +193,22 @@ def vendor_list(request):
 @login_required
 def add_vendor(request):
     if request.method == "POST":
-        name = request.POST["name"]
+        vid     = request.POST["vendor_id"].strip()
+        name    = request.POST["name"]
         address = request.POST["address"]
-        Vendor.objects.create(name=name, address=address)
-        messages.success(
-            request,
-            f"Vendor - {name} created successfully!",
-            extra_tags="auto-dismiss page-specific",
-        )
-        return redirect("vendor_list")
+
+        if Vendor.objects.filter(vendor_id__iexact=vid).exists():
+            messages.error(request, f"Vendor ID “{vid}” already exists!")
+            return redirect("add_vendor")
+
+        try:
+            Vendor.objects.create(vendor_id=vid, name=name, address=address)
+            messages.success(request, f"Vendor {vid} created.")
+            return redirect("vendor_list")
+        except IntegrityError:
+            messages.error(request, f"Vendor ID “{vid}” already exists!")
+            return redirect("add_vendor")
+
     return render(request, "app/vendor/add_vendor.html")
 
 
@@ -206,17 +216,22 @@ def add_vendor(request):
 def edit_vendor(request, pk):
     vendor = get_object_or_404(Vendor, pk=pk)
     if request.method == "POST":
-        vendor.name = request.POST["name"]
-        vendor.address = request.POST["address"]
-        vendor.save()
-        messages.success(
-            request,
-            f"Vendor - {vendor.name} updated successfully!",
-            extra_tags="auto-dismiss page-specific",
-        )
-        return redirect("vendor_list")
-    return render(request, "app/vendor/edit_vendor.html", {"vendor": vendor})
+        vid     = request.POST["vendor_id"].strip()
+        name    = request.POST["name"]
+        address = request.POST["address"]
 
+        if Vendor.objects.filter(vendor_id__iexact=vid).exclude(pk=pk).exists():
+            messages.error(request, f"Vendor ID “{vid}” is already taken!")
+            return redirect("edit_vendor", pk=pk)
+
+        vendor.vendor_id = vid
+        vendor.name      = name
+        vendor.address   = address
+        vendor.save()
+        messages.success(request, f"Vendor {vid} updated.")
+        return redirect("vendor_list")
+
+    return render(request, "app/vendor/edit_vendor.html", {"vendor": vendor})
 
 @login_required
 def delete_vendor(request, pk):
@@ -316,17 +331,23 @@ def order_list(request):
     if order_id:
         query &= Q(id=order_id)
     
-    product_name = request.GET.get('product')
-    if product_name:
-        query &= Q(product__name__icontains=product_name)
+    product_q = request.GET.get('product')        
+    if product_q:
+        query &= (
+            Q(product__name__icontains=product_q) |
+            Q(product__product_id__icontains=product_q)
+        )
     
     quantity = request.GET.get('quantity')
     if quantity:
         query &= Q(quantity=quantity)
     
-    vendor_name = request.GET.get('vendor')
-    if vendor_name:
-        query &= Q(vendor__name__icontains=vendor_name)
+    vendor_q = request.GET.get('vendor')         # keep the same param name
+    if vendor_q:
+        query &= (
+            Q(vendor__name__icontains=vendor_q) |
+            Q(vendor__vendor_id__icontains=vendor_q)
+        )
     
     order_date = request.GET.get('order_date')
     if order_date:
@@ -342,7 +363,6 @@ def order_list(request):
     if total_price:
         try:
             total_price_decimal = Decimal(total_price)
-            # Filter by calculated total_price
             query &= Q(total_price=total_price_decimal)
         except (InvalidOperation, DivisionByZero):
             pass
@@ -457,6 +477,7 @@ def load_vendors(request):
     vendors = [
         {
             "id": row["vendor"],
+            "vendor_id": Vendor.objects.get(pk=row["vendor"]).vendor_id,
             "name": Vendor.objects.get(pk=row["vendor"]).name,
             "stock": row["total_stock"],
         }
@@ -491,14 +512,15 @@ def edit_order(request, pk):
         order.vendor_id = request.POST["vendor"]
         order.quantity = request.POST["qty"]
         order.save()
-        return redirect("order_list")
-    products = Product.objects.all()
-    vendors = Vendor.objects.all()
-    messages.success(
+        messages.success(
         request,
         f"Order - {order.id} updated successfully!",
         extra_tags="auto-dismiss page-specific",
     )
+        return redirect("order_list")
+    products = Product.objects.all()
+    vendors = Vendor.objects.all()
+
     return render(
         request,
         "app/order/edit_order.html",

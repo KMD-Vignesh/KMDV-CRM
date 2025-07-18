@@ -25,14 +25,16 @@
 <table class="dv-table">
   <thead>
     <tr>
-      <th>ID</th><th>Product</th><th>Vendor</th><th>Qty</th><th>Status</th><th>Actions</th>
+      <th>ID</th><th>Product&nbsp;ID</th><th>Product&nbsp;Name</th><th>Vendo&nbsp;ID</th><th>Vendor&nbsp;Name</th><th>Qty</th><th>Status</th><th>Actions</th>
     </tr>
   </thead>
   <tbody>
     {% for o in orders %}
     <tr>
       <td>{{ o.id }}</td>
+      <td>{{ o.product.product_id|title }}</td>
       <td>{{ o.product.name|title }}</td>
+      <td>{{ o.vendor.vendor_id|title }}</td>
       <td>{{ o.vendor.name|title }}</td>
       <td>{{ o.quantity }}</td>
       <td>{{ o.get_status_display }}</td>
