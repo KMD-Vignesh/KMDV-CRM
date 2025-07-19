@@ -1,25 +1,74 @@
+from decimal import DivisionByZero, InvalidOperation, Decimal
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.db.models import DecimalField, ExpressionWrapper, F, Sum
+from django.db.models import DecimalField, ExpressionWrapper, F, Sum, Q
 from django.shortcuts import get_object_or_404, redirect, render
 
 from app.models import Inventory, Product, Vendor
 
-
 @login_required
 def inventory_list(request):
-    inventory = Inventory.objects.annotate(
-        total_price=ExpressionWrapper(
-            F("stock_quantity") * F("product__price"),
-            output_field=DecimalField(max_digits=10, decimal_places=2),
+    query = Q()
+
+    # ----- filters -----------------------------------------------------------
+    product_q = request.GET.get("product")
+    if product_q:
+        query &= Q(product__name__icontains=product_q) | \
+                 Q(product__product_id__icontains=product_q)
+
+    vendor_q = request.GET.get("vendor")
+    if vendor_q:
+        query &= Q(vendor__name__icontains=vendor_q) | \
+                 Q(vendor__vendor_id__icontains=vendor_q)
+
+    stock_quantity = request.GET.get("stock_quantity")
+    if stock_quantity:
+        try:
+            query &= Q(stock_quantity=int(stock_quantity))
+        except ValueError:
+            pass
+
+    inward_qty = request.GET.get("inward_qty")
+    if inward_qty:
+        try:
+            query &= Q(inward_qty=int(inward_qty))
+        except ValueError:
+            pass
+
+    total_price = request.GET.get("total_price")
+    if total_price:
+        try:
+            total_price_decimal = Decimal(total_price)
+            query &= Q(total_price=total_price_decimal)
+        except (InvalidOperation, DivisionByZero):
+            pass
+    status = request.GET.get("status")
+    if status:
+        query &= Q(status=status)
+    # -------------------------------------------------------------------------
+
+    inventory = (
+        Inventory.objects
+        .annotate(
+            total_price=ExpressionWrapper(
+                F("stock_quantity") * F("product__price"),
+                output_field=DecimalField(max_digits=10, decimal_places=2),
+            )
         )
+        .filter(query)
+        .order_by("-last_updated")
     )
 
-    total_inward_qty = inventory.aggregate(Sum("inward_qty"))["inward_qty__sum"] or 0
+    # ---- totals -------------------------------------------------------------
+    total_inward_qty = (
+        inventory.aggregate(Sum("inward_qty"))["inward_qty__sum"] or 0
+    )
     total_current_stock = (
         inventory.aggregate(Sum("stock_quantity"))["stock_quantity__sum"] or 0
     )
-    total_price = inventory.aggregate(Sum("total_price"))["total_price__sum"] or 0
+    total_price = (
+        inventory.aggregate(Sum("total_price"))["total_price__sum"] or 0
+    )
 
     return render(
         request,
@@ -31,7 +80,6 @@ def inventory_list(request):
             "total_price": total_price,
         },
     )
-
 
 @login_required
 def add_inventory(request):

@@ -18,50 +18,71 @@
 </div>
 
 <div class="page-header">
-  <p>Total Current Stock: <strong style="color: #245c9c;">{{ total_current_stock }}</strong></p>
-  <p>Total Inward Qty: <strong style="color: #2e8652;">{{ total_inward_qty }}</strong></p>
+  <p>Total Inward Qty: <strong style="color: #245c9c;">{{ total_inward_qty }}</strong></p>
+  <p>Total Current Stock: <strong style="color: #2e8652;">{{ total_current_stock }}</strong></p>
   <p>Total CS Price: <strong style="color: #245c9c;">₹{{ total_price|floatformat:2|indian_comma }}</strong></p>
 </div>
 
-<table class="dv-table">
-  <thead>
-    <tr>
-<th>Product&nbsp;ID</th>
-<th>Product&nbsp;Name</th>
-      <th>Inward&nbsp;Qty</th>
-      <th>Current&nbsp;Qty</th>
-      <th>Vendor&nbsp;ID</th>
-      <th>Vendor&nbsp;Name</th>
-      <th>Total&nbsp;Price</th>
-      <th>Inward&nbsp;Status</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for item in inventory %}
-    <tr>
-<td>{{ item.product.product_id|title }}</td>
-<td>{{ item.product.name|title }}</td>
-      <td>{{ item.inward_qty }}</td>
-      <td>{{ item.stock_quantity }}</td>
-      <td>{{ item.vendor.vendor_id|default:"N/A"|title }}</td>
-      <td>{{ item.vendor.name|default:"N/A"|title }}</td>
-      <td>₹{{ item.total_price|floatformat:2|indian_comma }}</td>
-      <td>
-  <span class="badge inventory-{{ item.get_status_display|lower }}">
-    {{ item.get_status_display }}
-  </span>
-</td>
-      <td class="actions">
-        <a class="btn" href="{% url 'edit_inventory' item.pk %}">Edit</a>
-        <a class="btn danger" href="{% url 'delete_inventory' item.pk %}">Delete</a>
-      </td>
-    </tr>
-    {% empty %}
-    <tr>
-      <td colspan="7" style="text-align: center">No inventory available.</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+<form method="get" class="filter-form">
+  <table class="dv-table">
+    <thead>
+      <tr>
+        <th>Vendor</th>
+        <th>Product</th>
+        <th>Inward&nbsp;Qty</th>
+        <th>Current&nbsp;Qty</th>
+        <th>Total&nbsp;Price</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+
+      <!-- FILTER ROW (same styling as order_list) -->
+      <tr class="filter-row">
+        <td><input type="text" name="vendor" value="{{ request.GET.vendor }}" class="form-control" placeholder="id / name"></td>
+        <td><input type="text" name="product" value="{{ request.GET.product }}" class="form-control" placeholder="id / name"></td>
+        <td><input type="number" name="inward_qty" value="{{ request.GET.inward_qty }}" class="form-control" placeholder="inward"></td>
+        <td><input type="number" name="stock_quantity" value="{{ request.GET.stock_quantity }}" class="form-control" placeholder="current"></td>
+        <td><input type="number" step="0.01" name="total_price" value="{{ request.GET.total_price }}" class="form-control" placeholder="price number"></td>
+        <td>
+          <select name="status" class="form-control">
+            <option value="">----</option>
+            {% for val, label in inventory.model.STATUS_CHOICES %}
+              <option value="{{ val }}" {% if request.GET.status == val %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </td>
+        <td class="actions">
+          <button type="submit" class="btn-filter">Filter</button>
+          <a href="{% url 'inventory_list' %}" class="btn">Clear</a>
+        </td>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for item in inventory %}
+      <tr>
+        <td>{{ item.vendor.name|default:"N/A"|title }}&nbsp;<small style="color: rgb(18, 77, 117); font-size:x-small !important;">({{ item.vendor.vendor_id|default:"N/A"|upper }})</small></td>
+        <td>{{ item.product.name|title }}&nbsp;<small style="color: rgb(18, 77, 117); font-size:x-small !important;">({{ item.product.product_id|upper }})</small></td>
+        <td>{{ item.inward_qty }}</td>
+        <td>{{ item.stock_quantity }}</td>
+        <td>₹{{ item.total_price|floatformat:2|indian_comma }}</td>
+        <td>
+          <span class="badge inventory-{{ item.get_status_display|lower }}">
+            {{ item.get_status_display }}
+          </span>
+        </td>
+        <td class="actions">
+          <a class="btn" href="{% url 'edit_inventory' item.pk %}">Edit</a>
+          <a class="btn danger" href="{% url 'delete_inventory' item.pk %}">Delete</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="9" style="text-align:center">No inventory available.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</form>
+
 {% endblock %}
