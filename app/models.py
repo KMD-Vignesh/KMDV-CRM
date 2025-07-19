@@ -110,24 +110,26 @@ class UserProfile(models.Model):
 
 class PurchaseOrder(models.Model):
     STATUS_CHOICES = [
-        ("PO_RAISED", "Raised"),
-        ("PO_APPROVED", "Approved"),
-        ("PO_REJECTED", "Rejected"),
-        ("PO_SHIPPED", "Shipped"),
-        ("PO_DELIVERED", "Delivered"),
-        ("INWARD_REQUESTED", "Inward Requested"),
+        ('PO_RAISED',  'Raised'),
+        ('PO_APPROVED','Approved'),
+        ('PO_REJECTED','Rejected'),
+        ('PO_SHIPPED',    'Shipped'),
+        ('PO_DELIVERED',  'Delivered'),
+        ('INWARD_REQUESTED','Inward Requested'),
+    ]
+    APPROVAL_CHOICES = [
+        ('PENDING', 'Pending'),
+        ('APPROVED', 'Approved'),
+        ('CANCELLED', 'Cancelled'),
     ]
 
-    product = models.ForeignKey("Product", on_delete=models.CASCADE)
-    vendor = models.ForeignKey(
-        "Vendor", on_delete=models.SET_NULL, null=True, blank=True
-    )
-    quantity = models.PositiveIntegerField()
-    status = models.CharField(
-        max_length=20, choices=STATUS_CHOICES, default="PO_RAISED"
-    )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    product         = models.ForeignKey('Product', on_delete=models.CASCADE)
+    vendor          = models.ForeignKey('Vendor', on_delete=models.SET_NULL, null=True, blank=True)
+    quantity        = models.PositiveIntegerField()
+    status          = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PO_RAISED')
+    approval_status = models.CharField(max_length=20, choices=APPROVAL_CHOICES, default='PENDING')
+    created_at      = models.DateTimeField(auto_now_add=True)
+    updated_at      = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"PO #{self.pk} — {self.product.name} ({self.quantity})"

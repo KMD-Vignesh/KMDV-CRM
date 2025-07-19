@@ -1,0 +1,20 @@
+{% extends 'app/base/base.html' %}
+{% block title %}Approval Request Detail{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h1>Approval Request Detail</h1>
+</div>
+
+<div class="form-wrapper">
+  <h2>Purchase Order {{ order.id }}</h2>
+  <p><strong>Product:</strong> {{ order.product.name }}</p>
+  <p><strong>Vendor:</strong> {{ order.vendor.name }}</p>
+  <p><strong>Quantity:</strong> {{ order.quantity }}</p>
+  <p><strong>Status:</strong> {{ order.get_status_display }}</p>
+  <p><strong>Approval Status:</strong> {{ order.get_approval_status_display }}</p>
+<a href="{% url 'approval_request_list' %}" class="btn btn-secondary">Back</a>
+
+</div>
+
+{% endblock %}

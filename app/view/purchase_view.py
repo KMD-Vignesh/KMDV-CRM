@@ -72,11 +72,19 @@ def add_purchase(request):
 @login_required
 def edit_purchase(request, pk):
     order = get_object_or_404(PurchaseOrder, pk=pk)
-    if request.method == "POST":
+
+    if request.method == 'POST':
+        # ------------- NEW -------------
+        if 'request_approval' in request.POST:
+            order.approval_status = 'PENDING'   # reset if rejected
+            order.save(update_fields=['approval_status'])
+            messages.success(request, f'Approval requested for PO #{order.id}.')
+            return redirect('edit_purchase', pk=pk)
+        # ------------- ORIGINAL -------------
         order.product_id = request.POST["product"]
-        order.vendor_id = request.POST["vendor"]
-        order.quantity = request.POST["qty"]
-        order.status = request.POST["status"]
+        order.vendor_id  = request.POST["vendor"]
+        order.quantity   = request.POST["qty"]
+        order.status     = request.POST["status"]
         order.save()
         messages.success(
             request,
@@ -84,8 +92,9 @@ def edit_purchase(request, pk):
             extra_tags="auto-dismiss page-specific",
         )
         return redirect("purchase_list")
+
     products = Product.objects.all()
-    vendors = Vendor.objects.all()
+    vendors  = Vendor.objects.all()
     return render(
         request,
         "app/purchase/edit_purchase.html",

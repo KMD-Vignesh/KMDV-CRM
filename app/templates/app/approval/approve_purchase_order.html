@@ -1,0 +1,15 @@
+{% extends 'app/base/base.html' %}
+{% block title %}Approve Purchase Order{% endblock %}
+{% block content %}
+
+<div class="form-wrapper">
+  <h1>Approve Purchase Order</h1>
+  <form method="post">
+    {% csrf_token %}
+    <p>Are you sure you want to approve Purchase Order {{ order.id }}?</p>
+    <button type="submit" class="btn btn-primary">Approve</button>
+    <a href="{% url 'approval_manager_list' %}" class="btn btn-secondary">Cancel</a>
+  </form>
+</div>
+
+{% endblock %}

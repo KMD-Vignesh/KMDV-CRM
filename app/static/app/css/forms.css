@@ -209,9 +209,15 @@
   margin-left: 0.5rem;
 }
 
-.btn- :hover {
-  background: #c3b855;
-  border-color: #a89e49;
+.btn-danger {
+  color: #fff;
+  background: #dc3545;
+  border-color: #dc3545;
+}
+
+.btn-danger:hover {
+  background: #c82333;
+  border-color: #bd2130;
 
 }
 

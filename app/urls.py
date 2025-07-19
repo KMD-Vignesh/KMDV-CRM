@@ -1,7 +1,7 @@
 from django.urls import path
 
 from . import views
-from .view import category_view, product_view, vendor_view, inventory_view, order_view, user_view, purchase_view
+from .view import category_view, product_view, vendor_view, inventory_view, order_view, user_view, purchase_view, approval_view
 
 
 urlpatterns = [
@@ -40,5 +40,10 @@ urlpatterns = [
     path('purchase/<int:pk>/edit/', purchase_view.edit_purchase, name='edit_purchase'),
     path('purchase/<int:pk>/delete/', purchase_view.delete_purchase, name='delete_purchase'),
     path('purchase/<int:pk>/print/', purchase_view.print_purchase_order, name='print_purchase_order'),
+    path('approval-request/', approval_view.approval_request_list, name='approval_request_list'),
+    path('approval-manager/', approval_view.approval_manager_list, name='approval_manager_list'),
+    path('approve-purchase-order/<int:pk>/', approval_view.approve_purchase_order, name='approve_purchase_order'),
+    path('cancel-purchase-order/<int:pk>/', approval_view.reject_purchase_order, name='reject_purchase_order'),
+    path('approval-request-detail/<int:pk>/', approval_view.approval_request_detail, name='approval_request_detail'), 
 
 ]
