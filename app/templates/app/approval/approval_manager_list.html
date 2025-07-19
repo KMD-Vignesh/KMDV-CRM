@@ -1,5 +1,5 @@
 {% extends 'app/base/base.html' %}
-{% block title %}Approval Requests{% endblock %}
+{% block title %}Approval{% endblock %}
 {% block content %}
 
 {% if messages %}
@@ -12,6 +12,7 @@
 
 <div class="page-header">
   <h1>Approval Requests</h1>
+  <a class="btn-add" href="{% url 'update_po_approval' %}">Update PO Approval</a>
 </div>
 
 {% if orders %}

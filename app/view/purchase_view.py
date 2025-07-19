@@ -73,18 +73,31 @@ def add_purchase(request):
 def edit_purchase(request, pk):
     order = get_object_or_404(PurchaseOrder, pk=pk)
 
+    # ---- Statuses that are **never** selectable after approval
+    DISALLOWED_AFTER_APPROVAL = {'PO_RAISED', 'PO_REJECTED'}
+
+    # ---- Build the list that will reach the template
+    if order.approval_status == 'APPROVED':
+        allowed_choices = [
+            (k, v) for k, v in PurchaseOrder.STATUS_CHOICES
+            if k not in DISALLOWED_AFTER_APPROVAL
+        ]
+    else:
+        allowed_choices = []           # empty ⇒ drop-down not rendered
+
     if request.method == 'POST':
-        # ------------- NEW -------------
         if 'request_approval' in request.POST:
-            order.approval_status = 'PENDING'   # reset if rejected
+            order.approval_status = 'PENDING'
             order.save(update_fields=['approval_status'])
             messages.success(request, f'Approval requested for PO #{order.id}.')
             return redirect('edit_purchase', pk=pk)
-        # ------------- ORIGINAL -------------
+
         order.product_id = request.POST["product"]
         order.vendor_id  = request.POST["vendor"]
         order.quantity   = request.POST["qty"]
-        order.status     = request.POST["status"]
+        # Only save status if the widget was shown
+        if allowed_choices:  # same condition as in template
+            order.status = request.POST["status"]
         order.save()
         messages.success(
             request,
@@ -102,10 +115,9 @@ def edit_purchase(request, pk):
             "order": order,
             "products": products,
             "vendors": vendors,
-            "status_choices": PurchaseOrder.STATUS_CHOICES,
+            "status_choices": allowed_choices,   # ← filtered list
         },
     )
-
 
 @login_required
 def delete_purchase(request, pk):

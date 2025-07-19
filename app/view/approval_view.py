@@ -41,3 +41,26 @@ def reject_purchase_order(request, pk):
 def approval_request_detail(request, pk):
     order = get_object_or_404(PurchaseOrder, pk=pk)
     return render(request, 'app/approval/approval_request_detail.html', {'order': order})
+
+
+@login_required
+def update_po_approval(request):
+    orders = PurchaseOrder.objects.select_related('product', 'vendor').all()
+
+    if request.method == 'POST':
+        po_id  = request.POST['po_id']
+        action = request.POST['action']          # PENDING / APPROVED / CANCELLED
+        po     = get_object_or_404(PurchaseOrder, pk=po_id)
+
+        po.approval_status = action
+        if action == 'PENDING':
+            po.status = 'PO_RAISED'
+        elif action == 'APPROVED':
+            po.status = 'PO_APPROVED'
+        elif action == 'CANCELLED':
+            po.status = 'PO_REJECTED'   # or keep PO_RAISED, adjust as needed
+        po.save(update_fields=['approval_status', 'status'])
+        messages.success(request, f'PO #{po.id} set to {po.get_approval_status_display()}.')
+        return redirect('update_po_approval')
+
+    return render(request, 'app/approval/update_po_approval.html', {'orders': orders})

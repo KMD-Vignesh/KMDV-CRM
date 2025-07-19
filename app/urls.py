@@ -45,5 +45,6 @@ urlpatterns = [
     path('approve-purchase-order/<int:pk>/', approval_view.approve_purchase_order, name='approve_purchase_order'),
     path('cancel-purchase-order/<int:pk>/', approval_view.reject_purchase_order, name='reject_purchase_order'),
     path('approval-request-detail/<int:pk>/', approval_view.approval_request_detail, name='approval_request_detail'), 
+    path('update-po-approval/', approval_view.update_po_approval, name='update_po_approval'),
 
 ]
