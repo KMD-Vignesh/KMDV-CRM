@@ -101,15 +101,27 @@
   </section>
 
   <!-- ---------- CHART ---------- -->
-  <section class="card">
-    <h2>Stock Chart</h2>
+  <section class="grid-2">
+    <div class="card scroll">
+          <h2>Stock Chart</h2>
     {% if inventory_summary and inventory_summary|length > 0 %}
     <canvas id="stockChart" width="600" height="300"></canvas>
     {% else %}
     <p>No data for chart</p>
     {% endif %}
-  </section>
+  
 </div>
+    <div class="card scroll">
+    <h2>Order Chart</h2>
+    {% if order_summary and order_summary|length > 0 %}
+    <canvas id="orderChart" width="200" height="100"></canvas>
+    {% else %}
+    <p>No data for chart</p>
+    {% endif %}
+  
+</div>
+  </section>
+
 
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -125,6 +137,30 @@
         datasets: [{
           label: 'Stock Quantity',
           data: [{% for item in inventory_summary %}{{ item.total }}{% if not forloop.last %},{% endif %}{% endfor %}],
+          backgroundColor: 'rgba(52, 152, 219, 0.5)',
+          borderColor: 'rgba(52, 152, 219, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: { y: { beginAtZero: true, title: { display: true, text: 'Units' } } }
+      }
+    });
+  });
+
+   document.addEventListener('DOMContentLoaded', function () {
+    const ctx = document.getElementById('orderChart');
+    if (!ctx) return;
+
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: [{% for item in order_summary %}'{{ item.product__name }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+        datasets: [{
+          label: 'Order Quantity',
+          data: [{% for item in order_summary %}{{ item.total }}{% if not forloop.last %},{% endif %}{% endfor %}],
           backgroundColor: 'rgba(52, 152, 219, 0.5)',
           borderColor: 'rgba(52, 152, 219, 1)',
           borderWidth: 1
