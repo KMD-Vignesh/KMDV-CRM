@@ -47,6 +47,7 @@ class Inventory(models.Model):
         max_length=20, choices=STATUS_CHOICES, default="INWARD_REQUESTED"
     )
     last_updated = models.DateTimeField(auto_now=True)
+    inward_date = models.DateTimeField(auto_now_add=True) 
 
     def __str__(self):
         return (

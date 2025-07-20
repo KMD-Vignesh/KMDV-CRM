@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import DecimalField, ExpressionWrapper, F, Sum, Q
 from django.shortcuts import get_object_or_404, redirect, render
-
+from django.utils.dateparse import parse_date
 from app.models import Inventory, Product, Vendor
 
 @login_required
@@ -34,6 +34,12 @@ def inventory_list(request):
             query &= Q(inward_qty=int(inward_qty))
         except ValueError:
             pass
+
+    inward_date = request.GET.get("inward_date")
+    if inward_date:
+        parsed_date = parse_date(inward_date)
+        if parsed_date:
+            query &= Q(inward_date__date=parsed_date)
 
     total_price = request.GET.get("total_price")
     if total_price:
