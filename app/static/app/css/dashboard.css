@@ -5,6 +5,12 @@
   padding: 0 1rem;
   display: grid;
   gap: 1.5rem;
+  box-sizing: border-box;
+}
+
+/* Prevent page overflow */
+body {
+  overflow-x: hidden;
 }
 
 /* KPI row */
@@ -20,6 +26,7 @@
   padding: 1.5rem 1rem;
   text-align: center;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
 }
 .kpi-card h3 {
   margin: 0 0 0.5rem;
@@ -39,16 +46,42 @@
   border-radius: 6px;
   padding: 1.5rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
 }
 .card.scroll {
   max-height: 300px;
   overflow-y: auto;
 }
 
+/* grid layout */
 .grid-2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1.5rem;
+}
+
+/* responsive product table */
+.dv-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: inherit;
+  min-width: 500px;
+  box-sizing: border-box;
+}
+
+.dv-table th,
+.dv-table td {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.dv-table th {
+  background: #f3f3f3;
+  font-weight: 600;
 }
 
 /* table tweak */
@@ -59,13 +92,29 @@
 /* chart container */
 .card canvas {
   width: 100% !important;
-  height: 300px !important;
+  height: auto !important;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
+/* ---------- Responsive Rules ---------- */
 @media (max-width: 768px) {
   .grid-2 {
     grid-template-columns: 1fr;
   }
+
+  .kpi-row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .card.scroll {
+    max-height: none;
+  }
+
+  .dv-table {
+    min-width: unset;
+    display: block;
+    overflow-x: auto;
+  }
 }
-
-
