@@ -15,7 +15,7 @@
     <h1>Purchase Orders</h1>
     <a class="btn-add" href="{% url 'add_purchase' %}">New Purchase</a>
 </div>
-<div class="page-header">
+<div class="page-header dv-table-responsive">
   <p>PO&nbsp;Raised: <strong style="color:#245c9c;">{{ summary.PO_RAISED }}</strong></p>
   <p>PO&nbsp;Approved: <strong style="color:#2e8652;">{{ summary.PO_APPROVED }}</strong></p>
   <p>PO&nbsp;Rejected: <strong style="color:#d9534f;">{{ summary.PO_REJECTED }}</strong></p>
@@ -24,6 +24,8 @@
   <p>Inward&nbsp;Requested: <strong style="color:#5cb85c;">{{ summary.INWARD_REQUESTED }}</strong></p>
   <p>Total&nbsp;PO&nbsp;Price: <strong style="color:#245c9c;">₹{{ grand_total|floatformat:2|indian_comma }}</strong></p>
 </div>
+<div class="dv-table-responsive">
+
 <form method="get" action="{% url 'purchase_list' %}" class="filter-form">
 <table class="dv-table">
   <thead>
@@ -86,4 +88,6 @@
   </tbody>
 </table>
 </form>
+</div>
+
 {% endblock %}

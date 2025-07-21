@@ -1,9 +1,16 @@
 /* ---------- orders.css ---------- */
 
+.dv-table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .dv-table {
   width: 100%;
   border-collapse: collapse;
   font-family: inherit;
+  min-width: 600px;
 }
 
 .dv-table th,
@@ -57,7 +64,7 @@
 .dv-table .badge.po-delivered {
   background: #d55bd3;
 }
-.dv-table .badge.po-inward-requested {
+.dv-table .badge.po-inward {
   background: #27ae60;
 }
 
@@ -177,4 +184,9 @@
   position: sticky;
   top: 0;
   z-index: 1;
+}
+
+.small_td {
+  font-size:80% !important;
+  white-space: nowrap;
 }

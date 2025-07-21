@@ -12,6 +12,8 @@ uv run python manage.py collectstatic
 
 uv run python manage.py makemigrations
 uv run python manage.py migrate
+uv run python manage.py shell
+
 
 uv run python manage.py makemigrations app
 uv run python manage.py migrate app

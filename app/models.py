@@ -104,6 +104,7 @@ class UserProfile(models.Model):
     designation = models.CharField(max_length=100, blank=True)
     work_location = models.CharField(max_length=100, blank=True)
     address = models.TextField(blank=True)
+    employee_id = models.CharField(max_length=50, unique=True, blank=True, editable=False)
 
     def __str__(self):
         return f"{self.user.username} – {self.get_role_display()}"
@@ -116,7 +117,7 @@ class PurchaseOrder(models.Model):
         ('PO_REJECTED','Rejected'),
         ('PO_SHIPPED',    'Shipped'),
         ('PO_DELIVERED',  'Delivered'),
-        ('INWARD_REQUESTED','Inward Requested'),
+        ('INWARD_REQUESTED','Inward'),
     ]
     APPROVAL_CHOICES = [
         ('PENDING', 'Pending'),

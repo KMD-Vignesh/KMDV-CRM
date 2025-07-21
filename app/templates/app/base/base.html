@@ -4,7 +4,8 @@
 <html lang="en">
   <head>
     <title>KMDV CRM - {% block title %}{% endblock %}</title>
-    {% include 'includes/base_include.html' %}
+    {% include 'includes/base_head_include.html' %}
+
   </head>
   <body>
     <div class="container">
@@ -72,11 +73,9 @@
       </footer>
     </div>
 
+        {% include 'includes/base_body_include.html' %}
+
     <!-- Burger Toggle Script -->
-    <script>
-      document.getElementById("burger").addEventListener("click", function () {
-        document.getElementById("navLinks").classList.toggle("show");
-      });
-    </script>
+
   </body>
 </html>

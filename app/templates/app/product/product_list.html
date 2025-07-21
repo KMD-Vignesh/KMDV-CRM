@@ -13,6 +13,7 @@
   <h1>Products</h1>
   <a class="btn-add" href="{% url 'add_product' %}">Add Product</a>
 </div>
+<div class="dv-table-responsive">
 
 <table class="dv-table">
   <thead>
@@ -49,6 +50,8 @@
     {% endfor %}
   </tbody>
 </table>
+</div>
+
 <script>
   document.querySelectorAll("ul li").forEach((li) => {
     li.addEventListener(

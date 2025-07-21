@@ -28,7 +28,7 @@
         <p>No orders available.</p>
     {% endif %}
 </div>
-
+<div class="dv-table-responsive">
 <form method="get" action="{% url 'order_list' %}" class="filter-form">
     <table class="dv-table">
         <thead>
@@ -93,4 +93,5 @@
         </tbody>
     </table>
 </form>
+</div>
 {% endblock %}

@@ -16,40 +16,29 @@
 </div>
 
 {% if users %}
-  <div class="table-responsive">
+  <div class="dv-table-responsive">
     <table class="dv-table">
       <thead class="table-light">
         <tr>
-          <th>ID</th>
           <th>Username</th>
+          <th>Emp&nbsp;ID</th>
           <th>Name</th>
           <th>Email</th>
           <th>Role</th>
           <th>DOJ</th>
-          <th>Staff/Superuser</th>
           <th class="text-end">Actions</th>
         </tr>
       </thead>
       <tbody>
         {% for u in users %}
           <tr>
-            <td>{{ u.id }}</td>
-            <td>{{ u.username }}</td>
-            <td>{{ u.first_name|default:"" }} {{ u.last_name|default:"" }}</td>
-            <td>{{ u.email|default:"—" }}</td>
-            <td>{{ u.userprofile.get_role_display|default:"—" }}</td>
-            <td>{{ u.userprofile.date_of_join|default:"—"|date:"d-M-y" }}</td>
-            <td>
-              {% if u.is_staff %}
-              <span class="badge active">Yes</span>
-              {% else %}<span class="badge cancelled">No</span>
-              {% endif %} /
-              {% if u.is_superuser %}
-                <span class="badge active">Yes</span>
-              {% else %}
-                <span class="badge cancelled">No</span>
-              {% endif %}
-              </td>
+            <td style="white-space: nowrap;">{{ u.username }}</td>
+            <td style="white-space: nowrap;" >{{ u.userprofile.employee_id }}</td>
+            <td style="white-space: nowrap;" >{{ u.first_name|default:""|title }}&nbsp;{{ u.last_name|default:""|title  }}</td>
+            <td style="white-space: nowrap;" >{{ u.email|default:"—" }}</td>
+            <td style="white-space: nowrap;" >{{ u.userprofile.get_role_display|default:"—" }}</td>
+            <td style="white-space: nowrap;" >{{ u.userprofile.date_of_join|default:"—"|date:"d-M-y" }}</td>
+   
   
             
             <td class="actions">
