@@ -39,7 +39,7 @@
             <td>{{ order.get_status_display }}</td>
             <td>{{ order.get_approval_status_display }}</td>
             <td>
-              <a class="btn" href="{% url 'approval_request_detail' order.pk %}">View</a>
+              <a class="btn" href="{% url 'po_approval_request_detail' order.pk %}">View</a>
             </td>
           </tr>
         {% endfor %}
@@ -48,6 +48,43 @@
   </div>
 {% else %}
   <p class="text-muted">No approval requests yet.</p>
+{% endif %}
+
+<h3 style="color: brown; margin-top: 2rem;">Inventory Inward Approval</h3>
+
+{% if inventories %}
+  <div class="dv-table-responsive">
+    <table class="dv-table">
+      <thead class="table-light">
+        <tr>
+          <th>ID</th>
+          <th>Product</th>
+          <th>Vendor</th>
+          <th>Quantity</th>
+          <th>Status</th>
+          <th>Approval Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for inv in inventories %}
+          <tr>
+            <td>{{ inv.id }}</td>
+            <td>{{ inv.product.name }}</td>
+            <td>{{ inv.vendor.name|default:"—" }}</td>
+            <td>{{ inv.stock_quantity }}</td>
+            <td>{{ inv.get_status_display }}</td>
+            <td>{{ inv.get_approval_status_display }}</td>
+            <td>
+              <a class="btn" href="{% url 'inventory_approval_request_detail' inv.pk %}">View</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <p class="text-muted">No inventory approval requests yet.</p>
 {% endif %}
 
 {% endblock %}

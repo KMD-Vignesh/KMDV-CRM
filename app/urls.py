@@ -44,7 +44,11 @@ urlpatterns = [
     path('approval-manager/', approval_view.approval_manager_list, name='approval_manager_list'),
     path('approve-purchase-order/<int:pk>/', approval_view.approve_purchase_order, name='approve_purchase_order'),
     path('cancel-purchase-order/<int:pk>/', approval_view.reject_purchase_order, name='reject_purchase_order'),
-    path('approval-request-detail/<int:pk>/', approval_view.approval_request_detail, name='approval_request_detail'), 
+    path('approval-request-detail/<int:pk>/', view=approval_view.po_approval_request_detail, name='po_approval_request_detail'), 
     path('update-po-approval/', approval_view.update_po_approval, name='update_po_approval'),
+    path('inventory/approval/<int:pk>/approve/', approval_view.approve_inventory, name='approve_inventory'),
+    path('inventory/approval/<int:pk>/reject/',  approval_view.reject_inventory,  name='reject_inventory'),
+    path('inventory/approval/update/', approval_view.update_inventory_approval,name='update_inventory_approval'),
+    path('inventory/approval-request-detail/<int:pk>/', approval_view.inventory_approval_request_detail, name='inventory_approval_request_detail'),
 
 ]

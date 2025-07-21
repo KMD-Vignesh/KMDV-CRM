@@ -1,0 +1,15 @@
+{% extends 'app/base/base.html' %}
+{% block title %}Approval{% endblock %}
+{% block content %}
+
+<div class="form-wrapper">
+  <h1>Approve Inventory Inward</h1>
+  <form method="post">
+    {% csrf_token %}
+    <p>Are you sure you want to approve Inventory inward #{{ inv.id }}?</p>
+    <button type="submit" class="btn btn-primary">Approve</button>
+    <a href="{% url 'approval_manager_list' %}" class="btn btn-secondary">Cancel</a>
+  </form>
+</div>
+
+{% endblock %}

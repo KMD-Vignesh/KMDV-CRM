@@ -1,8 +1,23 @@
 {% extends 'app/base/base.html' %}
 {% block title %}Inventory{% endblock %}
 {% block content %}
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            <p style="color: green;">{{ message }}</p>
+        </div>
+    {% endfor %}
+{% endif %}
+
 <div class="form-wrapper">
-  <h1>Edit Inventory</h1>
+  <h1>Edit Inventory #{{ inventory.id }}</h1>
+
+  <!-- approval badge -->
+  <p><strong>Approval Status:</strong>
+     <span class="badge approval-{{ inventory.approval_status|lower }}">
+       {{ inventory.get_approval_status_display }}
+     </span>
+  </p>
 
   <form class="form-card" method="post">
     {% csrf_token %}
@@ -12,7 +27,7 @@
       <select name="product" class="form-control" required>
         {% for prod in products %}
           <option value="{{ prod.id }}" {% if prod.id == inventory.product.id %}selected{% endif %}>
-            {{ prod.name|title }}&nbsp;({{ prod.product_id|title }})
+            {{ prod.name|title }} ({{ prod.product_id|title }})
           </option>
         {% endfor %}
       </select>
@@ -23,7 +38,7 @@
       <select name="vendor" class="form-control" required>
         {% for vend in vendors %}
           <option value="{{ vend.id }}" {% if vend.id == inventory.vendor.id %}selected{% endif %}>
-            {{ vend.name|title }}&nbsp;({{ vend.vendor_id|title }})
+            {{ vend.name|title }} ({{ vend.vendor_id|title }})
           </option>
         {% endfor %}
       </select>
@@ -33,21 +48,31 @@
       <label>Quantity:</label>
       <input type="number" name="qty" class="form-control" value="{{ inventory.stock_quantity }}" required>
     </div>
-    
 
-    <div class="form-group">
-  <label>Status:</label>
-  <select name="status" class="form-control" required>
-    {% for val, label in status_choices %}
-      <option value="{{ val }}"
-        {% if val == inventory.status|default:'INWARD_REQUESTED' %}selected{% endif %}>
-        {{ label }}
-      </option>
-    {% endfor %}
-  </select>
-</div>
+    {% if inventory.approval_status == 'APPROVED' %}
+      <div class="form-group">
+        <label>Status:</label>
+        <select name="status" class="form-control" required>
+          {% for val, label in status_choices %}
+            <option value="{{ val }}" {% if val == inventory.status %}selected{% endif %}>
+              {{ label }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+    {% else %}
+      <input type="hidden" name="status" value="{{ inventory.status }}">
+      <p><strong>Status:</strong> {{ inventory.get_status_display }}</p>
+    {% endif %}
 
-    <button type="submit" class="btn btn-primary">Update</button>
+    <button type="submit" name="save" class="btn btn-primary">Save changes</button>
+
+{% if inventory.approval_status not in 'PENDING,APPROVED' %}
+      <button type="submit" name="request_approval" class="btn btn-warning">
+        Request Approval
+      </button>
+    {% endif %}
+
     <a href="{% url 'inventory_list' %}" class="btn btn-secondary">Back</a>
   </form>
 </div>

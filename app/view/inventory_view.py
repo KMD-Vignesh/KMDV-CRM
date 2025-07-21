@@ -126,18 +126,38 @@ def add_inventory(request):
 @login_required
 def edit_inventory(request, pk):
     inventory = get_object_or_404(Inventory, pk=pk)
+
+    DISALLOWED_AFTER_APPROVAL = {"INWARD_REQUESTED", "INWARD_REJECTED"}
+
+    if inventory.approval_status == "APPROVED":
+        allowed_choices = [
+            (k, v)
+            for k, v in Inventory.STATUS_CHOICES
+            if k not in DISALLOWED_AFTER_APPROVAL
+        ]
+    else:
+        allowed_choices = []
+
     if request.method == "POST":
-        inventory.product_id = request.POST["product"]
-        inventory.vendor_id = request.POST["vendor"]
+        if "request_approval" in request.POST:
+            inventory.approval_status = "PENDING"
+            inventory.save(update_fields=["approval_status"])
+            messages.success(request, f"Approval requested for Inward #{inventory.id}.")
+            return redirect("edit_inventory", pk=pk)
+
+        inventory.product_id   = request.POST["product"]
+        inventory.vendor_id    = request.POST["vendor"]
         inventory.stock_quantity = request.POST["qty"]
-        inventory.status = request.POST.get("status", "INWARD_REQUESTED")
+        if allowed_choices:  # only save status if widget was rendered
+            inventory.status = request.POST["status"]
         inventory.save()
         messages.success(
             request,
-            f"Inventory Product - {inventory.product.name}, Vendor - {inventory.vendor.name} updated successfully!",
+            f"Inventory #{inventory.id} updated successfully!",
             extra_tags="auto-dismiss page-specific",
         )
         return redirect("inventory_list")
+
     return render(
         request,
         "app/inventory/edit_inventory.html",
@@ -145,7 +165,7 @@ def edit_inventory(request, pk):
             "inventory": inventory,
             "products": Product.objects.all(),
             "vendors": Vendor.objects.all(),
-            "status_choices": Inventory.STATUS_CHOICES,
+            "status_choices": allowed_choices,
         },
     )
 

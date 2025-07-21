@@ -48,7 +48,15 @@ class Inventory(models.Model):
     )
     last_updated = models.DateTimeField(auto_now=True)
     inward_date = models.DateTimeField(auto_now_add=True) 
-
+    approval_status = models.CharField(
+            max_length=20,
+            choices=[
+                ('PENDING',  'Pending'),
+                ('APPROVED', 'Approved'),
+                ('CANCELLED','Cancelled'),
+            ],
+            default='PENDING'
+        )
     def __str__(self):
         return (
             f"{self.product.name} - {self.stock_quantity} ({self.get_status_display()})"
@@ -90,10 +98,15 @@ class UserProfile(models.Model):
 
     ROLE_CHOICES = [
         ("admin", "Administrator"),
-        ("vendor_manager", "Vendor Manager"),
-        ("vendor_team", "Vendor Management Team"),
-        ("customer_manager", "Customer Manager"),
-        ("customer_team", "Customer Management Team"),
+        ("sourcing_team", "Sourcing Team"),
+        ("sourcing_manager", "Sourcing Manager"),
+        ("sales_team", "Sales Team"),
+        ("sales_manager", "Sales Manager"),
+        ("logistics_team", "Logistics Team"),
+        ("logistics_manager", "Logistics Manager"),
+        ("team_lead", "Team Leader"),
+
+
     ]
     role = models.CharField(
         max_length=30, choices=ROLE_CHOICES, default="customer_team"

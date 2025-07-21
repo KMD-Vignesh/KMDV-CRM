@@ -3,16 +3,35 @@
 {% block content %}
 
 <div class="form-wrapper">
-  <h1>Approval Request Detail</h1>
 
-  <form class="form-card" method="post">
-  <h2>Purchase Order - {{ order.id }}</h2>
-  <p><strong>Product:</strong> {{ order.product.name }}</p>
-  <p><strong>Vendor:</strong> {{ order.vendor.name }}</p>
-  <p><strong>Quantity:</strong> {{ order.quantity }}</p>
-  <p><strong>Status:</strong> {{ order.get_status_display }}</p>
-  <p><strong>Approval Status:</strong> {{ order.get_approval_status_display }}</p>
-  <a href="{% url 'approval_request_list' %}" class="btn btn-primary">Back</a>
-  </form>
+  <div>
+  {% if order %}
+    <h1>Purchase Order Approval</h1>
+    <table class="dv-table">
+      <tr><th>PO ID</th><td>{{ order.id }}</td></tr>
+      <tr><th>Product</th><td>{{ order.product.name }}</td></tr>
+      <tr><th>Vendor</th><td>{{ order.vendor.name }}</td></tr>
+      <tr><th>Quantity</th><td>{{ order.quantity }}</td></tr>
+      <tr><th>Status</th><td>{{ order.get_status_display }}</td></tr>
+      <tr><th>Approval Status</th><td>{{ order.get_approval_status_display }}</td></tr>
+    </table>
+
+  {% elif inv %}
+    <h1>Inventory Approval</h1>
+    <table class="dv-table">
+      <tr><th>Inward ID</th><td>{{ inv.id }}</td></tr>
+      <tr><th>Product</th><td>{{ inv.product.name }}</td></tr>
+      <tr><th>Vendor</th><td>{{ inv.vendor.name|default:"—" }}</td></tr>
+      <tr><th>Quantity</th><td>{{ inv.stock_quantity }}</td></tr>
+      <tr><th>Status</th><td>{{ inv.get_status_display }}</td></tr>
+      <tr><th>Approval Status</th><td>{{ inv.get_approval_status_display }}</td></tr>
+    </table>
+  {% endif %}
+  </div>
+    <div style="margin-top:1rem;">
+
+  <a href="{% url 'approval_request_list' %}" class="btn btn-danger">Back</a>
+
+    </div>
 </div>
 {% endblock %}
