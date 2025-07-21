@@ -31,7 +31,7 @@ def dashboard(request):
 
     # NEW / UPDATED AGGREGATES
     total_inward_qty = (
-        Inventory.objects.aggregate(total=Sum("stock_quantity"))["total"] or 0
+        Inventory.objects.aggregate(total=Sum("inward_qty"))["total"] or 0
     )
 
     total_order_price = (

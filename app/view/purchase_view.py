@@ -1,21 +1,73 @@
+from decimal import Decimal, InvalidOperation
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.db.models import DecimalField, ExpressionWrapper, F, Sum
+from django.db.models import DecimalField, ExpressionWrapper, F, Q, Sum
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.dateparse import parse_date
 
 from app.models import Product, PurchaseOrder, Vendor
 
 
 @login_required
 def purchase_list(request):
-    orders = PurchaseOrder.objects.select_related("product", "vendor").annotate(
-        total_price=ExpressionWrapper(
-            F("quantity") * F("product__price"),
-            output_field=DecimalField(max_digits=12, decimal_places=2),
+    query = Q()
+
+    # --- filters -------------------------------------------------------------
+    po_id = request.GET.get("po_id")
+    if po_id:
+        query &= Q(id=po_id)
+
+    product_q = request.GET.get("product")
+    if product_q:
+        query &= Q(product__name__icontains=product_q) | Q(
+            product__product_id__icontains=product_q
         )
+
+    vendor_q = request.GET.get("vendor")
+    if vendor_q:
+        query &= Q(vendor__name__icontains=vendor_q) | Q(
+            vendor__vendor_id__icontains=vendor_q
+        )
+
+    quantity = request.GET.get("quantity")
+    if quantity:
+        try:
+            query &= Q(quantity=int(quantity))
+        except ValueError:
+            pass
+
+    total_price = request.GET.get("total_price")
+    if total_price:
+        try:
+            query &= Q(total_price=Decimal(total_price))
+        except InvalidOperation:
+            pass
+
+    created_date = request.GET.get("created_date")
+    if created_date:
+        parsed = parse_date(created_date)
+        if parsed:
+            query &= Q(created_at__date=parsed)
+
+    status = request.GET.get("status")
+    if status:
+        query &= Q(status=status)
+    # ------------------------------------------------------------------------
+
+    orders = (
+        PurchaseOrder.objects.select_related("product", "vendor")
+        .annotate(
+            total_price=ExpressionWrapper(
+                F("quantity") * F("product__price"),
+                output_field=DecimalField(max_digits=12, decimal_places=2),
+            )
+        )
+        .filter(query)
+        .order_by("-id")
     )
 
-    # existing status totals
+    # status counts
     status_totals = dict(
         orders.values("status")
         .annotate(total=Sum("quantity"))
@@ -31,7 +83,6 @@ def purchase_list(request):
     ]
     summary = {k: status_totals.get(k, 0) for k in STATUS_KEYS}
 
-    # NEW: grand total
     grand_total = orders.aggregate(total=Sum("total_price"))["total"] or 0
 
     return render(
@@ -74,27 +125,28 @@ def edit_purchase(request, pk):
     order = get_object_or_404(PurchaseOrder, pk=pk)
 
     # ---- Statuses that are **never** selectable after approval
-    DISALLOWED_AFTER_APPROVAL = {'PO_RAISED', 'PO_REJECTED'}
+    DISALLOWED_AFTER_APPROVAL = {"PO_RAISED", "PO_REJECTED"}
 
     # ---- Build the list that will reach the template
-    if order.approval_status == 'APPROVED':
+    if order.approval_status == "APPROVED":
         allowed_choices = [
-            (k, v) for k, v in PurchaseOrder.STATUS_CHOICES
+            (k, v)
+            for k, v in PurchaseOrder.STATUS_CHOICES
             if k not in DISALLOWED_AFTER_APPROVAL
         ]
     else:
-        allowed_choices = []           # empty ⇒ drop-down not rendered
+        allowed_choices = []  # empty ⇒ drop-down not rendered
 
-    if request.method == 'POST':
-        if 'request_approval' in request.POST:
-            order.approval_status = 'PENDING'
-            order.save(update_fields=['approval_status'])
-            messages.success(request, f'Approval requested for PO #{order.id}.')
-            return redirect('edit_purchase', pk=pk)
+    if request.method == "POST":
+        if "request_approval" in request.POST:
+            order.approval_status = "PENDING"
+            order.save(update_fields=["approval_status"])
+            messages.success(request, f"Approval requested for PO #{order.id}.")
+            return redirect("edit_purchase", pk=pk)
 
         order.product_id = request.POST["product"]
-        order.vendor_id  = request.POST["vendor"]
-        order.quantity   = request.POST["qty"]
+        order.vendor_id = request.POST["vendor"]
+        order.quantity = request.POST["qty"]
         # Only save status if the widget was shown
         if allowed_choices:  # same condition as in template
             order.status = request.POST["status"]
@@ -107,7 +159,7 @@ def edit_purchase(request, pk):
         return redirect("purchase_list")
 
     products = Product.objects.all()
-    vendors  = Vendor.objects.all()
+    vendors = Vendor.objects.all()
     return render(
         request,
         "app/purchase/edit_purchase.html",
@@ -115,9 +167,10 @@ def edit_purchase(request, pk):
             "order": order,
             "products": products,
             "vendors": vendors,
-            "status_choices": allowed_choices,   # ← filtered list
+            "status_choices": allowed_choices,  # ← filtered list
         },
     )
+
 
 @login_required
 def delete_purchase(request, pk):

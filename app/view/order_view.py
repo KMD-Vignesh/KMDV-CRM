@@ -68,7 +68,7 @@ def order_list(request):
             )
         )
         .filter(query)
-        .order_by("-order_date")
+        .order_by("-id")
     )
 
     # Aggregate total values

@@ -27,8 +27,9 @@
   <table class="dv-table">
     <thead>
       <tr>
-        <th>Vendor</th>
+        <th>ID</th>
         <th>Product</th>
+        <th>Vendor</th>
         <th>Inward&nbsp;Qty</th>
         <th>Current&nbsp;Qty</th>
         <th>Total&nbsp;Price</th>
@@ -39,8 +40,9 @@
 
       <!-- FILTER ROW (same styling as order_list) -->
       <tr class="filter-row">
-        <td><input type="text" name="vendor" value="{{ request.GET.vendor }}" class="form-control" placeholder="id / name"></td>
+        <td><input type="text" name="inv_id" value="{{ request.GET.inv_id }}" class="form-control" placeholder="id"></td>
         <td><input type="text" name="product" value="{{ request.GET.product }}" class="form-control" placeholder="id / name"></td>
+        <td><input type="text" name="vendor" value="{{ request.GET.vendor }}" class="form-control" placeholder="id / name"></td>
         <td><input type="number" name="inward_qty" value="{{ request.GET.inward_qty }}" class="form-control" placeholder="inward"></td>
         <td><input type="number" name="stock_quantity" value="{{ request.GET.stock_quantity }}" class="form-control" placeholder="current"></td>
         <td><input type="number" step="0.01" name="total_price" value="{{ request.GET.total_price }}" class="form-control" placeholder="price number"></td>
@@ -63,13 +65,14 @@
     <tbody>
       {% for item in inventory %}
       <tr>
-        <td>{{ item.vendor.name|default:"N/A"|title }}&nbsp;<small style="color: rgb(18, 77, 117); font-size:x-small !important;">({{ item.vendor.vendor_id|default:"N/A"|upper }})</small></td>
-        <td>{{ item.product.name|title }}&nbsp;<small style="color: rgb(18, 77, 117); font-size:x-small !important;">({{ item.product.product_id|upper }})</small></td>
+        <td>{{ item.id }}</td>
+        <td style="white-space: nowrap;">{{ item.product.name|title }}&nbsp;<small style="color: rgb(18, 77, 117); font-size:x-small !important;">({{ item.product.product_id|upper }})</small></td>
+        <td style="white-space: nowrap;">{{ item.vendor.name|default:"N/A"|title }}&nbsp;<small style="color: rgb(18, 77, 117); font-size:x-small !important;">({{ item.vendor.vendor_id|default:"N/A"|upper }})</small></td>
         <td>{{ item.inward_qty }}</td>
         <td>{{ item.stock_quantity }}</td>
         <td>₹{{ item.total_price|floatformat:2|indian_comma }}</td>
         <td>{{ item.inward_date|date:"d-M-Y" }}</td>
-        <td>
+        <td style="white-space: nowrap;">
           <span class="badge inventory-{{ item.get_status_display|lower }}">
             {{ item.get_status_display }}
           </span>

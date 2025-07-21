@@ -24,31 +24,54 @@
   <p>Inward&nbsp;Requested: <strong style="color:#5cb85c;">{{ summary.INWARD_REQUESTED }}</strong></p>
   <p>Total&nbsp;PO&nbsp;Price: <strong style="color:#245c9c;">₹{{ grand_total|floatformat:2|indian_comma }}</strong></p>
 </div>
+<form method="get" action="{% url 'purchase_list' %}" class="filter-form">
 <table class="dv-table">
   <thead>
     <tr>
-      <th>ID</th>
-      <th>Product&nbsp;ID</th>
-      <th>Product&nbsp;Name</th>
-      <th>Vendo&nbsp;ID</th>
-      <th>Vendor&nbsp;Name</th>
-      <th>Qty</th>
+      <th>PO&nbsp;ID</th>
+      <th>Product</th>
+      <th>Vendor</th>
+      <th>Quantity</th>
       <th>Total&nbsp;Price</th>
+      <th>Date</th>
       <th>PO&nbsp;Status</th>
       <th>Actions</th>
+    </tr>
+
+    <!-- FILTER ROW (same style as other pages) -->
+    <tr class="filter-row">
+      <td><input type="text" name="po_id" value="{{ request.GET.po_id }}" class="form-control" placeholder="id"></td>
+      <td><input type="text" name="product" value="{{ request.GET.product }}" class="form-control" placeholder="id / name"></td>
+      <td><input type="text" name="vendor" value="{{ request.GET.vendor }}" class="form-control" placeholder="id / name"></td>
+      <td><input type="number" name="quantity" value="{{ request.GET.quantity }}" class="form-control" placeholder="qty"></td>
+      <td><input type="number" step="0.01" name="total_price" value="{{ request.GET.total_price }}" class="form-control" placeholder="₹"></td>
+      <td><input type="date" name="created_date" value="{{ request.GET.created_date }}" class="form-control"></td>
+      <td>
+        <select name="status" class="form-control">
+          <option value="">----</option>
+          {% for val, label in orders.model.STATUS_CHOICES %}
+            <option value="{{ val }}" {% if request.GET.status == val %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </td>
+      <td class="actions">
+        <button type="submit" class="btn-filter">Filter</button>
+        <a href="{% url 'purchase_list' %}" class="btn">Clear</a>
+      </td>
     </tr>
   </thead>
   <tbody>
     {% for o in orders %}
     <tr>
       <td>{{ o.id }}</td>
-      <td>{{ o.product.product_id|title }}</td>
-      <td>{{ o.product.name|title }}</td>
-      <td>{{ o.vendor.vendor_id|title }}</td>
-      <td>{{ o.vendor.name|title }}</td>
+      <td style="white-space: nowrap;">{{ o.product.name|title }}&nbsp;<small style="color: rgb(18, 77, 117); font-size:x-small !important;">({{ o.product.product_id|upper }})</small></td>
+      <td style="white-space: nowrap;">{{ o.vendor.name|default:"N/A"|title }}&nbsp;<small style="color: rgb(18, 77, 117); font-size:x-small !important;">({{ o.vendor.vendor_id|upper }})</small></td>
       <td>{{ o.quantity }}</td>
-      <td>₹{{ o.total_price|floatformat:2|indian_comma }}</td> 
-      <td>
+      <td>₹{{ o.total_price|floatformat:2|indian_comma }}</td>
+      <td>{{ o.created_at|date:"d M Y" }}</td>
+
+
+      <td style="white-space: nowrap;">
   <span class="badge po-{{ o.get_status_display|lower|slugify }}">{{ o.get_status_display }}</span>
 </td>
         <td class="actions">
@@ -62,4 +85,5 @@
     {% endfor %}
   </tbody>
 </table>
+</form>
 {% endblock %}

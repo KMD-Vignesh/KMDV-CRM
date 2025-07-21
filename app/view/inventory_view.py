@@ -10,7 +10,12 @@ from app.models import Inventory, Product, Vendor
 def inventory_list(request):
     query = Q()
 
+
     # ----- filters -----------------------------------------------------------
+    inv_id = request.GET.get("inv_id")
+    if inv_id:
+        query &= Q(id=inv_id)
+
     product_q = request.GET.get("product")
     if product_q:
         query &= Q(product__name__icontains=product_q) | \
@@ -62,7 +67,7 @@ def inventory_list(request):
             )
         )
         .filter(query)
-        .order_by("-last_updated")
+        .order_by("-id")
     )
 
     # ---- totals -------------------------------------------------------------

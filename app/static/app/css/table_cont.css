@@ -172,3 +172,9 @@
   border-color: #080808;
 } /* red   */
 
+
+.dv-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}

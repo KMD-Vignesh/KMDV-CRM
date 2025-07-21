@@ -234,7 +234,8 @@
 
 
 .btn-filter:hover {
-  background: #3d6e3b;
+  background: #a45611;
+  color: #fbe5e5;
 }
 
 /* make Django widgets the same size as our manual inputs */
