@@ -69,28 +69,33 @@ class Order(models.Model):
     vendor = models.ForeignKey(Vendor, on_delete=models.SET_NULL, null=True, blank=True)
     quantity = models.PositiveIntegerField()
     order_date = models.DateTimeField(auto_now_add=True)
-    is_cancelled = models.BooleanField(default=False)
+    STATUS_CHOICES = [
+            ('ORDER_RAISED',  'Raised'),
+            ('ORDER_APPROVED','Approved'),
+            ('ORDER_REJECTED','Rejected'),
+            ('ORDER_SHIPPED', 'Shipped'),
+            ('ORDER_DELIVERED','Delivered'),
+            ('ORDER_RETURNED','Returned'),
+        ]
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='ORDER_RAISED'
+    )
+
+    APPROVAL_CHOICES = [
+        ('PENDING',   'Pending'),
+        ('APPROVED',  'Approved'),
+        ('CANCELLED', 'Cancelled'),
+    ]
+    approval_status = models.CharField(
+        max_length=10,
+        choices=APPROVAL_CHOICES,
+        default='PENDING'
+    )
 
     def __str__(self):
         return f"Order {self.id} by {self.user.username}"
-
-    def save(self, *args, **kwargs):
-        if self.pk and self.is_cancelled:
-            original_order = Order.objects.filter(pk=self.pk).first()
-            if original_order and not original_order.is_cancelled:
-                # Restore stock to every matching Inventory row (FIFO-style)
-                remaining = self.quantity
-                for inv in Inventory.objects.filter(
-                    product=self.product, vendor=self.vendor
-                ).order_by("id"):
-                    add = min(remaining, inv.stock_quantity + remaining)  # always safe
-                    inv.stock_quantity = F("stock_quantity") + add
-                    inv.save(update_fields=["stock_quantity"])
-                    remaining -= add
-                    if remaining == 0:
-                        break
-
-        super().save(*args, **kwargs)
 
 
 class UserProfile(models.Model):

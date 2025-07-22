@@ -83,7 +83,11 @@ def purchase_list(request):
     ]
     summary = {k: status_totals.get(k, 0) for k in STATUS_KEYS}
 
-    grand_total = orders.aggregate(total=Sum("total_price"))["total"] or 0
+
+    grand_total = orders.aggregate(
+        total_quantity=Sum("quantity"),
+        grand_total_price=Sum("total_price"),
+    )
 
     return render(
         request,

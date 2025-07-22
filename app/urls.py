@@ -28,6 +28,7 @@ urlpatterns = [
     path("get-stock-quantity/", order_view.get_stock_quantity, name="get_stock_quantity"),
     path("orders/edit/<int:pk>/", order_view.edit_order, name="edit_order"),
     path("orders/cancel/<int:pk>/", order_view.cancel_order, name="cancel_order"),
+    path("orders/delete//<int:pk>", order_view.delete_order, name="delete_order"),
     path("register/", views.register, name="register"),
     path("profile/", views.profile, name="profile"),
     path('accounts/',        user_view.user_list,   name='user_list'),

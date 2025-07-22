@@ -6,7 +6,8 @@ from django.db.models import DecimalField, ExpressionWrapper, F, Q, Sum
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.dateparse import parse_date
-
+from django.views.decorators.http import require_http_methods
+from django.db import transaction
 from app.models import Inventory, Order, Product, Vendor
 
 
@@ -29,7 +30,7 @@ def order_list(request):
     if quantity:
         query &= Q(quantity=quantity)
 
-    vendor_q = request.GET.get("vendor")  # keep the same param name
+    vendor_q = request.GET.get("vendor")
     if vendor_q:
         query &= Q(vendor__name__icontains=vendor_q) | Q(
             vendor__vendor_id__icontains=vendor_q
@@ -37,9 +38,11 @@ def order_list(request):
 
     order_date = request.GET.get("order_date")
     if order_date:
-        parsed_date = parse_date(order_date)
-        if parsed_date:
+        try:
+            parsed_date = parse_date(order_date)
             query &= Q(order_date__date=parsed_date)
+        except ValueError:
+            pass
 
     product_price = request.GET.get("product_price")
     if product_price:
@@ -54,12 +57,10 @@ def order_list(request):
             pass
 
     status = request.GET.get("status")
-    if status == "cancelled":
-        query &= Q(is_cancelled=True)
-    elif status == "active":
-        query &= Q(is_cancelled=False)
+    if status:
+        query &= Q(status=status)
 
-    # Annotate total_price for each order
+    # Annotate total_price once
     orders = (
         Order.objects.annotate(
             total_price=ExpressionWrapper(
@@ -71,23 +72,28 @@ def order_list(request):
         .order_by("-id")
     )
 
-    # Aggregate total values
+    # 1) Overall aggregates
     orders_total = orders.aggregate(
         total_quantity=Sum("quantity"),
-        active_count=Sum("quantity", filter=Q(is_cancelled=False)),
-        cancelled_count=Sum("quantity", filter=Q(is_cancelled=True)),
-        total_price=Sum(
-            ExpressionWrapper(
-                F("quantity") * F("product__price"),
-                output_field=DecimalField(max_digits=10, decimal_places=2),
-            )
-        ),
+        grand_total_price=Sum("total_price"),
+    )
+
+    # 2) Quantity totals per status (flat dict for template)
+    status_totals = dict(
+        orders.values("status")
+        .annotate(qty=Sum("quantity"))
+        .values_list("status", "qty")
     )
 
     return render(
         request,
         "app/order/order_list.html",
-        {"orders": orders, "orders_total": orders_total},
+        {
+            "orders": orders,
+            "orders_total": orders_total,
+            "status_totals": status_totals,
+            "status_choices": Order.STATUS_CHOICES,
+        },
     )
 
 
@@ -215,6 +221,7 @@ def edit_order(request, pk):
         order.product_id = request.POST["product"]
         order.vendor_id = request.POST["vendor"]
         order.quantity = request.POST["qty"]
+        order.status = request.POST.get("status")
         order.save()
         messages.success(
             request,
@@ -245,3 +252,39 @@ def cancel_order(request, pk):
         )
         return redirect("order_list")
     return render(request, "app/order/cancel_order.html", {"order": order})
+
+
+@login_required
+@require_http_methods(["GET", "POST"])
+@transaction.atomic
+def delete_order(request, pk):
+    order = get_object_or_404(Order, pk=pk)
+
+    if request.method == "POST":
+        # 1. Restore stock (FIFO)
+        remaining = order.quantity
+        inventories = (
+            Inventory.objects
+            .filter(product=order.product, vendor=order.vendor)
+            .order_by("id")
+        )
+        for inv in inventories:
+            add = min(remaining, inv.stock_quantity + remaining)
+            inv.stock_quantity = F("stock_quantity") + add
+            inv.save(update_fields=["stock_quantity"])
+            remaining -= add
+            if remaining == 0:
+                break
+
+        # 2. Delete the order
+        order.delete()
+
+        messages.success(
+            request,
+            f"Order {order.id} deleted and stock restored.",
+            extra_tags="auto-dismiss page-specific",
+        )
+        return redirect("order_list")
+
+    # GET: show confirmation page
+    return render(request, "app/order/delete_order.html", {"order": order})

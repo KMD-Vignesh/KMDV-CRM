@@ -82,6 +82,27 @@
   background: #27ae60;
 }
 
+
+/*  Order badges  */
+.dv-table .badge.order-raised {
+  background: #3498db;
+}
+.dv-table .badge.order-approved {
+  background: #8e44ad;
+}
+.dv-table .badge.order-rejected {
+  background: #e74c3c;
+}
+.dv-table .badge.order-shipped {
+  background: #f39c12;
+}
+.dv-table .badge.order-delivered {
+  background: #27ae60;
+}
+.dv-table .badge.order-returned {
+  background: #933227;
+}
+
 .dv-table .btn {
   display: inline-block;
   padding: 4px 8px;

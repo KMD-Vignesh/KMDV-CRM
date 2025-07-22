@@ -3,8 +3,10 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import F, Sum
 from django.shortcuts import redirect, render
 
+from app.modules.chart_module import chart_js_script
+
 from .forms import CustomUserCreationForm, UserUpdateForm
-from .models import Category, Inventory, Order, Product, UserProfile
+from .models import Category, Inventory, Order, Product, PurchaseOrder, UserProfile
 
 
 @login_required
@@ -28,6 +30,7 @@ def dashboard(request):
 
     total_stock = Inventory.objects.aggregate(t=Sum("stock_quantity"))["t"] or 0
     total_orders = Order.objects.aggregate(total=Sum("quantity"))["total"] or 0
+    total_po_orders = PurchaseOrder.objects.aggregate(total=Sum("quantity"))["total"] or 0
 
     # NEW / UPDATED AGGREGATES
     total_inward_qty = (
@@ -36,6 +39,11 @@ def dashboard(request):
 
     total_order_price = (
         Order.objects.aggregate(total=Sum(F("quantity") * F("product__price")))["total"]
+        or 0
+    )
+
+    total_po_order_price = (
+        PurchaseOrder.objects.aggregate(total=Sum(F("quantity") * F("product__price")))["total"]
         or 0
     )
 
@@ -54,12 +62,17 @@ def dashboard(request):
         "products": products,
         "categories": categories,
         "inventory": inventory,
+        "total_po_orders":total_po_orders,
         "total_stock": total_stock,
         "total_orders": total_orders,
         "total_inward_qty": total_inward_qty,
+        "total_po_order_price":total_po_order_price,
         "total_order_price": total_order_price,
         "total_stock_price": total_stock_price,
+        "stock_script": chart_js_script("stockChart", inventory_summary, dataset_label="Stock"),
+        "order_script": chart_js_script("orderChart", order_summary,  dataset_label="Orders"),
     }
+    
 
     return render(request, "app/base/dashboard.html", context)
 

@@ -8,10 +8,14 @@
   <!-- ---------- KPI ROW ---------- -->
 <section class="kpi-row">
   <div class="kpi-card">
-    <h3>Products</h3>
-    <p>{{ products_count|default:"0" }}</p>
+    <h3>Total Purchase</h3>
+    <p>{{ total_po_orders|default:"0" }}</p>
   </div>
-
+  <div class="kpi-card">
+    <h3>Total Inward</h3>
+    <p>{{ total_inward_qty|default:"0" }}</p>
+  </div>
+  
   <div class="kpi-card">
     <h3>Total Orders</h3>
     <p>{{ total_orders|default:"0" }}</p>
@@ -22,13 +26,13 @@
     <p>{{ total_stock|default:"0" }}</p>
   </div>
 
-  <div class="kpi-card">
-    <h3>Total Inward Qty</h3>
-    <p>{{ total_inward_qty|default:"0" }}</p>
-  </div>
+
 </section>
 <section class="kpi-row">
-
+  <div class="kpi-card">
+    <h3>Total Purchase Price</h3>
+    <p>₹{{ total_po_order_price|floatformat:2|indian_comma|default:"0.00" }}</p>
+  </div>
   <div class="kpi-card">
     <h3>Total Order Price</h3>
     <p>₹{{ total_order_price|floatformat:2|indian_comma|default:"0.00" }}</p>
