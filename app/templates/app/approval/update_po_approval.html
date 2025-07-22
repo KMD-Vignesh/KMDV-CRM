@@ -10,6 +10,11 @@
 {% endif %}
 <div class="page-header">
   <h1>Update PO Approval</h1>
+  <div>
+<a href="{% url 'approval_manager_list' %}" class="back-link2">
+  ← Back to Approval List
+</a>
+  </div>
 </div>
 <div class="dv-table-responsive">
 <table class="dv-table">
@@ -42,6 +47,7 @@
     {% endfor %}
   </tbody>
 </table>
+
 </div>
 
 {% endblock %}
