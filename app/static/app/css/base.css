@@ -217,12 +217,15 @@ nav .logo img {
 
 .multiButton{
   display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 
 }
 
-.multiButton a:first-child{
-  margin-inline-end: 25px;
+.multiButton a {
+  flex: 1 1 auto; 
 }
+
 
 .back-link2 {
   display: inline-flex;

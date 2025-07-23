@@ -13,17 +13,19 @@
 <div class="page-header">
   <h1>Approval Requests</h1>
   <div class="multiButton">
-    <a class="btn-add" href="{% url 'update_po_approval' %}">Update PO Approval</a>
-    <a class="btn-add" href="{% url 'update_inventory_approval' %}">Update INV Approval</a>
+    <a class="btn-add" href="{% url 'update_po_approval' %}">Purchase Approvals</a>
+    <a class="btn-add" href="{% url 'update_inventory_approval' %}">Inventory Approvals</a>
+    <a class="btn-add" href="{% url 'update_order_approval' %}">Order Approvals</a>
+
   </div>
 </div>
 
 <div class="page-header">
 
-<h3 style="color: brown;">PO Approval</h3>
+<h3 style="color: brown;">Purchase Pending</h3>
 
 </div>
-{% if orders %}
+{% if purchase_orders %}
   <div class="dv-table-responsive">
     <table class="dv-table">
       <thead class="table-light">
@@ -38,7 +40,7 @@
         </tr>
       </thead>
       <tbody>
-        {% for order in orders %}
+        {% for order in purchase_orders %}
           <tr>
             <td>{{ order.id }}</td>
             <td>{{ order.product.name }}</td>
@@ -62,7 +64,7 @@
 <div class="page-header"></div>
 
 <div class="page-header">
-<h3 style="color: brown;">Inventory Approval</h3>
+<h3 style="color: brown;">Inventory Pending</h3>
 </div>
 
 {% if inventories %}
@@ -98,5 +100,45 @@
 {% else %}
   <p class="text-muted">No approval requests yet.</p>
 {% endif %}
+<div class="page-header"></div>
+<div class="page-header"></div>
 
+<div class="page-header">
+    <h3 style="color: brown;">Order Pending</h3>
+</div>
+{% if orders %}
+  <div class="dv-table-responsive">
+    <table class="dv-table">
+      <thead class="table-light">
+        <tr>
+          <th>ID</th>
+          <th>Product</th>
+          <th>Vendor</th>
+          <th>Quantity</th>
+          <th>Status</th>
+          <th>Approval Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in orders %}
+          <tr>
+            <td>{{ order.id }}</td>
+            <td>{{ order.product.name }}</td>
+            <td>{{ order.vendor.name }}</td>
+            <td>{{ order.quantity }}</td>
+            <td>{{ order.get_status_display }}</td>
+            <td>{{ order.get_approval_status_display }}</td>
+            <td>
+              <a class="btn" href="{% url 'approve_order' order.pk %}">Approve</a>
+              <a class="btn danger" href="{% url 'reject_order' order.pk %}">Reject</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <p class="text-muted">No approval requests yet.</p>
+{% endif %}
 {% endblock %}

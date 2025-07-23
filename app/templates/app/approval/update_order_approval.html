@@ -11,7 +11,7 @@
     {% endfor %}
 {% endif %}
 <div class="page-header">
-  <h1>Update Inward Approval</h1>
+  <h1>Update Order Approval</h1>
     <div>
 <a href="{% url 'approval_manager_list' %}" class="back-link2">
   ← Back to Approval List
@@ -22,38 +22,36 @@
 <table class="dv-table">
   <thead>
     <tr>
-      <th>Inward ID</th><th>Vendor</th><th>Product</th><th>Price</th><th>Qty</th><th>Total&nbsp;Price</th>
-      <th style="white-space: nowrap;text-align: center;">Current&nbsp;Status</th><th style="white-space: nowrap;text-align: center;">Approval&nbsp;Status</th><th class="actions">Actions</th>
+      <th>Order ID</th><th>Vendor</th><th>Product</th><th>Price</th><th>Qty</th><th>Total&nbsp;Price</th>
+      <th style="white-space: nowrap;text-align: center;" >Current&nbsp;Status</th><th style="white-space: nowrap;text-align: center;">Approval&nbsp;Status</th><th class="actions">Actions</th>
     </tr>
   </thead>
   <tbody>
-    {% for inv in inventories %}
+    {% for order in orders %}
     <tr>
-      <td>{{ inv.id }}</td>
-      <td>{{ inv.vendor.name|default:"—" }}</td>
-      <td>{{ inv.product.name }}</td>
-      <td>₹{{ inv.product.price|floatformat:2|indian_comma }}</td>
-      <td>{{ inv.inward_qty }}</td>
-      <td>₹{{ inv.total_price|floatformat:2|indian_comma }}</td>
+      <td>{{ order.id }}</td>
+      <td>{{ order.vendor.name|default:"—" }}</td>
+      <td>{{ order.product.name }}</td>
+            <td>₹{{ order.product.price|floatformat:2|indian_comma }}</td>
 
+      <td>{{ order.quantity }}</td>
+      <td>₹{{ order.total_price|floatformat:2|indian_comma }}</td>
 
-            <td style="white-space: nowrap;text-align: center;">
-          <span class="badge inventory-{{ inv.get_status_display|lower }}">
-            {{ inv.get_status_display }}
+      <td style="white-space: nowrap; text-align: center;">
+          <span class="badge order-{{ order.get_status_display|lower }}">
+            {{ order.get_status_display }}
           </span>
         </td>
       
         <td style="white-space: nowrap;text-align: center;">
-          <span class="approval-badge approval-list-{{ inv.approval_status|lower }}">
-            {{ inv.approval_status|title }}
+          <span class="approval-badge approval-list-{{ order.approval_status|lower }}">
+            {{ order.approval_status|title }}
           </span>
         </td>
-
-
       <td class="actions">
         <form method="post" style="display:inline;">
           {% csrf_token %}
-          <input type="hidden" name="inv_id" value="{{ inv.id }}">
+          <input type="hidden" name="order_id" value="{{ order.id }}">
           <button type="submit" name="action" value="PENDING"  class="btn-pending">Pending</button>
           <button type="submit" name="action" value="APPROVED" class="btn-approve">Approve</button>
           <button type="submit" name="action" value="CANCELLED" class="btn-cancel">Cancel</button>

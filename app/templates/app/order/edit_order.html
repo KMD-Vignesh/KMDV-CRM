@@ -1,15 +1,22 @@
 {% extends 'app/base/base.html' %}
 {% block title %}Orders{% endblock %}
 {% block content %}
-<div class="form-wrapper">
-  <h1>Edit Order</h1>
 
-  <form class="form-card" method="post">
+<div class="form-wrapper">
+  <h1>Edit Order #{{ order.id }}</h1>
+
+  <p><strong>Approval Status:</strong>
+    <span class="badge approval-{{ order.approval_status|lower }}">
+      {{ order.get_approval_status_display }}
+    </span>
+  </p>
+
+  <form class="form-card" method="post" id="order-form">
     {% csrf_token %}
 
     <div class="form-group">
-      <label>Product:</label>
-      <select name="product" class="form-control" required>
+      <label for="product-select">Product:</label>
+      <select id="product-select" name="product" class="form-control" required>
         {% for prod in products %}
           <option value="{{ prod.id }}" {% if prod.id == order.product.id %}selected{% endif %}>
             {{ prod.name|title }}&nbsp;({{ prod.product_id|title }})
@@ -19,8 +26,8 @@
     </div>
 
     <div class="form-group">
-      <label>Vendor:</label>
-      <select name="vendor" class="form-control" required>
+      <label for="vendor-select">Vendor:</label>
+      <select id="vendor-select" name="vendor" class="form-control" required>
         {% for vend in vendors %}
           <option value="{{ vend.id }}" {% if vend.id == order.vendor.id %}selected{% endif %}>
             {{ vend.name|title }}&nbsp;({{ vend.vendor_id|title }})
@@ -30,23 +37,98 @@
     </div>
 
     <div class="form-group">
-      <label>Quantity:</label>
-      <input type="number" name="qty" class="form-control" value="{{ order.quantity }}" required>
+      <label for="quantity-input">Quantity:</label>
+      <input
+        type="number"
+        id="quantity-input"
+        name="qty"
+        class="form-control"
+        value="{{ order.quantity }}"
+        min="1"
+        required
+      />
+      <small id="stock-info" class="form-text"></small>
     </div>
 
-    <div class="form-group">
-  <label>Status:</label>
-  <select name="status" class="form-control" required>
-    {% for val, label in order.STATUS_CHOICES %}
-      <option value="{{ val }}" {% if order.status == val %}selected{% endif %}>
-        {{ label }}
-      </option>
-    {% endfor %}
-  </select>
-</div>
+{% if allowed_status %}
+  <div class="form-group">
+    <label>Status:</label>
+    <select name="status" class="form-control" required>
+      {% for val, label in allowed_status %}
+        <option value="{{ val }}" {% if val == order.status %}selected{% endif %}>
+          {{ label }}
+        </option>
+      {% endfor %}
+    </select>
+  </div>
+{% else %}
+  {# read-only so form still submits the existing value #}
+  <input type="hidden" name="status" value="{{ order.status }}">
+  <p><strong>Status:</strong> {{ order.get_status_display }}</p>
+{% endif %}
 
-    <button type="submit" class="btn btn-primary">Update</button>
+        <button type="submit" name="save" class="btn btn-primary">Save changes</button>
+        
+      {% if order.approval_status not in 'PENDING,APPROVED' %}
+      <button type="submit" name="request_approval" class="btn btn-warning">
+        Request Approval
+      </button>
+    {% endif %}
     <a href="{% url 'order_list' %}" class="btn btn-secondary">Back</a>
   </form>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const productSelect = document.getElementById("product-select");
+  const vendorSelect  = document.getElementById("vendor-select");
+  const qtyInput      = document.getElementById("quantity-input");
+  const stockInfo     = document.getElementById("stock-info");
+
+  const ORIGINAL_QTY = parseInt(qtyInput.value, 10) || 0;
+
+  function fetchStock() {
+    const pid = productSelect.value;
+    const vid = vendorSelect.value;
+    if (!pid || !vid) return;
+
+    fetch(`/get-stock-quantity/?product_id=${pid}&vendor_id=${vid}`)
+      .then(r => r.json())
+      .then(data => {
+        const physicalStock = data.stock_quantity;
+        const editableStock = physicalStock + ORIGINAL_QTY;
+
+        stockInfo.textContent =
+          `Physical stock: ${physicalStock}  +  Order qty: ${ORIGINAL_QTY}  =  Editable: ${editableStock}`;
+        qtyInput.max = editableStock;
+
+        if (editableStock === 0) {
+          stockInfo.className = "form-text text-danger";
+          qtyInput.disabled = true;
+        } else {
+          stockInfo.className = "form-text text-success";
+          qtyInput.disabled = false;
+        }
+      });
+  }
+
+  // initial load
+  fetchStock();
+
+  // re-fetch on change
+  productSelect.addEventListener("change", fetchStock);
+  vendorSelect.addEventListener("change", fetchStock);
+
+  // live validation
+  qtyInput.addEventListener("input", function () {
+    const max = parseInt(this.max);
+    const val = parseInt(this.value);
+    if (max && val > max) {
+      this.setCustomValidity(`Maximum editable quantity is ${max}`);
+    } else {
+      this.setCustomValidity("");
+    }
+  });
+});
+</script>
 {% endblock %}

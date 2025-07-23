@@ -98,6 +98,7 @@ def order_list(request):
 
 
 @login_required
+@transaction.atomic
 def add_order(request):
     if request.method == "POST":
         product_id = request.POST.get("product")
@@ -215,27 +216,106 @@ def get_stock_quantity(request):
 
 
 @login_required
+@transaction.atomic
 def edit_order(request, pk):
     order = get_object_or_404(Order, pk=pk)
+    original_qty = order.quantity
+
+    # statuses to hide if order is already approved
+    DISALLOWED_AFTER_APPROVAL = {"ORDER_RAISED", "ORDER_REJECTED"}
+
+    if order.approval_status == "APPROVED":
+        allowed_status = [(k, v) for k, v in Order.STATUS_CHOICES
+                          if k not in DISALLOWED_AFTER_APPROVAL]
+    else:
+        allowed_status = []   # template will not render the dropdown
+
     if request.method == "POST":
-        order.product_id = request.POST["product"]
-        order.vendor_id = request.POST["vendor"]
-        order.quantity = request.POST["qty"]
-        order.status = request.POST.get("status")
+        # ---------- 1) “Request Approval” button ----------
+        if "request_approval" in request.POST:
+            order.approval_status = "PENDING"
+            order.save(update_fields=["approval_status"])
+            messages.success(
+                request,
+                f"Approval re-requested for Order #{order.id}.",
+                extra_tags="auto-dismiss page-specific",
+            )
+            return redirect("edit_order", pk=pk)
+
+        # ---------- 2) normal save ----------
+        product_id = int(request.POST["product"])
+        vendor_id  = int(request.POST["vendor"])
+        new_qty    = int(request.POST["qty"])
+
+        product = get_object_or_404(Product, pk=product_id)
+        vendor  = get_object_or_404(Vendor, pk=vendor_id)
+
+        # editable stock = physical stock + what this order already holds
+        current_stock = (
+            Inventory.objects.filter(product=product, vendor=vendor)
+            .aggregate(total=Sum("stock_quantity"))["total"] or 0
+        )
+        available = current_stock + original_qty
+
+        if new_qty > available:
+            messages.error(
+                request,
+                f"Insufficient stock. Available for edit: {available}, Requested: {new_qty}",
+                extra_tags="auto-dismiss page-specific",
+            )
+            return redirect("edit_order", pk=pk)
+
+        # restore old qty to inventory (FIFO reverse)
+        restore = original_qty
+        for inv in Inventory.objects.filter(
+            product=order.product, vendor=order.vendor
+        ).order_by("id"):
+            give = min(restore, inv.stock_quantity + restore)
+            inv.stock_quantity = F("stock_quantity") + give
+            inv.save(update_fields=["stock_quantity"])
+            restore -= give
+            if restore == 0:
+                break
+
+        # deduct new qty from inventory (FIFO forward)
+        deduct = new_qty
+        for inv in Inventory.objects.filter(
+            product=product, vendor=vendor, stock_quantity__gt=0
+        ).order_by("id"):
+            take = min(deduct, inv.stock_quantity)
+            inv.stock_quantity = F("stock_quantity") - take
+            inv.save(update_fields=["stock_quantity"])
+            deduct -= take
+            if deduct == 0:
+                break
+
+        # update order
+        order.product_id = product_id
+        order.vendor_id  = vendor_id
+        order.quantity   = new_qty
+        if allowed_status:  # only when dropdown was shown
+            order.status = request.POST["status"]
         order.save()
+
         messages.success(
             request,
-            f"Order - {order.id} updated successfully!",
+            f"Order {order.id} updated successfully!",
             extra_tags="auto-dismiss page-specific",
         )
         return redirect("order_list")
-    products = Product.objects.all()
-    vendors = Vendor.objects.all()
 
+    # GET ---------------------------------------------------------------
+    products = Product.objects.all()
+    vendors  = Vendor.objects.all()
     return render(
         request,
         "app/order/edit_order.html",
-        {"order": order, "products": products, "vendors": vendors},
+        {
+            "order": order,
+            "products": products,
+            "vendors": vendors,
+            "allowed_status": allowed_status,
+        },
     )
 
 

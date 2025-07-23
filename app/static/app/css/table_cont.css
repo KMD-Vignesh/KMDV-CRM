@@ -157,10 +157,8 @@
 .btn-cancel {
 
 
-  display: inline-block;
-  padding: 5px 10px;
-  font-size: 0.8rem;
-  font-weight: 350;
+  padding: 3px 7px;
+  font-size: 0.75rem;
   text-decoration: none;
   border: 1px solid transparent;
   border-radius: 4px;
@@ -170,33 +168,30 @@
 
 .btn-pending {
   color: #fff;
-  background-color: #007bff;
-    border-color: #007bff;
+  background-color: #3498db;
 
 } /* blue  */
 .btn-approve {
   color: #ffffff;
-  background-color: #28a745;
-      border-color: #28a745;
+  background-color: #27ae60;
 
 } /* green */
 .btn-cancel {
   color: #fff;
-  background-color: #dc3545;
-      border-color: #dc3545;
+  background-color: #e74c3c;
 
 } /* red   */
 
 .btn-pending:hover {
-  background: #00448b;
+  background: #246c9c;
   border-color: #080808;
 } /* blue  */
 .btn-approve:hover {
-  background: #155724;
+  background: #186f3c;
   border-color: #080808;
 } /* green */
 .btn-cancel:hover {
-  background: #741b24;
+  background: #943126;
   border-color: #080808;
 } /* red   */
 
@@ -211,3 +206,25 @@
   font-size:80% !important;
   white-space: nowrap;
 }
+
+.approval-badge{
+  padding: 3px 7px;
+  font-size: 0.75rem;
+  border-radius: 3px;
+    color: #fff;
+
+}
+
+.approval-list-pending {
+
+  background-color: #3498db;
+
+} /* blue  */
+.approval-list-approved {
+  background-color: #27ae60;
+
+} /* green */
+.approval-list-cancelled {
+  background-color: #e74c3c;
+
+} /* red   */

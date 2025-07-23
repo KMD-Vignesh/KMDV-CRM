@@ -1,5 +1,7 @@
 {% extends 'app/base/base.html' %}
 {% block title %}Approval{% endblock %}
+{% load static %}
+{% load custom_filters %}
 {% block content %}
 {% if messages %}
     {% for message in messages %}
@@ -20,19 +22,33 @@
 <table class="dv-table">
   <thead>
     <tr>
-      <th>PO ID</th><th>Product</th><th>Vendor</th><th>Qty</th>
-      <th>Current&nbsp;Status</th><th class="actions">Actions</th>
+      <th>PO ID</th><th>Vendor</th><th>Product</th><th>Price</th><th>Qty</th><th>Total&nbsp;Price</th>
+      <th style="white-space: nowrap;text-align: center;">Current&nbsp;Status</th><th style="white-space: nowrap;text-align: center;">Approval&nbsp;Status</th><th class="actions">Actions</th>
     </tr>
   </thead>
   <tbody>
     {% for o in orders %}
     <tr>
       <td>{{ o.id }}</td>
-      <td>{{ o.product.name }}</td>
       <td>{{ o.vendor.name|default:"—" }}</td>
-      <td>{{ o.quantity }}</td>
-      <td>{{ o.get_status_display }}</td>
+      <td>{{ o.product.name }}</td>
+            <td>₹{{ o.product.price|floatformat:2|indian_comma }}</td>
 
+      <td>{{ o.quantity }}</td>
+            <td>₹{{ o.total_price|floatformat:2|indian_comma }}</td>
+
+
+            <td style="white-space: nowrap;text-align: center;">
+          <span class="badge po-{{ o.get_status_display|lower }}">
+            {{ o.get_status_display }}
+          </span>
+        </td>
+      
+        <td style="white-space: nowrap;text-align: center;">
+          <span class="approval-badge approval-list-{{ o.approval_status|lower }}">
+            {{ o.approval_status|title }}
+          </span>
+        </td>
       <td class="actions">
         <form method="post" style="display:inline;">
           {% csrf_token %}

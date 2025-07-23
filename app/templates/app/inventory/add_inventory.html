@@ -1,12 +1,12 @@
-{% extends 'app/base/base.html' %} 
+{% extends 'app/base/base.html' %}
 {% block title %}Inventory{% endblock %}
 {% block content %}
 <div class="form-wrapper">
   <h1>Add Inventory / Stock Inward</h1>
 
-  {% if messages %} {% for message in messages %}
-  <div class="alert">{{ message }}</div>
-  {% endfor %} {% endif %}
+  {% if messages %}
+    {% for message in messages %}<div class="alert">{{ message }}</div>{% endfor %}
+  {% endif %}
 
   <form class="form-card" method="post">
     {% csrf_token %}
@@ -15,7 +15,7 @@
       <label>Product:</label>
       <select name="product" class="form-control" required>
         {% for prod in products %}
-        <option value="{{ prod.id }}">{{ prod.name|title }}&nbsp;({{ prod.product_id|title }})</option>
+          <option value="{{ prod.id }}">{{ prod.name|title }}&nbsp;({{ prod.product_id|title }})</option>
         {% endfor %}
       </select>
     </div>
@@ -24,7 +24,7 @@
       <label>Vendor:</label>
       <select name="vendor" class="form-control" required>
         {% for vend in vendors %}
-        <option value="{{ vend.id }}">{{ vend.name|title }}&nbsp;({{ vend.vendor_id|title }})</option>
+          <option value="{{ vend.id }}">{{ vend.name|title }}&nbsp;({{ vend.vendor_id|title }})</option>
         {% endfor %}
       </select>
     </div>
@@ -33,18 +33,8 @@
       <label>Quantity:</label>
       <input type="number" name="qty" class="form-control" min="1" required />
     </div>
-    
-    <div class="form-group">
-  <label>Status:</label>
-  <select name="status" class="form-control" required>
-    {% for val, label in status_choices %}
-      <option value="{{ val }}"
-        {% if val == inventory.status|default:'INWARD_REQUESTED' %}selected{% endif %}>
-        {{ label }}
-      </option>
-    {% endfor %}
-  </select>
-</div>
+
+    <!-- status dropdown removed -->
 
     <button type="submit" class="btn btn-primary">Add</button>
     <a href="{% url 'inventory_list' %}" class="btn btn-secondary">Back</a>

@@ -96,15 +96,17 @@ def inventory_list(request):
 def add_inventory(request):
     if request.method == "POST":
         product_id = request.POST["product"]
-        vendor_id = request.POST["vendor"]
-        qty = request.POST["qty"]
+        vendor_id  = request.POST["vendor"]
+        qty        = int(request.POST["qty"])
+
         Inventory.objects.create(
-            product_id=product_id,
-            vendor_id=vendor_id,
-            stock_quantity=qty,
-            inward_qty=qty,
-            status=request.POST.get("status", "INWARD_REQUESTED"),
+            product_id     = product_id,
+            vendor_id      = vendor_id,
+            stock_quantity = qty,
+            inward_qty     = qty,
+            status         = "INWARD_REQUESTED",   # hard-coded
         )
+
         messages.success(
             request,
             f"Inventory Qty {qty} for (Product:{product_id},Vendor:{vendor_id}) created successfully!",
@@ -117,8 +119,7 @@ def add_inventory(request):
         "app/inventory/add_inventory.html",
         {
             "products": Product.objects.all(),
-            "vendors": Vendor.objects.all(),
-            "status_choices": Inventory.STATUS_CHOICES,
+            "vendors":  Vendor.objects.all(),
         },
     )
 
