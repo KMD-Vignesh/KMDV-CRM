@@ -50,7 +50,10 @@ ul li {
   border-radius: 3px;
 }
 canvas {
-  max-width: 100%;
+ width: 100% !important;   /* keep responsive width */
+  height: auto !important;  /* keep aspect-ratio */
+  max-height: 300px;        /* never taller than you want */
+  display: block;
 }
 .nav-links li {
   margin: 10px 0;

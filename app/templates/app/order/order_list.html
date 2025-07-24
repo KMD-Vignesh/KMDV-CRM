@@ -21,7 +21,7 @@
     </div>
 </div>
 
-<div class="page-header">
+<div class="page-header dv-table-responsive">
     {% if orders %}
         <p>Total Orders: <strong style="color:#245c9c;">{{ orders_total.total_quantity|indian_comma }}</strong></p>
         <p>Raised:      <strong style="color: #3498db;">{{ status_totals.ORDER_RAISED|default:0 }}</strong></p>
