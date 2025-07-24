@@ -13,43 +13,77 @@
 
   <form class="form-card" method="post" id="order-form">
     {% csrf_token %}
+{# ---------- Product ---------- #}
+<div class="form-group">
+  <label for="product-select">Product:</label>
 
-    <div class="form-group">
-      <label for="product-select">Product:</label>
-      <select id="product-select" name="product" class="form-control" required>
-        {% for prod in products %}
-          <option value="{{ prod.id }}" {% if prod.id == order.product.id %}selected{% endif %}>
-            {{ prod.name|title }}&nbsp;({{ prod.product_id|title }})
-          </option>
-        {% endfor %}
-      </select>
-    </div>
+  {% if order.approval_status == 'APPROVED' %}
+    {# greyed-out, read-only display #}
+    <select id="product-select" class="form-control" disabled>
+      <option selected>{{ order.product.name|title }} ({{ order.product.product_id|title }})</option>
+    </select>
+    {# hidden twin that is actually sent with the form #}
+    <input type="hidden" name="product" value="{{ order.product.id }}">
+  {% else %}
+    {# normal editable dropdown #}
+    <select id="product-select" name="product" class="form-control" required>
+      {% for prod in products %}
+        <option value="{{ prod.id }}" {% if prod.id == order.product.id %}selected{% endif %}>
+          {{ prod.name|title }} ({{ prod.product_id|title }})
+        </option>
+      {% endfor %}
+    </select>
+  {% endif %}
+</div>
 
-    <div class="form-group">
-      <label for="vendor-select">Vendor:</label>
-      <select id="vendor-select" name="vendor" class="form-control" required>
-        {% for vend in vendors %}
-          <option value="{{ vend.id }}" {% if vend.id == order.vendor.id %}selected{% endif %}>
-            {{ vend.name|title }}&nbsp;({{ vend.vendor_id|title }})
-          </option>
-        {% endfor %}
-      </select>
-    </div>
+{# ---------- Vendor ---------- #}
+<div class="form-group">
+  <label for="vendor-select">Vendor:</label>
 
-    <div class="form-group">
-      <label for="quantity-input">Quantity:</label>
-      <input
-        type="number"
-        id="quantity-input"
-        name="qty"
-        class="form-control"
-        value="{{ order.quantity }}"
-        min="1"
-        required
-      />
-      <small id="stock-info" class="form-text"></small>
-    </div>
+  {% if order.approval_status == 'APPROVED' %}
+    <!-- greyed-out, read-only display -->
+    <select id="vendor-select" class="form-control" disabled>
+      <option selected>{{ order.vendor.name|title }} ({{ order.vendor.vendor_id|title }})</option>
+    </select>
+    <!-- hidden twin that is actually sent -->
+    <input type="hidden" name="vendor" value="{{ order.vendor.id }}">
+  {% else %}
+    <!-- normal editable dropdown -->
+    <select id="vendor-select" name="vendor" class="form-control" required>
+      {% for vend in vendors %}
+        <option value="{{ vend.id }}" {% if vend.id == order.vendor.id %}selected{% endif %}>
+          {{ vend.name|title }} ({{ vend.vendor_id|title }})
+        </option>
+      {% endfor %}
+    </select>
+  {% endif %}
+</div>
 
+{# ---------- Quantity ---------- #}
+<div class="form-group">
+  <label for="quantity-input">Quantity:</label>
+
+  {% if order.approval_status == 'APPROVED' %}
+    <!-- greyed-out, read-only display -->
+    <input  type="number"
+            id="quantity-input"
+            class="form-control"
+            value="{{ order.quantity }}"
+            disabled>
+    <!-- hidden twin that is actually sent -->
+    <input type="hidden" name="qty" value="{{ order.quantity }}">
+  {% else %}
+    <!-- normal editable input -->
+    <input  type="number"
+            id="quantity-input"
+            name="qty"
+            class="form-control"
+            value="{{ order.quantity }}"
+            min="1"
+            required>
+  {% endif %}
+  <small id="stock-info" class="form-text"></small>
+</div>
 {% if allowed_status %}
   <div class="form-group">
     <label>Status:</label>

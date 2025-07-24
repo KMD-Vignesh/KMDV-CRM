@@ -36,6 +36,7 @@ class Inventory(models.Model):
         ("INWARD_REQUESTED", "Requested"),
         ("INWARD_APPROVED", "Approved"),
         ("INWARD_REJECTED", "Rejected"),
+        ("INWARD_QC", "QC-Done"),
         ("INWARD_COMPLETED", "Completed"),
     ]
 

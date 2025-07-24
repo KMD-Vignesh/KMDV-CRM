@@ -96,6 +96,17 @@ body {
   max-width: 100%;
   box-sizing: border-box;
 }
+.approval-card {
+  background: #fff;
+  border: 1px solid #c8c6c6;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+}
 
 /* ---------- Responsive Rules ---------- */
 @media (max-width: 768px) {

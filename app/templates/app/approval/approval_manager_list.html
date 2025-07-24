@@ -19,13 +19,11 @@
 
   </div>
 </div>
-
-<div class="page-header">
-
-<h3 style="color: brown;">Purchase Pending</h3>
-
-</div>
-{% if purchase_orders %}
+<section class="approval-card">
+  <div class="page-header">
+  <h3 style="color: brown;">Purchase Pending</h3>
+  </div>
+  {% if purchase_orders %}
   <div class="dv-table-responsive">
     <table class="dv-table">
       <thead class="table-light">
@@ -57,11 +55,12 @@
       </tbody>
     </table>
   </div>
-{% else %}
-  <p class="text-muted">No approval requests yet.</p>
-{% endif %}
-<div class="page-header"></div>
-<div class="page-header"></div>
+  {% else %}
+    <p class="text-muted">No approval requests yet.</p>
+  {% endif %}
+  </section>
+
+<section class="approval-card">
 
 <div class="page-header">
 <h3 style="color: brown;">Inventory Pending</h3>
@@ -100,13 +99,13 @@
 {% else %}
   <p class="text-muted">No approval requests yet.</p>
 {% endif %}
-<div class="page-header"></div>
-<div class="page-header"></div>
+  </section>
 
-<div class="page-header">
-    <h3 style="color: brown;">Order Pending</h3>
-</div>
-{% if orders %}
+<section class="approval-card">
+  <div class="page-header">
+      <h3 style="color: brown;">Order Pending</h3>
+  </div>
+  {% if orders %}
   <div class="dv-table-responsive">
     <table class="dv-table">
       <thead class="table-light">
@@ -141,4 +140,6 @@
 {% else %}
   <p class="text-muted">No approval requests yet.</p>
 {% endif %}
+</section>
+
 {% endblock %}

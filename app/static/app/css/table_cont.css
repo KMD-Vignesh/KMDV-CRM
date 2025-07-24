@@ -78,6 +78,9 @@
 .dv-table .badge.inventory-rejected {
   background: #e74c3c;
 }
+.dv-table .badge.inventory-qc-done {
+  background: #8eaf58;
+}
 .dv-table .badge.inventory-completed {
   background: #27ae60;
 }

@@ -12,7 +12,6 @@
 <div class="form-wrapper">
   <h1>Edit Inventory #{{ inventory.id }}</h1>
 
-  <!-- approval badge -->
   <p><strong>Approval Status:</strong>
      <span class="badge approval-{{ inventory.approval_status|lower }}">
        {{ inventory.get_approval_status_display }}
@@ -22,33 +21,56 @@
   <form class="form-card" method="post">
     {% csrf_token %}
 
+    <!-- ========== PRODUCT ========== -->
     <div class="form-group">
       <label>Product:</label>
-      <select name="product" class="form-control" required>
-        {% for prod in products %}
-          <option value="{{ prod.id }}" {% if prod.id == inventory.product.id %}selected{% endif %}>
-            {{ prod.name|title }} ({{ prod.product_id|title }})
-          </option>
-        {% endfor %}
-      </select>
+      {% if inventory.approval_status == 'APPROVED' %}
+        <select class="form-control" disabled>
+          <option selected>{{ inventory.product.name|title }} ({{ inventory.product.product_id|title }})</option>
+        </select>
+        <input type="hidden" name="product" value="{{ inventory.product.id }}">
+      {% else %}
+        <select name="product" class="form-control" required>
+          {% for prod in products %}
+            <option value="{{ prod.id }}" {% if prod.id == inventory.product.id %}selected{% endif %}>
+              {{ prod.name|title }} ({{ prod.product_id|title }})
+            </option>
+          {% endfor %}
+        </select>
+      {% endif %}
     </div>
 
+    <!-- ========== VENDOR ========== -->
     <div class="form-group">
       <label>Vendor:</label>
-      <select name="vendor" class="form-control" required>
-        {% for vend in vendors %}
-          <option value="{{ vend.id }}" {% if vend.id == inventory.vendor.id %}selected{% endif %}>
-            {{ vend.name|title }} ({{ vend.vendor_id|title }})
-          </option>
-        {% endfor %}
-      </select>
+      {% if inventory.approval_status == 'APPROVED' %}
+        <select class="form-control" disabled>
+          <option selected>{{ inventory.vendor.name|title }} ({{ inventory.vendor.vendor_id|title }})</option>
+        </select>
+        <input type="hidden" name="vendor" value="{{ inventory.vendor.id }}">
+      {% else %}
+        <select name="vendor" class="form-control" required>
+          {% for vend in vendors %}
+            <option value="{{ vend.id }}" {% if vend.id == inventory.vendor.id %}selected{% endif %}>
+              {{ vend.name|title }} ({{ vend.vendor_id|title }})
+            </option>
+          {% endfor %}
+        </select>
+      {% endif %}
     </div>
 
+    <!-- ========== QUANTITY ========== -->
     <div class="form-group">
       <label>Quantity:</label>
-      <input type="number" name="qty" class="form-control" value="{{ inventory.stock_quantity }}" required>
+      {% if inventory.approval_status == 'APPROVED' %}
+        <input type="number" class="form-control" value="{{ inventory.stock_quantity }}" disabled>
+        <input type="hidden" name="qty" value="{{ inventory.stock_quantity }}">
+      {% else %}
+        <input type="number" name="qty" class="form-control" value="{{ inventory.stock_quantity }}" required>
+      {% endif %}
     </div>
 
+    <!-- Status logic (unchanged) -->
     {% if inventory.approval_status == 'APPROVED' %}
       <div class="form-group">
         <label>Status:</label>
@@ -67,7 +89,7 @@
 
     <button type="submit" name="save" class="btn btn-primary">Save changes</button>
 
-{% if inventory.approval_status not in 'PENDING,APPROVED' %}
+    {% if inventory.approval_status not in 'PENDING,APPROVED' %}
       <button type="submit" name="request_approval" class="btn btn-warning">
         Request Approval
       </button>

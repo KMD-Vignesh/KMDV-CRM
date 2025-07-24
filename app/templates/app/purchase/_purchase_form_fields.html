@@ -1,23 +1,54 @@
+<!-- ===== PRODUCT ===== -->
 <div class="form-group">
   <label>Product:</label>
-  <select name="product" class="form-control" required>
-    {% for p in products %}
-      <option value="{{ p.id }}" {% if p.id == order.product.id|default:'' %}selected{% endif %}>{{ p.name|title }}&nbsp;({{ p.product_id|title }})</option>
-    {% endfor %}
-  </select>
+
+  {% if order.approval_status|default:'' == 'APPROVED' %}
+    <!-- greyed display -->
+    <select class="form-control" disabled>
+      <option selected>{{ order.product.name|title }} ({{ order.product.product_id|title }})</option>
+    </select>
+    <!-- hidden twin that is posted -->
+    <input type="hidden" name="product" value="{{ order.product.id }}">
+  {% else %}
+    <select name="product" class="form-control" required>
+      {% for p in products %}
+        <option value="{{ p.id }}" {% if p.id == order.product.id|default:'' %}selected{% endif %}>
+          {{ p.name|title }} ({{ p.product_id|title }})
+        </option>
+      {% endfor %}
+    </select>
+  {% endif %}
 </div>
 
+<!-- ===== VENDOR ===== -->
 <div class="form-group">
   <label>Vendor:</label>
-  <select name="vendor" class="form-control" required>
-    {% for v in vendors %}
-      <option value="{{ v.id }}" {% if v.id == order.vendor.id|default:'' %}selected{% endif %}>{{ v.name|title }}&nbsp;({{ v.vendor_id|title }})</option>
-    {% endfor %}
-  </select>
+
+  {% if order.approval_status|default:'' == 'APPROVED' %}
+    <select class="form-control" disabled>
+      <option selected>{{ order.vendor.name|title }} ({{ order.vendor.vendor_id|title }})</option>
+    </select>
+    <input type="hidden" name="vendor" value="{{ order.vendor.id }}">
+  {% else %}
+    <select name="vendor" class="form-control" required>
+      {% for v in vendors %}
+        <option value="{{ v.id }}" {% if v.id == order.vendor.id|default:'' %}selected{% endif %}>
+          {{ v.name|title }} ({{ v.vendor_id|title }})
+        </option>
+      {% endfor %}
+    </select>
+  {% endif %}
 </div>
 
+<!-- ===== QUANTITY ===== -->
 <div class="form-group">
   <label>Quantity:</label>
-  <input type="number" name="qty" class="form-control" min="1"
-         value="{{ order.quantity|default:'' }}" required>
+
+  {% if order.approval_status|default:'' == 'APPROVED' %}
+    <input type="number" class="form-control" value="{{ order.quantity }}" disabled>
+    <input type="hidden" name="qty" value="{{ order.quantity }}">
+  {% else %}
+    <input type="number" name="qty" class="form-control" min="1"
+           value="{{ order.quantity|default:'' }}" required>
+  {% endif %}
 </div>
