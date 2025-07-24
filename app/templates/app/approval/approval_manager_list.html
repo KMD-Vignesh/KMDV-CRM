@@ -1,5 +1,7 @@
 {% extends 'app/base/base.html' %}
 {% block title %}Approval{% endblock %}
+{% load custom_filters %}
+
 {% block content %}
 
 {% if messages %}
@@ -13,9 +15,10 @@
 <div class="page-header">
   <h1>Approval Requests</h1>
   <div class="multiButton">
-    <a class="btn-add" href="{% url 'update_po_approval' %}">Purchase Approvals</a>
-    <a class="btn-add" href="{% url 'update_inventory_approval' %}">Inventory Approvals</a>
-    <a class="btn-add" href="{% url 'update_order_approval' %}">Order Approvals</a>
+
+    <a class="btn-add" href="{% url 'update_approval' model='po' %}">Purchase Approvals</a>
+<a class="btn-add" href="{% url 'update_approval' model='inventory' %}">Inventory Approvals</a>
+<a class="btn-add" href="{% url 'update_approval' model='order' %}">Order Approvals</a>
 
   </div>
 </div>
@@ -47,8 +50,10 @@
             <td>{{ order.get_status_display }}</td>
             <td>{{ order.get_approval_status_display }}</td>
             <td>
-              <a class="btn" href="{% url 'approve_purchase_order' order.pk %}">Approve</a>
-              <a class="btn danger" href="{% url 'reject_purchase_order' order.pk %}">Reject</a>
+              
+              <a class="btn"  href="{% url 'mark_approved' model='po' pk=order.pk %}">Approve</a>
+              <a class="btn danger" href="{% url 'mark_rejected' model='po' pk=order.pk %}">Reject</a>
+
             </td>
           </tr>
         {% endfor %}
@@ -88,8 +93,9 @@
           <td>{{ inv.get_status_display }}</td>
           <td>{{ inv.get_approval_status_display }}</td>
           <td>
-            <a class="btn" href="{% url 'approve_inventory' inv.pk %}">Approve</a>
-            <a class="btn danger" href="{% url 'reject_inventory' inv.pk %}">Reject</a>
+              <a class="btn"  href="{% url 'mark_approved' model='inventory' pk=inv.pk %}">Approve</a>
+              <a class="btn danger" href="{% url 'mark_rejected' model='inventory' pk=inv.pk %}">Reject</a>
+
           </td>
         </tr>
       {% endfor %}
@@ -129,8 +135,10 @@
             <td>{{ order.get_status_display }}</td>
             <td>{{ order.get_approval_status_display }}</td>
             <td>
-              <a class="btn" href="{% url 'approve_order' order.pk %}">Approve</a>
-              <a class="btn danger" href="{% url 'reject_order' order.pk %}">Reject</a>
+                            <a class="btn"  href="{% url 'mark_approved' model='order' pk=order.pk %}">Approve</a>
+              <a class="btn danger" href="{% url 'mark_rejected' model='order' pk=order.pk %}">Reject</a>
+
+
             </td>
           </tr>
         {% endfor %}

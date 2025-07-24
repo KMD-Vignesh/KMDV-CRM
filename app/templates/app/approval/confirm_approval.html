@@ -1,0 +1,29 @@
+{% extends 'app/base/base.html' %}
+{% load custom_filters %}
+
+{% block title %}{{ verb|title }} {{ model|title }} #{{ object.id }}{% endblock %}
+{% block content %}
+
+<div class="form-wrapper">
+  <h1>{{ verb|title }} {{ model|title }} #{{ object.id }}</h1>
+
+    <table class="dv-table">
+      <tr><th>PO ID</th><td>{{ object.id }}</td></tr>
+      <tr><th>Product</th><td>{{ object.product.name }}</td></tr>
+      <tr><th>Vendor</th><td>{{ object.vendor.name }}</td></tr>
+      <tr><th>Quantity</th><td> {% if model == 'inventory' %}{{ object.stock_quantity }} {% else %}{{ object.quantity }}{% endif %}</td></tr>
+      <tr><th>Total&nbsp;Price</th><td>₹{{ object.total_price|floatformat:2|indian_comma }}</td></tr>
+
+    </table>
+    
+  <form method="post">
+    {% csrf_token %}
+    <p>Are you sure you want to <strong>{{ verb|title }}</strong> this <strong>{{ model|title }}</strong> ?</p>
+    <button type="submit" class="btn btn-primary">
+      {% if action == 'APPROVED' %}Approve{% else %}Reject{% endif %}
+    </button>
+    <a href="{% url 'approval_manager_list' %}" class="btn btn-secondary">Cancel</a>
+  </form>
+</div>
+
+{% endblock %}

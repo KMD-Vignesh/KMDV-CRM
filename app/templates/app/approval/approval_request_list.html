@@ -12,10 +12,95 @@
 
 <div class="page-header">
   <h1>Approval Requests</h1>
-</div>
-<h3 style="color: brown;">Purchase Order Approval</h3>
 
-{% if orders %}
+</div>
+<section class="approval-card">
+  <div class="page-header">
+  <h3 style="color: brown;">Purchase Pending</h3>
+  </div>
+  {% if purchase_orders %}
+  <div class="dv-table-responsive">
+    <table class="dv-table">
+      <thead class="table-light">
+        <tr>
+          <th>ID</th>
+          <th>Product</th>
+          <th>Vendor</th>
+          <th>Quantity</th>
+          <th>Status</th>
+          <th>Approval Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in purchase_orders %}
+          <tr>
+            <td>{{ order.id }}</td>
+            <td>{{ order.product.name }}</td>
+            <td>{{ order.vendor.name }}</td>
+            <td>{{ order.quantity }}</td>
+            <td>{{ order.get_status_display }}</td>
+            <td>{{ order.get_approval_status_display }}</td>
+            <td>
+              <a class="btn" href="{% url 'po_approval_request_detail' order.pk %}">View</a>
+
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <p class="text-muted">No approval requests yet.</p>
+  {% endif %}
+  </section>
+
+<section class="approval-card">
+
+<div class="page-header">
+<h3 style="color: brown;">Inventory Pending</h3>
+</div>
+
+{% if inventories %}
+  <div class="dv-table-responsive">
+    <table class="dv-table">
+      <thead class="table-light">
+        <tr>
+        <th>ID</th>
+        <th>Product</th>
+        <th>Vendor</th>
+        <th>Quantity</th>
+        <th>Status</th>
+        <th>Approval Status</th>
+        <th>Actions</th>
+      </tr>
+      {% for inv in inventories %}
+        <tr>
+          <td>{{ inv.id }}</td>
+          <td>{{ inv.product.name }}</td>
+          <td>{{ inv.vendor.name|default:"–" }}</td>
+          <td>{{ inv.stock_quantity }}</td>
+          <td>{{ inv.get_status_display }}</td>
+          <td>{{ inv.get_approval_status_display }}</td>
+          <td>
+                            <a class="btn" href="{% url 'inventory_approval_request_detail' inv.pk %}">View</a>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <p class="text-muted">No approval requests yet.</p>
+{% endif %}
+  </section>
+
+
+  <section class="approval-card">
+  <div class="page-header">
+      <h3 style="color: brown;">Order Pending</h3>
+  </div>
+  {% if orders %}
   <div class="dv-table-responsive">
     <table class="dv-table">
       <thead class="table-light">
@@ -39,7 +124,8 @@
             <td>{{ order.get_status_display }}</td>
             <td>{{ order.get_approval_status_display }}</td>
             <td>
-              <a class="btn" href="{% url 'po_approval_request_detail' order.pk %}">View</a>
+                                          <a class="btn" href="{% url 'order_approval_request_detail' order.pk %}">View</a>
+
             </td>
           </tr>
         {% endfor %}
@@ -49,42 +135,6 @@
 {% else %}
   <p class="text-muted">No approval requests yet.</p>
 {% endif %}
-
-<h3 style="color: brown; margin-top: 2rem;">Inventory Inward Approval</h3>
-
-{% if inventories %}
-  <div class="dv-table-responsive">
-    <table class="dv-table">
-      <thead class="table-light">
-        <tr>
-          <th>ID</th>
-          <th>Product</th>
-          <th>Vendor</th>
-          <th>Quantity</th>
-          <th>Status</th>
-          <th>Approval Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for inv in inventories %}
-          <tr>
-            <td>{{ inv.id }}</td>
-            <td>{{ inv.product.name }}</td>
-            <td>{{ inv.vendor.name|default:"—" }}</td>
-            <td>{{ inv.stock_quantity }}</td>
-            <td>{{ inv.get_status_display }}</td>
-            <td>{{ inv.get_approval_status_display }}</td>
-            <td>
-              <a class="btn" href="{% url 'inventory_approval_request_detail' inv.pk %}">View</a>
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-{% else %}
-  <p class="text-muted">No inventory approval requests yet.</p>
-{% endif %}
+</section>
 
 {% endblock %}

@@ -1,0 +1,85 @@
+{% extends 'app/base/base.html' %}
+{% load custom_filters %}
+{% block title %}{{ title }} Approvals{% endblock %}
+
+{% block content %}
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+      <p style="color: green;">{{ message }}</p>
+    </div>
+  {% endfor %}
+{% endif %}
+
+<div class="page-header">
+  <h1>Update {{ title }} Approvals</h1>
+  <div>
+    <a href="{% url 'approval_manager_list' %}" class="back-link2">← Back to Approval List</a>
+  </div>
+</div>
+
+<div class="dv-table-responsive">
+  <table class="dv-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Vendor</th>
+        <th>Product</th>
+        <th>Price</th>
+        <th>Qty</th>
+        <th>Total&nbsp;Price</th>
+        <th style="white-space: nowrap;text-align: center;">{{ title }}&nbsp;Status</th>
+        <th style="white-space: nowrap;text-align: center;">Approval&nbsp;Status</th>
+        <th class="actions">Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for rec in records %}
+      <tr>
+        <td>{{ rec.id }}</td>
+        <td>
+          {{ rec.vendor.name|default:"—" }}
+          <small style="color: rgb(18, 77, 117); font-size:x-small !important;">
+            ({{ rec.vendor.vendor_id|upper }})
+          </small>
+        </td>
+        <td>
+          {{ rec.product.name }}
+          <small style="color: rgb(18, 77, 117); font-size:x-small !important;">
+            ({{ rec.product.product_id|upper }})
+          </small>
+        </td>
+        <td>₹{{ rec.product.price|floatformat:2|indian_comma }}</td>
+        <td>{{ rec.qty }}</td>
+        <td>₹{{ rec.total_price|floatformat:2|indian_comma }}</td>
+
+        <td style="white-space: nowrap;text-align: center;">
+          <span class="badge {{ status_class_prefix }}-{{ rec.get_status_display|lower }}">
+            {{ rec.get_status_display }}
+          </span>
+        </td>
+
+        <td style="white-space: nowrap;text-align: center;">
+          <span class="approval-badge approval-list-{{ rec.approval_status|lower }}">
+            {{ rec.approval_status|title }}
+          </span>
+        </td>
+
+        <td class="actions">
+          <form method="post" style="display:inline;">
+            {% csrf_token %}
+            <input type="hidden" name="pk" value="{{ rec.id }}">
+            <button type="submit" name="action" value="PENDING"  class="btn-pending">Pending</button>
+            <button type="submit" name="action" value="APPROVED" class="btn-approve">Approve</button>
+            <button type="submit" name="action" value="CANCELLED" class="btn-cancel">Cancel</button>
+          </form>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="9" class="text-center">No records</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

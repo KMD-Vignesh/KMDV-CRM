@@ -26,12 +26,29 @@
       <tr><th>Status</th><td>{{ inv.get_status_display }}</td></tr>
       <tr><th>Approval Status</th><td>{{ inv.get_approval_status_display }}</td></tr>
     </table>
+
+
+  {% elif orders %}
+    <h1>Order Approval</h1>
+    <table class="dv-table">
+      <tr><th>Order ID</th><td>{{ orders.id }}</td></tr>
+      <tr><th>Product</th><td>{{ orders.product.name }}</td></tr>
+      <tr><th>Vendor</th><td>{{ orders.vendor.name|default:"—" }}</td></tr>
+      <tr><th>Quantity</th><td>{{ orders.quantity }}</td></tr>
+      <tr><th>Status</th><td>{{ orders.get_status_display }}</td></tr>
+      <tr><th>Approval Status</th><td>{{ orders.get_approval_status_display }}</td></tr>
+    </table>
   {% endif %}
   </div>
     <div style="margin-top:1rem;">
 
-  <a href="{% url 'approval_request_list' %}" class="btn btn-danger">Back</a>
 
+
+          {% if request.user.userprofile.role in 'admin,vendor_manager,customer_manager' %}
+          <a href="{% url 'approval_manager_list' %}" class="btn btn-danger">Back</a>
+        {% else %}
+          <a href="{% url 'approval_request_list' %}" class="btn btn-danger">Back</a>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
