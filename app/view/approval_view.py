@@ -90,11 +90,6 @@ def order_approval_request_detail(request, pk):
 def update_approval(request, model):
     Model = MODELS[model]
 
-    print("=== REQUEST DEBUG ===")
-    print("Method:", request.method)
-    print("GET params:", dict(request.GET))
-    print("POST params:", dict(request.POST))
-    
     if request.method == "POST":
         pk = request.POST["pk"]
         action = request.POST["action"]
