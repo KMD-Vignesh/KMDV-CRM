@@ -17,7 +17,7 @@
 
   {% if order.approval_status == 'APPROVED' %}
     {# greyed-out, read-only display #}
-    <select id="product-select" class="form-control" disabled>
+    <select  class="form-control" disabled>
       <option selected>{{ order.product.name|title }} ({{ order.product.product_id|title }})</option>
     </select>
     {# hidden twin that is actually sent with the form #}
