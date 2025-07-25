@@ -1,0 +1,36 @@
+/* ========== UNIVERSAL CARD COMPONENT ========== */
+.card, .profile-card, .form-card, .kpi-card {
+  background: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  box-shadow: var(--box-shadow);
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1200px; /* Removed duplicate max-width: 100% */
+  overflow-x: auto;
+  margin: 0 auto;
+}
+
+.approval-card {
+  background: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 0 1rem 1rem 1rem;
+  box-shadow: var(--box-shadow);
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1200px;
+  overflow-x: auto;
+  margin: 1rem auto;
+}
+
+.kpi-card {
+  text-align: center;
+  padding: 1.5rem 1rem;
+}
+
+.card.scroll {
+  max-height: 600px;
+  overflow-y: auto;
+}

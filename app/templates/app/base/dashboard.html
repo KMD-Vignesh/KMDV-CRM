@@ -45,85 +45,66 @@
 </section>
 
   <!-- ---------- SUMMARY CARDS ---------- -->
-  <section class="grid-2">
-    <div class="card scroll">
-      <h2>Top Orders</h2>
-      {% if order_summary %}
-      <ul class="list">
+<section class="grid-2">
+  <div class="card scroll">
+    <h2>Top Orders</h2>
+    {% if order_summary %}
+    <table class="dv-table">
+      <tbody>
         {% for item in order_summary %}
-        <li>{{ item.product__name }} – {{ item.total }} units</li>
+        <tr>
+          <td>{{ item.product__name }}</td>
+          <td>{{ item.total }}</td>
+        </tr>
         {% endfor %}
-      </ul>
-      {% else %}
-      <p>No data</p>
-      {% endif %}
-    </div>
+      </tbody>
+    </table>
+    {% else %}
+    <p>No data</p>
+    {% endif %}
+  </div>
 
-    <div class="card scroll">
-      <h2>Current Stock</h2>
-      {% if inventory_summary %}
-      <ul class="list">
+  <div class="card scroll">
+    <h2>Current Stock</h2>
+    {% if inventory_summary %}
+    <table class="dv-table">
+      <tbody>
         {% for item in inventory_summary %}
-        <li>{{ item.product__name }} – {{ item.total }} units</li>
+        <tr>
+          <td>{{ item.product__name }}</td>
+          <td>{{ item.total }}</td>
+        </tr>
         {% endfor %}
-      </ul>
-      {% else %}
-      <p>No data</p>
-      {% endif %}
-    </div>
-  </section>
+      </tbody>
+    </table>
+    {% else %}
+    <p>No data</p>
+    {% endif %}
+  </div>
+</section>
 
-  <!-- ---------- PRODUCT TABLE ---------- -->
-  <section class="card">
-    <h2>Product Overview</h2>
-    <div class="scroll">
-      <table class="dv-table">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Price</th>
-            <th>Category</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for product in products %}
-          <tr>
-            <td>{{ product.name|title }}</td>
-            <td>₹{{ product.price|floatformat:2|intcomma }}</td>
-            <td>{{ product.category.name|title }}</td>
-          </tr>
-          {% empty %}
-          <tr>
-            <td colspan="3" style="text-align: center">
-              No products available.
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </section>
 
   <!-- ---------- CHART ---------- -->
   <section class="grid-2">
+        <div class="card scroll">
+    <h2>Order Chart</h2>
+    {% if order_summary and order_summary|length > 0 %}
+    <canvas id="orderChart" width="600" height="600"></canvas>
+    {% else %}
+    <p>No data for chart</p>
+    {% endif %}
+  
+</div>
     <div class="card scroll">
           <h2>Stock Chart</h2>
     {% if inventory_summary and inventory_summary|length > 0 %}
-    <canvas id="stockChart" width="600" height="300"></canvas>
+    <canvas id="stockChart" width="600" height="600"></canvas>
     {% else %}
     <p>No data for chart</p>
     {% endif %}
   
 </div>
-    <div class="card scroll">
-    <h2>Order Chart</h2>
-    {% if order_summary and order_summary|length > 0 %}
-    <canvas id="orderChart" width="200" height="100"></canvas>
-    {% else %}
-    <p>No data for chart</p>
-    {% endif %}
-  
-</div>
+
   </section>
 </div>
 {% endblock %}

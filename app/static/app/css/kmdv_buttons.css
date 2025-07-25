@@ -1,0 +1,148 @@
+/* ========== BUTTONS ========== */
+.btn, .btn-filter, .btn-filter_2_3, .dv-table .btn, .btn-add {
+  display: inline-block;
+  padding: 0.5rem 1.2rem;
+  font-size: 0.9rem;
+  text-decoration: none;
+  border: 1px solid transparent;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background 0.2s;
+  text-align: center;
+}
+
+.btn-filter, .btn-filter_2_3 {
+  padding: 4px 6px;
+  font-size: 0.8rem;
+  border: 1px solid #bbb;
+  color: #000;
+  font-weight: bold;
+  background: #fd841ad9;
+  border-color: #fd841a;
+}
+
+.btn-filter_2_3 {
+  padding: 4px 30px;
+}
+
+.btn-filter:hover, .btn-filter_2_3:hover {
+  background: #a45611;
+  color: #fbe5e5;
+}
+
+.btn-primary {
+  color: #fff;
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+.btn-warning {
+  color: #191818;
+  background: #f3e567;
+  border-color: #ccc;
+}
+
+.btn-danger {
+  color: #fff;
+  background: var(--danger-color);
+  border-color: var(--danger-color);
+}
+
+.btn-danger:hover {
+  background: #c82333;
+  border-color: #bd2130;
+}
+
+.btn-secondary {
+  color: #333;
+  background: var(--light-bg);
+  border-color: #ccc;
+}
+
+.btn-secondary:hover {
+  background: #e2e6ea;
+}
+
+.btn-add {
+  padding: 6px 14px;
+  color: #fff;
+  background: var(--primary-color);
+  border: 1px solid var(--primary-color);
+}
+
+.btn-add:hover {
+  background: var(--primary-hover);
+}
+
+/* ========== ACTION BUTTONS ========== */
+.btn-pending, .btn-approve, .btn-cancel {
+  padding: 3px 7px;
+  font-size: 0.75rem;
+  text-decoration: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+  color: #fff;
+}
+
+.btn-pending {
+  background-color: var(--info-color);
+}
+
+.btn-approve {
+  background-color: var(--success-color);
+}
+
+.btn-cancel {
+  background-color: var(--danger-color);
+}
+
+.btn-pending:hover {
+  background: #246c9c;
+  border-color: #080808;
+}
+
+.btn-approve:hover {
+  background: #186f3c;
+  border-color: #080808;
+}
+
+.btn-cancel:hover {
+  background: #943126;
+  border-color: #080808;
+}
+
+.back-link, .back-link2 {
+  display: inline-block;
+  margin-top: 1rem;
+  color: #007bff;
+  text-decoration: none;
+}
+
+.back-link:hover, .back-link2:hover {
+  text-decoration: underline;
+}
+
+.back-link2 {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.85rem;
+  font-weight: 200;
+  color: #2e5379;
+  padding: 6px 12px;
+  background: #f4f6f9;
+  border: 1px solid #d0d0d0;
+  border-radius: 4px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.back-link2:hover {
+  background: #2e5379;
+  color: #f4f6f9;
+}

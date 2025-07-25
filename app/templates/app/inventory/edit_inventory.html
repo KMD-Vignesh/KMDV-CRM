@@ -13,9 +13,7 @@
   <h1>Edit Inventory #{{ inventory.id }}</h1>
 
   <p><strong>Approval Status:</strong>
-     <span class="badge approval-{{ inventory.approval_status|lower }}">
        {{ inventory.get_approval_status_display }}
-     </span>
   </p>
 
   <form class="form-card" method="post">
@@ -30,7 +28,7 @@
         </select>
         <input type="hidden" name="product" value="{{ inventory.product.id }}">
       {% else %}
-        <select name="product" class="form-control" required>
+        <select name="product" class="form-control" data-enhanced required>
           {% for prod in products %}
             <option value="{{ prod.id }}" {% if prod.id == inventory.product.id %}selected{% endif %}>
               {{ prod.name|title }} ({{ prod.product_id|title }})
@@ -49,7 +47,7 @@
         </select>
         <input type="hidden" name="vendor" value="{{ inventory.vendor.id }}">
       {% else %}
-        <select name="vendor" class="form-control" required>
+        <select name="vendor" class="form-control" data-enhanced required>
           {% for vend in vendors %}
             <option value="{{ vend.id }}" {% if vend.id == inventory.vendor.id %}selected{% endif %}>
               {{ vend.name|title }} ({{ vend.vendor_id|title }})
@@ -74,7 +72,7 @@
     {% if inventory.approval_status == 'APPROVED' %}
       <div class="form-group">
         <label>Status:</label>
-        <select name="status" class="form-control" required>
+        <select name="status" class="form-control" data-enhanced required>
           {% for val, label in status_choices %}
             <option value="{{ val }}" {% if val == inventory.status %}selected{% endif %}>
               {{ label }}
@@ -98,4 +96,30 @@
     <a href="{% url 'inventory_list' %}" class="btn btn-secondary">Back</a>
   </form>
 </div>
+
+<!-- Initialize searchable selects for this form -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize enhanced selects for editable dropdowns
+    setTimeout(function() {
+        // Product select (if not approved)
+        const productSelect = document.querySelector('select[name="product"]:not([disabled])');
+        if (productSelect) {
+            makeSelectSearchable(productSelect);
+        }
+        
+        // Vendor select (if not approved)
+        const vendorSelect = document.querySelector('select[name="vendor"]:not([disabled])');
+        if (vendorSelect) {
+            makeSelectSearchable(vendorSelect);
+        }
+        
+        // Status select (if approved)
+        const statusSelect = document.querySelector('select[name="status"]:not([disabled])');
+        if (statusSelect) {
+            makeSelectSearchable(statusSelect);
+        }
+    }, 100);
+});
+</script>
 {% endblock %}

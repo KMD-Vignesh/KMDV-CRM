@@ -1,0 +1,68 @@
+/* ========== DASHBOARD ========== */
+.dashboard {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  display: grid;
+  gap: 1.5rem;
+  box-sizing: border-box;
+}
+
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.kpi-card h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+  color: #555;
+}
+
+.kpi-card p {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 600;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.card canvas {
+  width: 100% !important;
+  height: auto !important;
+  max-width: 100%;
+  box-sizing: border-box;
+  max-height: 300px;
+  display: block;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .kpi-row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .card.scroll {
+    max-height: none;
+  }
+
+  .dv-table {
+    min-width: unset;
+    display: block;
+    overflow-x: auto;
+  }
+  
+  .page-header {
+    padding: 0 10px;
+  }
+}

@@ -13,7 +13,7 @@
 
     <div class="form-group">
       <label>Product:</label>
-      <select name="product" class="form-control" required>
+      <select name="product" class="form-control" data-enhanced required>
         {% for prod in products %}
           <option value="{{ prod.id }}">{{ prod.name|title }}&nbsp;({{ prod.product_id|title }})</option>
         {% endfor %}
@@ -22,7 +22,7 @@
 
     <div class="form-group">
       <label>Vendor:</label>
-      <select name="vendor" class="form-control" required>
+      <select name="vendor" class="form-control" data-enhanced required>
         {% for vend in vendors %}
           <option value="{{ vend.id }}">{{ vend.name|title }}&nbsp;({{ vend.vendor_id|title }})</option>
         {% endfor %}
@@ -40,4 +40,19 @@
     <a href="{% url 'inventory_list' %}" class="btn btn-secondary">Back</a>
   </form>
 </div>
+
+<!-- Initialize searchable selects for this form -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize enhanced selects for this form
+    setTimeout(function() {
+        const selects = document.querySelectorAll('select[data-enhanced]');
+        selects.forEach(function(select) {
+            if (!select.dataset.enhancedApplied) {
+                makeSelectSearchable(select);
+            }
+        });
+    }, 50);
+});
+</script>
 {% endblock %}

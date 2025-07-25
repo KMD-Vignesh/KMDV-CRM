@@ -10,7 +10,7 @@
     <!-- hidden twin that is posted -->
     <input type="hidden" name="product" value="{{ order.product.id }}">
   {% else %}
-    <select name="product" class="form-control" required>
+    <select name="product" class="form-control" data-enhanced required>
       {% for p in products %}
         <option value="{{ p.id }}" {% if p.id == order.product.id|default:'' %}selected{% endif %}>
           {{ p.name|title }} ({{ p.product_id|title }})
@@ -30,7 +30,7 @@
     </select>
     <input type="hidden" name="vendor" value="{{ order.vendor.id }}">
   {% else %}
-    <select name="vendor" class="form-control" required>
+    <select name="vendor" class="form-control" data-enhanced required>
       {% for v in vendors %}
         <option value="{{ v.id }}" {% if v.id == order.vendor.id|default:'' %}selected{% endif %}>
           {{ v.name|title }} ({{ v.vendor_id|title }})
@@ -52,3 +52,23 @@
            value="{{ order.quantity|default:'' }}" required>
   {% endif %}
 </div>
+
+<!-- Initialize searchable selects for this form -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize enhanced selects for editable dropdowns
+    setTimeout(function() {
+        // Product select (if not approved)
+        const productSelect = document.querySelector('select[name="product"]:not([disabled])');
+        if (productSelect) {
+            makeSelectSearchable(productSelect);
+        }
+        
+        // Vendor select (if not approved)
+        const vendorSelect = document.querySelector('select[name="vendor"]:not([disabled])');
+        if (vendorSelect) {
+            makeSelectSearchable(vendorSelect);
+        }
+    }, 100);
+});
+</script>

@@ -1,0 +1,163 @@
+/* ========== FORM STYLES ========== */
+.form-wrapper, .profile-wrapper {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label, .profile-form label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.form-control, .profile-form input, .profile-form select, .profile-form textarea,
+.form-card input[type="text"], .form-card input[type="email"], .form-card input[type="password"],
+.form-card input[type="number"], .form-card select, .form-card textarea {
+  width: 100%;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: var(--border-radius);
+  font-family: inherit;
+  font-size: 0.95rem;
+  transition: border-color 0.2s;
+  background-color: #fffcf9;
+  box-sizing: border-box;
+}
+
+.form-control:focus, .profile-form input:focus, .profile-form select:focus, .profile-form textarea:focus,
+.form-card input:focus, .form-card select:focus, .form-card textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.form-text {
+  display: block;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+  color: var(--secondary-color);
+}
+
+.form-text.text-danger, .form-text.text-warn {
+  color: var(--danger-color);
+}
+
+.form-text.text-success {
+  color: var(--success-color);
+}
+
+.profile-form textarea, .form-card textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* ========== SEARCHABLE SELECT STYLES ========== */
+.searchable-select-container {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.searchable-select-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    z-index: 1000;
+    display: none;
+    max-height: 250px;
+    overflow: hidden;
+    margin-top: 2px;
+}
+
+.searchable-select-dropdown[style*="bottom"] {
+    top: auto;
+    bottom: 100%;
+    margin-top: 0;
+    margin-bottom: 2px;
+}
+
+.searchable-select-search-wrapper {
+    padding: 5px;
+    border-bottom: 1px solid #eee;
+}
+
+.searchable-select-search {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    outline: none;
+    box-sizing: border-box;
+    font-family: inherit;
+    font-size: 0.95rem;
+}
+
+.searchable-select-search:focus {
+    border-color: #007bff;
+}
+
+.searchable-select-options {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.searchable-select-option {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #f8f8f8;
+    font-size: 0.95rem;
+}
+
+.searchable-select-option:hover,
+.searchable-select-option.selected {
+    background-color: #d5e8f5;
+}
+
+.searchable-select-option:last-child {
+    border-bottom: none;
+}
+
+.searchable-select-converted {
+    /* Hide original select but keep it in DOM */
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+.searchable-highlight {
+    font-weight: bold;
+    color: #007bff;
+    background-color: rgba(0, 123, 255, 0.1);
+    border-radius: 2px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .searchable-select-dropdown {
+        max-height: 200px;
+    }
+    
+    .searchable-select-options {
+        max-height: 150px;
+    }
+    
+    .searchable-select-option {
+        padding: 6px 10px;
+        font-size: 0.9rem;
+    }
+}

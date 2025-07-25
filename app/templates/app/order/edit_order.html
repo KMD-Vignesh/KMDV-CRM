@@ -6,9 +6,7 @@
   <h1>Edit Order #{{ order.id }}</h1>
 
   <p><strong>Approval Status:</strong>
-    <span class="badge approval-{{ order.approval_status|lower }}">
       {{ order.get_approval_status_display }}
-    </span>
   </p>
 
   <form class="form-card" method="post" id="order-form">
@@ -26,7 +24,7 @@
     <input type="hidden" name="product" value="{{ order.product.id }}">
   {% else %}
     {# normal editable dropdown #}
-    <select id="product-select" name="product" class="form-control" required>
+    <select id="product-select" name="product" class="form-control" data-enhanced required>
       {% for prod in products %}
         <option value="{{ prod.id }}" {% if prod.id == order.product.id %}selected{% endif %}>
           {{ prod.name|title }} ({{ prod.product_id|title }})
@@ -49,7 +47,7 @@
     <input type="hidden" name="vendor" value="{{ order.vendor.id }}">
   {% else %}
     <!-- normal editable dropdown -->
-    <select id="vendor-select" name="vendor" class="form-control" required>
+    <select id="vendor-select" name="vendor" class="form-control" data-enhanced required>
       {% for vend in vendors %}
         <option value="{{ vend.id }}" {% if vend.id == order.vendor.id %}selected{% endif %}>
           {{ vend.name|title }} ({{ vend.vendor_id|title }})
@@ -87,7 +85,7 @@
 {% if allowed_status %}
   <div class="form-group">
     <label>Status:</label>
-    <select name="status" class="form-control" required>
+    <select name="status" class="form-control" data-enhanced required>
       {% for val, label in allowed_status %}
         <option value="{{ val }}" {% if val == order.status %}selected{% endif %}>
           {{ label }}
@@ -163,6 +161,20 @@ document.addEventListener("DOMContentLoaded", function () {
       this.setCustomValidity("");
     }
   });
+  
+  // Initialize searchable selects for editable dropdowns
+  setTimeout(() => {
+    if (productSelect && !productSelect.hasAttribute('disabled')) {
+      makeSelectSearchable('#product-select');
+    }
+    if (vendorSelect && !vendorSelect.hasAttribute('disabled')) {
+      makeSelectSearchable('#vendor-select');
+    }
+    const statusSelect = document.querySelector('select[name="status"]');
+    if (statusSelect && !statusSelect.hasAttribute('disabled')) {
+      makeSelectSearchable('select[name="status"]');
+    }
+  }, 100);
 });
 </script>
 {% endblock %}

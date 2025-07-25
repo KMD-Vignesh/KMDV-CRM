@@ -14,7 +14,7 @@ def dashboard(request):
     products_count = Product.objects.count()
 
     inventory_summary = list(
-        Inventory.objects.values("product__name").annotate(total=Sum("stock_quantity"))
+        Inventory.objects.values("product__name").annotate(total=Sum("stock_quantity")).order_by("-total")[:3]
     )
 
     products = Product.objects.all()
@@ -24,7 +24,7 @@ def dashboard(request):
     order_summary = (
         Order.objects.values("product__name")
         .annotate(total=Sum("quantity"))
-        .order_by("-total")
+        .order_by("-total")[:3]
     )
     orders_count = Order.objects.count()
 

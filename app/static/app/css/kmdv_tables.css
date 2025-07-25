@@ -1,0 +1,116 @@
+/* ========== TABLES ========== */
+.dv-table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 0 auto;
+}
+
+.dv-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: inherit;
+  min-width: 100%; /* Changed: Always take full container width */
+  box-sizing: border-box;
+}
+
+.dv-table th,
+.dv-table td {
+  padding: 8px 12px;
+  border: 1px solid #dbdbdb;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.dv-table th {
+  background: var(--dark-bg);
+  color: #ecf0f1;
+  font-weight: 200;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.dv-table tr:hover {
+  background-color: #d5e8f5;
+}
+
+.dv-table .actions {
+  white-space: nowrap;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto 0.2rem auto;
+  padding: 0 2px;
+  box-sizing: border-box;
+}
+
+.filter-row input, .filter-row select {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.filter-row select[name="status"] {
+  width: 6rem;
+}
+
+.small_td {
+  font-size: 80% !important;
+  white-space: nowrap;
+}
+
+.multiButton {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.multiButton a {
+  flex: 1 1 auto;
+}
+
+/* ========== TABLE BUTTONS ========== */
+.dv-table .btn {
+  display: inline-block;
+  padding: 4px 8px;
+  margin-right: 4px;
+  font-size: 0.8rem;
+  text-decoration: none;
+  border: 1px solid #bbb;
+  border-radius: 3px;
+  color: #333;
+  white-space: nowrap;
+}
+
+.dv-table .btn:hover {
+  background: #eee;
+}
+
+.dv-table .btn.warning {
+  border-color: #c58907;
+  color: #c58907;
+}
+
+.dv-table .btn.danger {
+  border-color: #c0392b;
+  color: #c0392b;
+}
+
+/* ========== RESPONSIVE IMPROVEMENTS ========== */
+@media (max-width: 768px) {
+  .dv-table th,
+  .dv-table td {
+    padding: 6px 8px;
+    font-size: 0.9em;
+  }
+  
+  .dv-table .btn {
+    padding: 3px 6px;
+    font-size: 0.75rem;
+    margin-right: 2px;
+  }
+}

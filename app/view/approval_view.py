@@ -86,11 +86,15 @@ def order_approval_request_detail(request, pk):
         request, "app/approval/approval_request_detail.html", {"orders": orders}
     )
 
-
 @login_required
 def update_approval(request, model):
     Model = MODELS[model]
 
+    print("=== REQUEST DEBUG ===")
+    print("Method:", request.method)
+    print("GET params:", dict(request.GET))
+    print("POST params:", dict(request.POST))
+    
     if request.method == "POST":
         pk = request.POST["pk"]
         action = request.POST["action"]
@@ -138,9 +142,9 @@ def update_approval(request, model):
         try:
             qty_val = int(qty_q)
             if model == "inventory":
-                query &= Q(inward_qty=qty_val)
+                query &= Q(inward_qty=qty_q)
             else:
-                query &= Q(quantity=qty_val)
+                query &= Q(quantity=qty_q)
         except ValueError:
             pass
 
@@ -153,10 +157,11 @@ def update_approval(request, model):
         except (InvalidOperation, ValueError):
             pass
 
-    # Status filter
+    # Status filter - Use the same approach as order_list
     status_q = request.GET.get("status")
     if status_q:
         query &= Q(status=status_q)
+
 
     # Approval Status filter
     approval_status_q = request.GET.get("approval_status")
@@ -184,9 +189,11 @@ def update_approval(request, model):
     # Apply filters
     qs = qs.filter(query)
 
-    # Status choices for filter dropdown
-    status_choices = Model._meta.get_field("status").choices
+    # Status choices for filter dropdown - Use the same approach as order_list
+    status_choices = Model.STATUS_CHOICES
 
+    if status_q:
+        print(f"Sample record status: {qs.first().status if qs.exists() else 'No records'}")
     context = {
         "records": qs,
         "model": model,
@@ -198,7 +205,6 @@ def update_approval(request, model):
     }
 
     return render(request, "app/approval/update_approval.html", context)
-
 
 @login_required
 def mark_approved(request, model, pk):

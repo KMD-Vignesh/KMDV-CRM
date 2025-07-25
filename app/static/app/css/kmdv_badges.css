@@ -1,0 +1,103 @@
+/* ========== BADGES - CONSOLIDATED SYSTEM ========== */
+.badge, .approval-badge {
+  padding: 3px 7px;
+  font-size: 0.75rem;
+  border-radius: 3px;
+  color: #fff;
+  display: inline-block;
+  text-align: center;
+}
+
+/* ---------- STATUS BADGES ---------- */
+/* Generic status badges */
+.badge.cancelled {
+  background: var(--danger-color);
+}
+
+.badge.active {
+  background: var(--success-color);
+}
+
+/* Purchase Order badges */
+.badge.po-raised {
+  background: var(--info-color);
+}
+
+.badge.po-approved {
+  background: var(--purple-color);
+}
+
+.badge.po-rejected {
+  background: var(--danger-color);
+}
+
+.badge.po-shipped {
+  background: var(--warning-color);
+}
+
+.badge.po-delivered {
+  background: #d55bd3;
+}
+
+.badge.po-inward {
+  background: var(--success-color);
+}
+
+/* Inventory badges */
+.badge.inventory-requested {
+  background: var(--info-color);
+}
+
+.badge.inventory-approved {
+  background: var(--purple-color);
+}
+
+.badge.inventory-rejected {
+  background: var(--danger-color);
+}
+
+.badge.inventory-qc-done {
+  background: #8eaf58;
+}
+
+.badge.inventory-completed {
+  background: var(--success-color);
+}
+
+/* Order badges */
+.badge.order-raised {
+  background: var(--info-color);
+}
+
+.badge.order-approved {
+  background: var(--purple-color);
+}
+
+.badge.order-rejected {
+  background: var(--danger-color);
+}
+
+.badge.order-shipped {
+  background: var(--warning-color);
+}
+
+.badge.order-delivered {
+  background: var(--success-color);
+}
+
+.badge.order-returned {
+  background: #933227;
+}
+
+/* Approval badges */
+.approval-list-pending {
+  background-color: var(--info-color);
+}
+
+.approval-list-approved {
+  background-color: var(--success-color);
+}
+
+.approval-list-cancelled {
+  background-color: var(--danger-color);
+}
