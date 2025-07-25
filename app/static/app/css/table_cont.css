@@ -16,13 +16,14 @@
 .dv-table th,
 .dv-table td {
   padding: 8px 12px;
-  border: 1px solid #ddd;
+  border: 1px solid #dbdbdb;
   text-align: left;
 }
 
 .dv-table th {
-  background: #f3f3f3;
-  font-weight: 600;
+  background: #2c3e50;;
+  color: #ecf0f1;
+  font-weight: 200;
 }
 
 .dv-table tr:hover {
