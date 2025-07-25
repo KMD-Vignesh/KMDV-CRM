@@ -165,14 +165,32 @@
 }
 
 .btn-filter {
-  display: inline-block;
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
+
+    display: inline-block;
+  padding: 4px 6px;
+  margin-right: 4px;
   font-size: 0.8rem;
   text-decoration: none;
-  border: 1px solid transparent;
-  border-radius: 4px;
-  cursor: pointer;
+  border: 1px solid #bbb;
+  border-radius: 3px;
+
+  transition: background 0.2s;
+  color: #000000;
+  font-weight: bold;
+  background: #fd841ad9;
+  border-color: #fd841a;
+}
+
+.btn-filter_2_3 {
+
+    display: inline-block;
+  padding: 4px 30px;
+  margin-right: 4px;
+  font-size: 0.8rem;
+  text-decoration: none;
+  border: 1px solid #bbb;
+  border-radius: 3px;
+
   transition: background 0.2s;
   color: #000000;
   font-weight: bold;
@@ -234,6 +252,10 @@
 
 
 .btn-filter:hover {
+  background: #a45611;
+  color: #fbe5e5;
+}
+.btn-filter_2_3:hover {
   background: #a45611;
   color: #fbe5e5;
 }

@@ -1,36 +1,38 @@
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404, redirect, render
-from django.db.models import F, ExpressionWrapper, DecimalField, Q
 from decimal import Decimal, InvalidOperation
 
-from app.models import Inventory, PurchaseOrder, Order
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.db.models import DecimalField, ExpressionWrapper, F, Q
+from django.shortcuts import get_object_or_404, redirect, render
 
+from app.models import Inventory, Order, PurchaseOrder
 
 MODELS = {
-    'po':        PurchaseOrder,
-    'inventory': Inventory,
-    'order':     Order,
+    "po": PurchaseOrder,
+    "inventory": Inventory,
+    "order": Order,
 }
 
 # common mapping for status when approval changes
 STATUS_MAP = {
-    'po': {
-        'PENDING':  'PO_RAISED',
-        'APPROVED': 'PO_APPROVED',
-        'CANCELLED':'PO_REJECTED',
+    "po": {
+        "PENDING": "PO_RAISED",
+        "APPROVED": "PO_APPROVED",
+        "CANCELLED": "PO_REJECTED",
     },
-    'inventory': {
-        'PENDING':  'INWARD_REQUESTED',
-        'APPROVED': 'INWARD_APPROVED',
-        'CANCELLED':'INWARD_REJECTED',
+    "inventory": {
+        "PENDING": "INWARD_REQUESTED",
+        "APPROVED": "INWARD_APPROVED",
+        "CANCELLED": "INWARD_REJECTED",
     },
-    'order': {
-        'PENDING':  'ORDER_RAISED',
-        'APPROVED': 'ORDER_APPROVED',
-        'CANCELLED':'ORDER_REJECTED',
+    "order": {
+        "PENDING": "ORDER_RAISED",
+        "APPROVED": "ORDER_APPROVED",
+        "CANCELLED": "ORDER_REJECTED",
     },
 }
+
+
 @login_required
 def approval_request_list(request):
     purchase_orders = PurchaseOrder.objects.filter(approval_status="PENDING")
@@ -39,7 +41,11 @@ def approval_request_list(request):
     return render(
         request,
         "app/approval/approval_request_list.html",
-        {"purchase_orders": purchase_orders, "inventories": inventories, "orders":orders},
+        {
+            "purchase_orders": purchase_orders,
+            "inventories": inventories,
+            "orders": orders,
+        },
     )
 
 
@@ -51,7 +57,11 @@ def approval_manager_list(request):
     return render(
         request,
         "app/approval/approval_manager_list.html",
-        {"purchase_orders": purchase_orders, "inventories": inventories, "orders":orders},
+        {
+            "purchase_orders": purchase_orders,
+            "inventories": inventories,
+            "orders": orders,
+        },
     )
 
 
@@ -72,22 +82,24 @@ def inventory_approval_request_detail(request, pk):
 @login_required
 def order_approval_request_detail(request, pk):
     orders = get_object_or_404(Order, pk=pk)
-    return render(request, "app/approval/approval_request_detail.html", {"orders": orders})
+    return render(
+        request, "app/approval/approval_request_detail.html", {"orders": orders}
+    )
 
 
 @login_required
 def update_approval(request, model):
     Model = MODELS[model]
 
-    if request.method == 'POST':
-        pk     = request.POST['pk']
-        action = request.POST['action']
-        obj    = get_object_or_404(Model, pk=pk)
+    if request.method == "POST":
+        pk = request.POST["pk"]
+        action = request.POST["action"]
+        obj = get_object_or_404(Model, pk=pk)
         obj.approval_status = action
-        obj.status          = STATUS_MAP[model][action]
-        obj.save(update_fields=['approval_status', 'status'])
+        obj.status = STATUS_MAP[model][action]
+        obj.save(update_fields=["approval_status", "status"])
         messages.success(request, f"{model.title()} #{pk} set to {action}")
-        return redirect('update_approval', model=model)
+        return redirect("update_approval", model=model)
 
     # --- Build query filters ---
     query = Q()
@@ -100,12 +112,16 @@ def update_approval(request, model):
     # Vendor filter
     vendor_q = request.GET.get("vendor")
     if vendor_q:
-        query &= Q(vendor__name__icontains=vendor_q) | Q(vendor__vendor_id__icontains=vendor_q)
+        query &= Q(vendor__name__icontains=vendor_q) | Q(
+            vendor__vendor_id__icontains=vendor_q
+        )
 
     # Product filter
     product_q = request.GET.get("product")
     if product_q:
-        query &= Q(product__name__icontains=product_q) | Q(product__product_id__icontains=product_q)
+        query &= Q(product__name__icontains=product_q) | Q(
+            product__product_id__icontains=product_q
+        )
 
     # Product price filter - same logic as order_list
     product_price = request.GET.get("product_price")
@@ -121,7 +137,7 @@ def update_approval(request, model):
     if qty_q:
         try:
             qty_val = int(qty_q)
-            if model == 'inventory':
+            if model == "inventory":
                 query &= Q(inward_qty=qty_val)
             else:
                 query &= Q(quantity=qty_val)
@@ -148,93 +164,81 @@ def update_approval(request, model):
         query &= Q(approval_status=approval_status_q)
 
     # --- choose the right queryset ---
-    if model == 'inventory':
-        qs = (
-            Model.objects
-            .select_related('product', 'vendor')
-            .annotate(
-                qty=F('inward_qty'),
-                total_price=ExpressionWrapper(
-                    F("inward_qty") * F("product__price"),
-                    output_field=DecimalField(max_digits=12, decimal_places=2),
-                )
-            )
+    if model == "inventory":
+        qs = Model.objects.select_related("product", "vendor").annotate(
+            qty=F("inward_qty"),
+            total_price=ExpressionWrapper(
+                F("inward_qty") * F("product__price"),
+                output_field=DecimalField(max_digits=12, decimal_places=2),
+            ),
         )
-    else:   # po / order
-        qs = (
-            Model.objects
-            .select_related('product', 'vendor')
-            .annotate(
-                qty=F('quantity'),
-                total_price=ExpressionWrapper(
-                    F("quantity") * F("product__price"),
-                    output_field=DecimalField(max_digits=12, decimal_places=2),
-                )
-            )
+    else:  # po / order
+        qs = Model.objects.select_related("product", "vendor").annotate(
+            qty=F("quantity"),
+            total_price=ExpressionWrapper(
+                F("quantity") * F("product__price"),
+                output_field=DecimalField(max_digits=12, decimal_places=2),
+            ),
         )
 
     # Apply filters
     qs = qs.filter(query)
 
     # Status choices for filter dropdown
-    status_choices = Model._meta.get_field('status').choices
+    status_choices = Model._meta.get_field("status").choices
 
     context = {
-        'records': qs,
-        'model': model,
-        'title': {'po':'PO','inventory':'Inward','order':'Order'}[model],
-        'status_class_prefix': {'po':'po','inventory':'inventory','order':'order'}[model],
-        'status_choices': status_choices,
+        "records": qs,
+        "model": model,
+        "title": {"po": "PO", "inventory": "Inward", "order": "Order"}[model],
+        "status_class_prefix": {"po": "po", "inventory": "inventory", "order": "order"}[
+            model
+        ],
+        "status_choices": status_choices,
     }
 
-    return render(request, 'app/approval/update_approval.html', context)
+    return render(request, "app/approval/update_approval.html", context)
+
 
 @login_required
 def mark_approved(request, model, pk):
-    return _handle_approval(request, model, pk, 'APPROVED', 'approve')
+    return _handle_approval(request, model, pk, "APPROVED", "approve")
+
 
 @login_required
 def mark_rejected(request, model, pk):
-    return _handle_approval(request, model, pk, 'CANCELLED', 'reject')
+    return _handle_approval(request, model, pk, "CANCELLED", "reject")
+
 
 def _handle_approval(request, model, pk, action, verb):
     Model = MODELS[model]
-        # build the annotated queryset
-    if model == 'inventory':
-        qs = (
-            Model.objects
-            .select_related('product', 'vendor')
-            .annotate(
-                qty=F('inward_qty'),
-                total_price=ExpressionWrapper(
-                    F("inward_qty") * F("product__price"),
-                    output_field=DecimalField(max_digits=12, decimal_places=2),
-                )
-            )
+    # build the annotated queryset
+    if model == "inventory":
+        qs = Model.objects.select_related("product", "vendor").annotate(
+            qty=F("inward_qty"),
+            total_price=ExpressionWrapper(
+                F("inward_qty") * F("product__price"),
+                output_field=DecimalField(max_digits=12, decimal_places=2),
+            ),
         )
     else:  # po / order
-        qs = (
-            Model.objects
-            .select_related('product', 'vendor')
-            .annotate(
-                qty=F('quantity'),
-                total_price=ExpressionWrapper(
-                    F("quantity") * F("product__price"),
-                    output_field=DecimalField(max_digits=12, decimal_places=2),
-                )
-            )
+        qs = Model.objects.select_related("product", "vendor").annotate(
+            qty=F("quantity"),
+            total_price=ExpressionWrapper(
+                F("quantity") * F("product__price"),
+                output_field=DecimalField(max_digits=12, decimal_places=2),
+            ),
         )
 
     obj = get_object_or_404(qs, pk=pk)
 
-    if request.method == 'POST':
+    if request.method == "POST":
         obj.approval_status = action
-        obj.status          = STATUS_MAP[model][action]
-        obj.save(update_fields=['approval_status', 'status'])
+        obj.status = STATUS_MAP[model][action]
+        obj.save(update_fields=["approval_status", "status"])
         messages.success(request, f"{model.title()} #{pk} marked {verb}.")
-        return redirect('approval_manager_list')
-
+        return redirect("approval_manager_list")
 
     # GET → confirmation page
-    context = {'object': obj, 'model': model, 'verb': verb, 'action': action}
-    return render(request, 'app/approval/confirm_approval.html', context)
+    context = {"object": obj, "model": model, "verb": verb, "action": action}
+    return render(request, "app/approval/confirm_approval.html", context)
