@@ -32,6 +32,39 @@
         <th style="white-space: nowrap;text-align: center;">Approval&nbsp;Status</th>
         <th class="actions">Actions</th>
       </tr>
+      <form method="get" id="filter-form">
+<tr class="filter-row">
+    <td><input type="text" name="id" value="{{ request.GET.id }}" class="form-control" placeholder="id"></td>
+    <td><input type="text" name="vendor" value="{{ request.GET.vendor }}" class="form-control" placeholder="name / id"></td>
+    <td><input type="text" name="product" value="{{ request.GET.product }}" class="form-control" placeholder="name / id"></td>
+    <td><input type="number" step="0.01" name="product_price" value="{{ request.GET.product_price }}" class="form-control" placeholder="price"></td>
+    <td><input type="number" name="qty" value="{{ request.GET.qty }}" class="form-control" placeholder="qty"></td>
+    <td><input type="number" step="0.01" name="total_price" value="{{ request.GET.total_price }}" class="form-control" placeholder="total price"></td>
+    
+    <td style="white-space: nowrap;text-align: center;">
+        <select name="status" class="form-control">
+            <option value="">----</option>
+            {% for val, label in status_choices %}
+                <option value="{{ val }}" {% if request.GET.status == val %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+    </td>
+
+    <td style="white-space: nowrap;text-align: center;">
+        <select name="approval_status" class="form-control">
+            <option value="">----</option>
+            <option value="PENDING" {% if request.GET.approval_status == 'PENDING' %}selected{% endif %}>Pending</option>
+            <option value="APPROVED" {% if request.GET.approval_status == 'APPROVED' %}selected{% endif %}>Approved</option>
+            <option value="CANCELLED" {% if request.GET.approval_status == 'CANCELLED' %}selected{% endif %}>Cancelled</option>
+        </select>
+    </td>
+
+    <td class="actions">
+        <button type="submit" class="btn-filter">Filter</button>
+        <a href="{% url 'update_approval' model=model %}" class="btn">Clear</a>
+    </td>
+</tr>
+</form>
     </thead>
 
     <tbody>

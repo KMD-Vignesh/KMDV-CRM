@@ -1,7 +1,8 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
-from django.db.models import F, ExpressionWrapper, DecimalField
+from django.db.models import F, ExpressionWrapper, DecimalField, Q
+from decimal import Decimal, InvalidOperation
 
 from app.models import Inventory, PurchaseOrder, Order
 
@@ -88,6 +89,64 @@ def update_approval(request, model):
         messages.success(request, f"{model.title()} #{pk} set to {action}")
         return redirect('update_approval', model=model)
 
+    # --- Build query filters ---
+    query = Q()
+
+    # ID filter
+    id_q = request.GET.get("id")
+    if id_q:
+        query &= Q(id=id_q)
+
+    # Vendor filter
+    vendor_q = request.GET.get("vendor")
+    if vendor_q:
+        query &= Q(vendor__name__icontains=vendor_q) | Q(vendor__vendor_id__icontains=vendor_q)
+
+    # Product filter
+    product_q = request.GET.get("product")
+    if product_q:
+        query &= Q(product__name__icontains=product_q) | Q(product__product_id__icontains=product_q)
+
+    # Product price filter - same logic as order_list
+    product_price = request.GET.get("product_price")
+    if product_price:
+        try:
+            product_price_decimal = Decimal(product_price)
+            query &= Q(product__price=product_price_decimal)
+        except (InvalidOperation, ValueError):
+            pass
+
+    # Quantity filter
+    qty_q = request.GET.get("qty")
+    if qty_q:
+        try:
+            qty_val = int(qty_q)
+            if model == 'inventory':
+                query &= Q(inward_qty=qty_val)
+            else:
+                query &= Q(quantity=qty_val)
+        except ValueError:
+            pass
+
+    # Total price filter - using the same logic as order_list
+    total_price = request.GET.get("total_price")
+    if total_price:
+        try:
+            total_price_decimal = Decimal(total_price)
+            query &= Q(total_price=total_price_decimal)
+        except (InvalidOperation, ValueError):
+            pass
+
+    # Status filter
+    status_q = request.GET.get("status")
+    if status_q:
+        query &= Q(status=status_q)
+
+    # Approval Status filter
+    approval_status_q = request.GET.get("approval_status")
+    if approval_status_q:
+        query &= Q(approval_status=approval_status_q)
+
     # --- choose the right queryset ---
     if model == 'inventory':
         qs = (
@@ -114,14 +173,21 @@ def update_approval(request, model):
             )
         )
 
+    # Apply filters
+    qs = qs.filter(query)
+
+    # Status choices for filter dropdown
+    status_choices = Model._meta.get_field('status').choices
+
     context = {
         'records': qs,
-        'model':   model,
-        'title':   {'po':'PO','inventory':'Inward','order':'Order'}[model],
+        'model': model,
+        'title': {'po':'PO','inventory':'Inward','order':'Order'}[model],
         'status_class_prefix': {'po':'po','inventory':'inventory','order':'order'}[model],
+        'status_choices': status_choices,
     }
-    return render(request, 'app/approval/update_approval.html', context)
 
+    return render(request, 'app/approval/update_approval.html', context)
 
 @login_required
 def mark_approved(request, model, pk):
