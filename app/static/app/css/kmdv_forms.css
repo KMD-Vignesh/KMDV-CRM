@@ -65,7 +65,6 @@
 
 .searchable-select-dropdown {
     position: absolute;
-    top: 100%;
     left: 0;
     right: 0;
     background: white;
@@ -77,13 +76,6 @@
     max-height: 250px;
     overflow: hidden;
     margin-top: 2px;
-}
-
-.searchable-select-dropdown[style*="bottom"] {
-    top: auto;
-    bottom: 100%;
-    margin-top: 0;
-    margin-bottom: 2px;
 }
 
 .searchable-select-search-wrapper {

@@ -146,25 +146,57 @@ function makeSearchable(selectElement) {
             hideDropdown(currentlyOpenDropdown);
         }
         
+        // Position dropdown properly before showing
+        positionDropdown();
+        
         dropdown.style.display = 'block';
         currentlyOpenDropdown = dropdown;
         searchInput.focus();
         searchInput.value = '';
         populateOptions();
+    }
+    
+    function positionDropdown() {
+        // Reset positioning
+        dropdown.style.top = '';
+        dropdown.style.bottom = '';
+        dropdown.style.marginTop = '';
+        dropdown.style.marginBottom = '';
         
-        // Position dropdown properly
+        // Get element positions
         const rect = selectElement.getBoundingClientRect();
+        const dropdownRect = dropdown.getBoundingClientRect();
         const viewportHeight = window.innerHeight;
-        const spaceBelow = viewportHeight - rect.bottom;
+        const viewportWidth = window.innerWidth;
         
-        if (spaceBelow < 250) {
-            dropdown.style.top = 'auto';
-            dropdown.style.bottom = '100%';
-            dropdown.style.marginBottom = '2px';
-        } else {
+        // Calculate available space
+        const spaceBelow = viewportHeight - rect.bottom;
+        const spaceAbove = rect.top;
+        const dropdownHeight = Math.min(250, dropdownRect.height || 250);
+        
+        // Position based on available space
+        if (spaceBelow >= dropdownHeight || spaceBelow >= spaceAbove) {
+            // Position below
             dropdown.style.top = '100%';
             dropdown.style.bottom = 'auto';
             dropdown.style.marginTop = '2px';
+            dropdown.style.marginBottom = '0';
+        } else {
+            // Position above
+            dropdown.style.top = 'auto';
+            dropdown.style.bottom = '100%';
+            dropdown.style.marginTop = '0';
+            dropdown.style.marginBottom = '2px';
+        }
+        
+        // Ensure dropdown doesn't go off screen horizontally
+        const containerRect = container.getBoundingClientRect();
+        if (containerRect.right > viewportWidth) {
+            dropdown.style.left = 'auto';
+            dropdown.style.right = '0';
+        } else {
+            dropdown.style.left = '0';
+            dropdown.style.right = 'auto';
         }
     }
     
@@ -218,6 +250,13 @@ function makeSearchable(selectElement) {
     document.addEventListener('click', function(e) {
         if (!container.contains(e.target)) {
             hideDropdown(dropdown);
+        }
+    });
+    
+    // Handle window resize
+    window.addEventListener('resize', function() {
+        if (currentlyOpenDropdown === dropdown && dropdown.style.display === 'block') {
+            positionDropdown();
         }
     });
     
